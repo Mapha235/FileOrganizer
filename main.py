@@ -1,4 +1,10 @@
 from lib.folder import Folder
+import os
 
 
-tracked_folder = Folder("./TestFolder", "")
+print(os.getcwd())
+tracked_folder = Folder("./TestFolder", "./Test")
+
+
+
+

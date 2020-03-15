@@ -1,9 +1,10 @@
 import os
 
 
+
 class Folder:
     source = ""
-    target= ""
+    target = ""
     source_content = []
     keyword = ""
 
@@ -25,6 +26,7 @@ class Folder:
         except OSError:
             if is_source:
                 print("Source-Directory not found.")
+                return
             else:
                 self.create_directory()
 
@@ -38,16 +40,13 @@ class Folder:
 
     def create_directory(self):
         while 1:
-            inp = input("Target-Directory not found. Create missing Directory? [y/n] ")
-            if inp == "y":
-                os.system("mkdir" + self.target)
+            inp = input("Target-Directory not found. Create missing Directory? [y/n]")
+            if inp == 'y':
+                os.system("mkdir " + self.target)
                 print("Successfully created Target-Directory.")
                 break
-            elif inp == "n":
+            elif inp == 'n':
                 print("Error: Target-Directory does not exist.")
                 return
             else:
-                print("Please type [y/n]!")
                 continue
-
-
