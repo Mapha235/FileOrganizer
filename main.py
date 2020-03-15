@@ -1,3 +1,4 @@
-import magic
+from lib.folder import Folder
 
-print("Hello World!")
+
+tracked_folder = Folder("./TestFolder", "")
