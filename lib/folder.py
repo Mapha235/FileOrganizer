@@ -1,7 +1,6 @@
 import os
 
 
-
 class Folder:
     source = ""
     target = ""
@@ -30,7 +29,6 @@ class Folder:
             else:
                 self.create_directory()
 
-
     def my_print(self):
         for i in self.source_content:
             print(i)
@@ -42,7 +40,7 @@ class Folder:
         while 1:
             inp = input("Target-Directory not found. Create missing Directory? [y/n]")
             if inp == 'y':
-                os.system("mkdir " + self.target)
+                os.system("mkdir " + "\"" + self.target + "\"")
                 print("Successfully created Target-Directory.")
                 break
             elif inp == 'n':
