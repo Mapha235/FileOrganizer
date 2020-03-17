@@ -3,7 +3,7 @@ import os
 
 
 print(os.getcwd())
-tracked_folder = Folder("./TestFolder", "./Test")
+tracked_folder = Folder("TestFolder", "Test")
 
 
 

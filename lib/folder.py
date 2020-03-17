@@ -1,7 +1,6 @@
 import os
 
 
-
 class Folder:
     source = ""                 #Quellpfad
     target = ""                 #Zielpfad
@@ -29,7 +28,6 @@ class Folder:
                 return
             else:
                 self.create_directory()
-
 
     def my_print(self):
         for i in self.source_content:
