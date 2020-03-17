@@ -3,10 +3,11 @@ import os
 
 
 class Folder:
-    source = ""
-    target = ""
-    source_content = []
+    source = ""                 #Quellpfad
+    target = ""                 #Zielpfad
+    source_content = []         #Inhalt von Quellpfad
     keyword = ""
+
 
     def __init__(self, s, t):
         is_source = False
@@ -17,7 +18,6 @@ class Folder:
 
             # listdir sorts its content by ascii-value
             self.source_content = os.listdir(os.getcwd())
-            self.my_print()
 
             self.target = t
             is_source = False
@@ -35,6 +35,9 @@ class Folder:
         for i in self.source_content:
             print(i)
 
+
+
+
     def set_keyword(self, k):
         self.keyword = k
 
@@ -42,7 +45,7 @@ class Folder:
         while 1:
             inp = input("Target-Directory not found. Create missing Directory? [y/n]")
             if inp == 'y':
-                os.system("mkdir " + self.target)
+                os.system("mkdir " + "\"" + self.target + "\"")
                 print("Successfully created Target-Directory.")
                 break
             elif inp == 'n':
@@ -50,3 +53,20 @@ class Folder:
                 return
             else:
                 continue
+
+    #replaces the forwardslashes in source and target to backslashes
+    def backslashes(self):
+        source_copy = self.source.replace("/" , "\\")
+        target_copy = self.target.replace("/" , "\\")
+        return [source_copy, target_copy]
+
+
+
+    def move(self):
+        s = self.backslashes()
+        for iterator in self.source_content:
+            if iterator.__contains__(self.keyword):
+                print("move " + "\"" + s[0] + "\\" + iterator + "\"" + " " + s[1])
+                os.system("move " + "\"" + s[0] + "\\" + iterator + "\"" + " \"" + s[1] + "\"")
+
+
