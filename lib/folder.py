@@ -2,11 +2,10 @@ import os
 
 
 class Folder:
-    source = ""                 #Quellpfad
-    target = ""                 #Zielpfad
-    source_content = []         #Inhalt von Quellpfad
+    source = ""
+    target = ""
+    source_content = []
     keyword = ""
-
 
     def __init__(self, s, t):
         is_source = False
@@ -17,6 +16,7 @@ class Folder:
 
             # listdir sorts its content by ascii-value
             self.source_content = os.listdir(os.getcwd())
+            self.my_print()
 
             self.target = t
             is_source = False
@@ -32,9 +32,6 @@ class Folder:
     def my_print(self):
         for i in self.source_content:
             print(i)
-
-
-
 
     def set_keyword(self, k):
         self.keyword = k
@@ -52,13 +49,11 @@ class Folder:
             else:
                 continue
 
-    #replaces the forwardslashes in source and target to backslashes
+    # replaces the forwardslashes in source and target to backslashes
     def backslashes(self):
-        source_copy = self.source.replace("/" , "\\")
-        target_copy = self.target.replace("/" , "\\")
+        source_copy = self.source.replace("/", "\\")
+        target_copy = self.target.replace("/", "\\")
         return [source_copy, target_copy]
-
-
 
     def move(self):
         s = self.backslashes()
@@ -66,5 +61,3 @@ class Folder:
             if iterator.__contains__(self.keyword):
                 print("move " + "\"" + s[0] + "\\" + iterator + "\"" + " " + s[1])
                 os.system("move " + "\"" + s[0] + "\\" + iterator + "\"" + " \"" + s[1] + "\"")
-
-
