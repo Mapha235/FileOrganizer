@@ -1,9 +1,6 @@
-from lib.folder import Folder
-import os
+from app import *
 
-
-print(os.getcwd())
-tracked_folder = Folder("TestFolder", "Test")
+window()
 
 
 

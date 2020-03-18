@@ -8,5 +8,5 @@ setup(
     license='',
     author='MPham',
     author_email='',
-    description=''
+    description='', requires=['PyQt5']
 )
