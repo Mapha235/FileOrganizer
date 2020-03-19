@@ -1,7 +1,7 @@
 layout1 = '''
             font-size: 14pt;
             color: white;
-            background-color: rgba(0,0,0,0.4);
+            background-color: rgba(0,0,0,0.5);
             border-radius: 10px;
             '''
 

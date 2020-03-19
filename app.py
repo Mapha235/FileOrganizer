@@ -1,8 +1,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QImage, QPalette, QBrush
-from PyQt5.QtWidgets import QApplication, QFileDialog, QGridLayout, QSizePolicy, QWidget, QTextBrowser, QTextEdit, \
-    QLabel
+from PyQt5.QtWidgets import QApplication, QFileDialog, QGridLayout, QSizePolicy, QWidget, QTextBrowser
 import sys
 from stylesheets import *
 
@@ -15,83 +14,79 @@ class TheWindow(QWidget):
         self.my_width = 800
         self.my_height = 500
 
-        # Background Image
-        QWidget.__init__(self)
-        bg = QImage("C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/bg.png")
-        scaled_bg = bg.scaled(QSize(self.my_width, self.my_height))  # resize Image to widgets size
-        palette = QPalette()
-        palette.setBrush(QPalette.Background, QBrush(scaled_bg))
-        self.setPalette(palette)
-        self.show()
+        # set Background Image
+        self.bg = QImage("C:/Dev/python/FileOrganizer/data/bg.png")
 
         self.settings_button = QtWidgets.QPushButton(self)
         self.create_entry_button = QtWidgets.QPushButton("Create new entry", self)
+        self.run_script_button = QtWidgets.QPushButton(self)
 
+        #list of all buttons
+        self.buttons = []
 
-        # used for mouse hover event
-        self.create_entry_button.installEventFilter(self)
-        self.settings_button.installEventFilter(self)
+        self.buttons.append(self.settings_button)
+        self.buttons.append(self.create_entry_button)
+        self.buttons.append(self.run_script_button)
 
-        # create Text Fields
         self.source_text_browser = QTextBrowser()
         self.target_text_browser = QTextBrowser()
         self.keyword_text_browser = QTextBrowser()
 
-        # set window size
-        self.setGeometry(self.x, self.y, self.my_width, self.my_height)
+        # create Text Fields
+        self.text_fields = []
 
-        self.setWindowTitle("File Organizer")
+        self.text_fields.append(self.source_text_browser)
+        self.text_fields.append(self.target_text_browser)
+        self.text_fields.append(self.keyword_text_browser)
+
         self.initUI()
 
-
     def initUI(self):
-        buttons = []
+        self.setWindowTitle("File Organizer")
+        self.setGeometry(self.x, self.y, self.my_width, self.my_height)
 
         # Design of the settings button
-        self.settings_button.setFixedWidth(70)
-        self.settings_button.setIcon(
-            QtGui.QIcon("C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/Settings.png"))
+        self.settings_button.setFixedSize(70, 70)
+        self.settings_button.setIcon(QtGui.QIcon("C:/Dev/python/FileOrganizer/data/Settings.png"))
         self.settings_button.setIconSize(QtCore.QSize(60, 60))
-        self.settings_button.clicked.connect(self.open_dialog_box)
-        buttons.append(self.settings_button)
-        buttons.append(self.create_entry_button)
 
+        self.run_script_button.setFixedSize(70, 70)
+        self.run_script_button.setIcon(QtGui.QIcon("C:/Dev/python/FileOrganizer/data/arrow.png"))
+        self.run_script_button.setIconSize(QtCore.QSize(60, 60))
 
-        # assign design Layout to all widgets
-        self.source_text_browser.setStyleSheet(layout1)
-        self.target_text_browser.setStyleSheet(layout1)
-        self.keyword_text_edit.setStyleSheet(layout1)
-        self.settings_button.setStyleSheet(layout1)
-        self.create_entry_button.setStyleSheet(layout1)
+        self.create_entry_button.setFixedHeight(70)
 
+        for button, text in zip(self.buttons, self.text_fields):
+            # used for mouse hover event
+            button.installEventFilter(self)
+            button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+            # assign design layout to all widgets
+            text.setStyleSheet(layout1)
+
+        self.createGridLayout()
+
+    def createGridLayout(self):
         layout_grid = QGridLayout()
 
         self.setLayout(layout_grid)
         layout_grid.setSpacing(10)
 
-        for button in buttons:
-            button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
         layout_grid.addWidget(self.settings_button, 0, 0, 1, 1)
-        layout_grid.addWidget(self.create_entry_button, 0, 1, 1, 7)
+        layout_grid.addWidget(self.create_entry_button, 0, 1, 1, 8)
 
-        layout_grid.addWidget(self.keyword_text_edit, 1, 0, 1, 8)
+        layout_grid.addWidget(self.keyword_text_browser, 1, 0, 1, 9)
+
         layout_grid.addWidget(self.source_text_browser, 2, 0, 1, 4)
-        layout_grid.addWidget(self.target_text_browser, 2, 4, 1, 4)
-
-    def clicked(self):
-        self.label.setText("you pressed THE button")
+        layout_grid.addWidget(self.run_script_button, 2, 4, 1, 1)
+        layout_grid.addWidget(self.target_text_browser, 2, 5, 1, 4)
 
     def eventFilter(self, obj, event):
-        if obj == self.create_entry_button:
-            button = self.create_entry_button
-        elif obj == self.settings_button:
-            button = self.settings_button
-        else:
-            return
+        button = obj
 
         if event.type() == QtCore.QEvent.HoverEnter:
             self.onHovered(button)
+        elif event.type() == QtCore.QEvent.HoverLeave:
+            self.update()
 
         return super(TheWindow, self).eventFilter(obj, event)
 
@@ -106,14 +101,23 @@ class TheWindow(QWidget):
         print(self.height)
 
     def update(self):
-        self.x = self.x()
-        self.y = self.y()
-        self.my_width = self.width()
-        self.my_height = self.height()
+        size = self.size()
 
-        self.my_print()
+        self.my_width = size.width()
+        self.my_height = size.height()
 
-    # QTextEdit
+        # set background image
+        scaled_bg = self.bg.scaled(QSize(self.my_width, self.my_height))
+        palette = QPalette()
+        palette.setBrush(QPalette.Background, QBrush(scaled_bg))
+        self.setPalette(palette)
+
+        self.settings_button.setStyleSheet(layout1)
+        self.create_entry_button.setStyleSheet(layout1)
+        self.run_script_button.setStyleSheet(layout1)
+
+    def resizeEvent(self, event):
+        self.update()
 
 
 def window():
@@ -122,3 +126,5 @@ def window():
 
     win.show()
     sys.exit(app.exec_())
+
+
