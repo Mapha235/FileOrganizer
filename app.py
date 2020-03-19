@@ -1,38 +1,38 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QImage, QPalette, QBrush
-from PyQt5.QtWidgets import QApplication, QFileDialog, QGridLayout, QWidget, QSizePolicy, QTextBrowser, QLabel
+from PyQt5.QtWidgets import QApplication, QFileDialog, QGridLayout, QSizePolicy, QWidget, QTextBrowser, QTextEdit, \
+    QLabel
 import sys
 from stylesheets import *
 
 
 class TheWindow(QWidget):
-
     def __init__(self):
         super(TheWindow, self).__init__()
-
         self.x = 960
         self.y = 200
         self.my_width = 800
         self.my_height = 500
 
-        # Background image
+        # Background Image
         QWidget.__init__(self)
-        bg = QImage("C:/Dev/python/FileOrganizer/data/bg.png")
+        bg = QImage("C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/bg.png")
         scaled_bg = bg.scaled(QSize(self.my_width, self.my_height))  # resize Image to widgets size
         palette = QPalette()
-        palette.setBrush(QPalette.Background, QBrush(scaled_bg))  # 10 = Windowrole
+        palette.setBrush(QPalette.Background, QBrush(scaled_bg))
         self.setPalette(palette)
         self.show()
 
         self.settings_button = QtWidgets.QPushButton(self)
         self.create_entry_button = QtWidgets.QPushButton("Create new entry", self)
 
+
         # used for mouse hover event
         self.create_entry_button.installEventFilter(self)
         self.settings_button.installEventFilter(self)
 
-        # Text fields
+        # create Text Fields
         self.source_text_browser = QTextBrowser()
         self.target_text_browser = QTextBrowser()
         self.keyword_text_browser = QTextBrowser()
@@ -43,23 +43,26 @@ class TheWindow(QWidget):
         self.setWindowTitle("File Organizer")
         self.initUI()
 
+
     def initUI(self):
         buttons = []
 
         # Design of the settings button
         self.settings_button.setFixedWidth(70)
-        self.settings_button.setIcon(QtGui.QIcon("C:/Dev/python/FileOrganizer/data/Settings2.png"))
+        self.settings_button.setIcon(
+            QtGui.QIcon("C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/Settings.png"))
         self.settings_button.setIconSize(QtCore.QSize(60, 60))
         self.settings_button.clicked.connect(self.open_dialog_box)
         buttons.append(self.settings_button)
         buttons.append(self.create_entry_button)
 
-        # assign design layout to all widgets
-        self.settings_button.setStyleSheet(layout1)
-        self.create_entry_button.setStyleSheet(layout1)
+
+        # assign design Layout to all widgets
         self.source_text_browser.setStyleSheet(layout1)
         self.target_text_browser.setStyleSheet(layout1)
-        self.keyword_text_browser.setStyleSheet(layout1)
+        self.keyword_text_edit.setStyleSheet(layout1)
+        self.settings_button.setStyleSheet(layout1)
+        self.create_entry_button.setStyleSheet(layout1)
 
         layout_grid = QGridLayout()
 
@@ -69,25 +72,21 @@ class TheWindow(QWidget):
         for button in buttons:
             button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        layout_grid.addWidget(self.settings_button, 0, 0)
+        layout_grid.addWidget(self.settings_button, 0, 0, 1, 1)
         layout_grid.addWidget(self.create_entry_button, 0, 1, 1, 7)
 
-        layout_grid.addWidget(self.keyword_text_browser, 1, 0, 1, 8)
+        layout_grid.addWidget(self.keyword_text_edit, 1, 0, 1, 8)
         layout_grid.addWidget(self.source_text_browser, 2, 0, 1, 4)
         layout_grid.addWidget(self.target_text_browser, 2, 4, 1, 4)
 
     def clicked(self):
         self.label.setText("you pressed THE button")
 
-    def setStyleSheet(self, styleSheet: str):
-        for widgets in self.widgets:
-            widgets.super(self).setStyleSheet(styleSheet)
-
     def eventFilter(self, obj, event):
-        if obj == self.settings_button:
-            button = self.settings_button
-        elif obj == self.create_entry_button:
+        if obj == self.create_entry_button:
             button = self.create_entry_button
+        elif obj == self.settings_button:
+            button = self.settings_button
         else:
             return
 
@@ -107,15 +106,14 @@ class TheWindow(QWidget):
         print(self.height)
 
     def update(self):
-        # self.x = self.x()
-        # self.y = self.y()
+        self.x = self.x()
+        self.y = self.y()
         self.my_width = self.width()
         self.my_height = self.height()
 
         self.my_print()
 
-
-# QTextEdit
+    # QTextEdit
 
 
 def window():
@@ -124,6 +122,3 @@ def window():
 
     win.show()
     sys.exit(app.exec_())
-
-
-window()
