@@ -1,20 +1,30 @@
-layout1 = '''
+layout1 = """
             font-size: 14pt;
             color: white;
-            background-color: rgba(0,0,0,0.5);
+            background-color: rgba(0,0,0,0.4);
             border-radius: 10px;
-            '''
-
-
-font = """
-    font-size: 16pt;
-    font-family: "Montserrat", sans-serif;
-    """
-
-mouse_hover = """
-    font-size: 14pt;
-    color: white;
-    background-color: rgba(0, 0, 0, 0.25);
-    border-radius: 10px;
             """
 
+entry_layout = """
+            font-size: 10pt;
+            color: white;
+            background-color: rgba(0,0,0,0.4);
+            border-radius: 5px;
+            """
+
+mouse_hover = """
+                border: 2px solid rgb(255, 255, 255);
+                color: white;
+                """
+
+entry_mouse_hover = """
+                background-color: rgba(255,255,255,0.5);
+                color: white;
+                border-radius: 5px;
+                """
+
+
+mouse_click = """
+        color: white;
+        background-color: rgba(255, 255, 255, 0.5);
+"""

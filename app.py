@@ -1,68 +1,68 @@
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5 import QtWidgets, QtCore, QtGui, Qt
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QImage, QPalette, QBrush
 from PyQt5.QtWidgets import QApplication, QFileDialog, QGridLayout, QSizePolicy, QWidget, QTextBrowser
 import sys
 from stylesheets import *
+from entry import *
+
 
 
 class TheWindow(QWidget):
     def __init__(self):
         super(TheWindow, self).__init__()
-        self.x = 960
+        self.x = 160
         self.y = 200
         self.my_width = 800
         self.my_height = 500
 
+        self.entry = None
+
         # set Background Image
-        self.bg = QImage("C:/Dev/python/FileOrganizer/data/bg.png")
+        self.bg = QImage("C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/bg.png")
 
         self.settings_button = QtWidgets.QPushButton(self)
         self.create_entry_button = QtWidgets.QPushButton("Create new entry", self)
         self.run_script_button = QtWidgets.QPushButton(self)
 
-        #list of all buttons
+        # list of all buttons
         self.buttons = []
 
         self.buttons.append(self.settings_button)
         self.buttons.append(self.create_entry_button)
         self.buttons.append(self.run_script_button)
 
-        self.source_text_browser = QTextBrowser()
-        self.target_text_browser = QTextBrowser()
-        self.keyword_text_browser = QTextBrowser()
-
-        # create Text Fields
-        self.text_fields = []
-
-        self.text_fields.append(self.source_text_browser)
-        self.text_fields.append(self.target_text_browser)
-        self.text_fields.append(self.keyword_text_browser)
+        self.source_text_browser = QTextBrowser(self)
+        self.target_text_browser = QTextBrowser(self)
+        self.entry_text_browser = QTextBrowser(self)
 
         self.initUI()
 
     def initUI(self):
         self.setWindowTitle("File Organizer")
         self.setGeometry(self.x, self.y, self.my_width, self.my_height)
+        self.setMinimumSize(800, 500)
 
         # Design of the settings button
         self.settings_button.setFixedSize(70, 70)
-        self.settings_button.setIcon(QtGui.QIcon("C:/Dev/python/FileOrganizer/data/Settings.png"))
+        self.settings_button.setIcon(QtGui.QIcon("C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/Settings.png"))
         self.settings_button.setIconSize(QtCore.QSize(60, 60))
 
-        self.run_script_button.setFixedSize(70, 70)
-        self.run_script_button.setIcon(QtGui.QIcon("C:/Dev/python/FileOrganizer/data/arrow.png"))
+        self.run_script_button.setFixedWidth(70)
+        self.run_script_button.setIcon(QtGui.QIcon("C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/arrow.png"))
         self.run_script_button.setIconSize(QtCore.QSize(60, 60))
 
         self.create_entry_button.setFixedHeight(70)
 
-        for button, text in zip(self.buttons, self.text_fields):
+        for button in self.buttons:
             # used for mouse hover event
             button.installEventFilter(self)
             button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-            # assign design layout to all widgets
-            text.setStyleSheet(layout1)
 
+        self.buttons.clear()
+
+        # assign design layout to all widgets
+        self.setStyleSheet(layout1)
         self.createGridLayout()
 
     def createGridLayout(self):
@@ -74,37 +74,33 @@ class TheWindow(QWidget):
         layout_grid.addWidget(self.settings_button, 0, 0, 1, 1)
         layout_grid.addWidget(self.create_entry_button, 0, 1, 1, 8)
 
-        layout_grid.addWidget(self.keyword_text_browser, 1, 0, 1, 9)
+        layout_grid.addWidget(self.entry_text_browser, 1, 0, 1, 9)
 
         layout_grid.addWidget(self.source_text_browser, 2, 0, 1, 4)
         layout_grid.addWidget(self.run_script_button, 2, 4, 1, 1)
         layout_grid.addWidget(self.target_text_browser, 2, 5, 1, 4)
 
+    def openEntry(self):
+        self.entry = Entry(self.pos().x() + (self.width()/4), self.pos().y())
+        self.entry.show()
+
     def eventFilter(self, obj, event):
-        button = obj
-
         if event.type() == QtCore.QEvent.HoverEnter:
-            self.onHovered(button)
+            obj.setStyleSheet(mouse_hover)
+        elif event.type() == QtCore.QEvent.MouseButtonPress and event.button() == QtCore.Qt.LeftButton:
+            obj.setStyleSheet(mouse_hover + mouse_click)
+        elif event.type() == QtCore.QEvent.MouseButtonRelease:
+            obj.setStyleSheet(mouse_hover)
+            if obj == self.create_entry_button:
+                self.openEntry()
         elif event.type() == QtCore.QEvent.HoverLeave:
-            self.update()
-
+            obj.setStyleSheet(layout1)
         return super(TheWindow, self).eventFilter(obj, event)
 
-    def onHovered(self, btn):
-        btn.setStyleSheet(mouse_hover)
 
-    def open_dialog_box(self):
-        filename = QFileDialog.getOpenFileName(self)
-        print(filename)
-
-    def my_print(self):
-        print(self.height)
-
-    def update(self):
-        size = self.size()
-
-        self.my_width = size.width()
-        self.my_height = size.height()
+    def resizeBg(self):
+        self.my_width = self.width()
+        self.my_height = self.height()
 
         # set background image
         scaled_bg = self.bg.scaled(QSize(self.my_width, self.my_height))
@@ -112,19 +108,12 @@ class TheWindow(QWidget):
         palette.setBrush(QPalette.Background, QBrush(scaled_bg))
         self.setPalette(palette)
 
-        self.settings_button.setStyleSheet(layout1)
-        self.create_entry_button.setStyleSheet(layout1)
-        self.run_script_button.setStyleSheet(layout1)
-
     def resizeEvent(self, event):
-        self.update()
+        self.resizeBg()
 
 
 def window():
     app = QApplication(sys.argv)
     win = TheWindow()
-
     win.show()
     sys.exit(app.exec_())
-
-
