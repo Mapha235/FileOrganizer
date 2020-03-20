@@ -1,17 +1,18 @@
-from PyQt5 import QtWidgets, QtCore, QtGui, Qt
+import sys
+
+from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QImage, QPalette, QBrush
-from PyQt5.QtWidgets import QApplication, QFileDialog, QGridLayout, QSizePolicy, QWidget, QTextBrowser
-import sys
-from stylesheets import *
-from entry import *
+from PyQt5.QtWidgets import QApplication, QGridLayout, QSizePolicy, QWidget, QTextBrowser
 
+from entry import Entry
+from stylesheets import *
 
 
 class TheWindow(QWidget):
     def __init__(self):
         super(TheWindow, self).__init__()
-        self.x = 160
+        self.x = -1160
         self.y = 200
         self.my_width = 800
         self.my_height = 500
@@ -19,7 +20,7 @@ class TheWindow(QWidget):
         self.entry = None
 
         # set Background Image
-        self.bg = QImage("C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/bg.png")
+        self.bg = QImage("./data/bg.png")
 
         self.settings_button = QtWidgets.QPushButton(self)
         self.create_entry_button = QtWidgets.QPushButton("Create new entry", self)
@@ -45,11 +46,13 @@ class TheWindow(QWidget):
 
         # Design of the settings button
         self.settings_button.setFixedSize(70, 70)
-        self.settings_button.setIcon(QtGui.QIcon("C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/Settings.png"))
+        self.settings_button.setIcon(
+            QtGui.QIcon("./data/Settings.png"))
         self.settings_button.setIconSize(QtCore.QSize(60, 60))
 
         self.run_script_button.setFixedWidth(70)
-        self.run_script_button.setIcon(QtGui.QIcon("C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/arrow.png"))
+        self.run_script_button.setIcon(
+            QtGui.QIcon("./data/arrow.png"))
         self.run_script_button.setIconSize(QtCore.QSize(60, 60))
 
         self.create_entry_button.setFixedHeight(70)
@@ -81,7 +84,7 @@ class TheWindow(QWidget):
         layout_grid.addWidget(self.target_text_browser, 2, 5, 1, 4)
 
     def openEntry(self):
-        self.entry = Entry(self.pos().x() + (self.width()/4), self.pos().y())
+        self.entry = Entry(self.pos().x() + (self.width() / 4), self.pos().y() + 50)
         self.entry.show()
 
     def eventFilter(self, obj, event):
@@ -96,7 +99,6 @@ class TheWindow(QWidget):
         elif event.type() == QtCore.QEvent.HoverLeave:
             obj.setStyleSheet(layout1)
         return super(TheWindow, self).eventFilter(obj, event)
-
 
     def resizeBg(self):
         self.my_width = self.width()

@@ -1,4 +1,7 @@
+from PyQt5.QtWidgets import QFileDialog
+
 from app import *
+
 from stylesheets import *
 
 
@@ -8,9 +11,8 @@ class Entry(QWidget):
         self.x = x
         self.y = y
 
-
         # set Background Image
-        self.bg = QImage("C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/bg.png")
+        self.bg = QImage("./data/bg.png")
 
         self.source_button = QtWidgets.QPushButton("Browse Source Folder", self)
         self.target_button = QtWidgets.QPushButton("Browse Target Folder", self)
@@ -24,10 +26,11 @@ class Entry(QWidget):
         self.buttons.append(self.add_button)
         self.buttons.append(self.cancel_button)
 
+        self.label = QtWidgets.QLabel("Example: urlaub//.pdf//5e-43c5")
+
         self.keyword_text_field = QtWidgets.QLineEdit(self)
         self.keyword_text_field.setPlaceholderText("Enter keyword")
         self.initUI()
-
 
     def initUI(self):
         self.setWindowTitle("Add New Entry")
@@ -36,10 +39,11 @@ class Entry(QWidget):
 
         for button in self.buttons:
             button.installEventFilter(self)
+            button.setFixedHeight(18)
         self.buttons.clear()
 
         self.setStyleSheet(entry_layout)
-
+        self.label.setStyleSheet(examples)
 
         self.createGridLayout()
 
@@ -53,26 +57,28 @@ class Entry(QWidget):
         layout_grid.addWidget(self.target_button, 0, 4, 1, 4)
         layout_grid.addWidget(self.keyword_text_field, 1, 0, 1, 8)
 
+        layout_grid.addWidget(self.label, 2, 0, 1, 4)
         layout_grid.addWidget(self.add_button, 2, 4, 1, 2)
-
         layout_grid.addWidget(self.cancel_button, 2, 6, 1, 2)
 
-
-
     def eventFilter(self, obj, event):
-        default_style_sheet = self.styleSheet()
         if event.type() == QtCore.QEvent.HoverEnter:
+            obj.setStyleSheet(entry_mouse_hover)
+        elif event.type() == QtCore.QEvent.MouseButtonPress and event.button() == QtCore.Qt.LeftButton:
+            obj.setStyleSheet(entry_mouse_hover + mouse_click)
+        elif event.type() == QtCore.QEvent.MouseButtonRelease:
+            if obj == self.source_button or obj == self.target_button:
+                self.open_dialog_box()
+            elif obj == self.cancel_button:
+                self.close()
             obj.setStyleSheet(entry_mouse_hover)
         elif event.type() == QtCore.QEvent.HoverLeave:
             obj.setStyleSheet(entry_layout)
         return super(Entry, self).eventFilter(obj, event)
 
-
     def open_dialog_box(self):
         filename = QFileDialog.getExistingDirectory(self)
         print(filename)
-
-
 
     def resizeBG(self):
         # set background image
@@ -83,12 +89,3 @@ class Entry(QWidget):
 
     def resizeEvent(self, event):
         self.resizeBG()
-
-
-
-
-def window2():
-    app = QApplication(sys.argv)
-    win = Entry()
-    win.show()
-    sys.exit(app.exec_())

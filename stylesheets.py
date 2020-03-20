@@ -18,13 +18,17 @@ mouse_hover = """
                 """
 
 entry_mouse_hover = """
-                background-color: rgba(255,255,255,0.5);
+                border: 1px solid rgb(255, 255, 255);
                 color: white;
                 border-radius: 5px;
                 """
-
 
 mouse_click = """
         color: white;
         background-color: rgba(255, 255, 255, 0.5);
 """
+examples = """
+        font-size: 8pt;
+        color: white;
+        background-color: rgba(255, 255, 255, 0.0);
+        """
