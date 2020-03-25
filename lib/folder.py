@@ -7,8 +7,9 @@ class Folder:
     source_content = []
     keyword = ""
 
-    def __init__(self, s, t):
+    def __init__(self, s, t, k):
         is_source = False
+        keyword = k
         try:
             self.source = s
             is_source = True
@@ -16,7 +17,6 @@ class Folder:
 
             # listdir sorts its content by ascii-value
             self.source_content = os.listdir(os.getcwd())
-            self.my_print()
 
             self.target = t
             is_source = False

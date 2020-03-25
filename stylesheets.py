@@ -1,15 +1,20 @@
-layout1 = """
+dark = """
             font-size: 14pt;
             color: white;
             background-color: rgba(0,0,0,0.4);
-            border-radius: 10px;
+            """
+
+light = """
+            font-size: 14pt;
+            font-weight: bold;
+            color: rgb(225,225,225);
+            background-color: rgba(255,255,255,0.4);
             """
 
 entry_layout = """
             font-size: 10pt;
-            color: white;
-            background-color: rgba(0,0,0,0.4);
-            border-radius: 5px;
+            font-weight: normal;
+            background-color: rgba(255,255,255,0.3);
             """
 
 mouse_hover = """
@@ -33,3 +38,6 @@ examples = """
         background-color: rgba(255, 255, 255, 0.0);
         margin: 10px;
         """
+
+
+
