@@ -14,7 +14,8 @@ from stylesheets import *
 class TheWindow(QWidget):
     def __init__(self):
         super(TheWindow, self).__init__()
-        self.x = -1160
+        self.scroll = QScrollArea()
+        self.x = 160
         self.y = 200
         self.my_width = 800
         self.my_height = 500
@@ -42,6 +43,8 @@ class TheWindow(QWidget):
         self.target_text_browser = QTextBrowser(self)
         self.entry_box = QGroupBox(self)
         self.entry_box.setStyleSheet("font-size: 14pt; color: rgb(225,225,225); background-color: rgba(255,255,255,0.0); ")
+
+
 
         self.initUI()
 
@@ -76,6 +79,7 @@ class TheWindow(QWidget):
         self.setStyleSheet(light)
         self.createGridLayout()
         self.createBoxLayout()
+        self.makeScrollable(self.entry_box)
         self.show()
 
     def createBoxLayout(self):
@@ -85,18 +89,22 @@ class TheWindow(QWidget):
         trash_box.setContentsMargins(0, 0, 0, 0)
 
         #trash_box.setSpacing(10)
-        for i in range(0, 5):
+        for i in range(0, 10):
             entry = Entry((((self.height() - 110) / 2) - 60) / 5)
             self.entries.append(entry)
             trash_box.addWidget(entry)
 
         self.entry_box.setLayout(trash_box)
 
-    def extract(self, *data):
+    def parse(self, *data):
         if len(data) != 3:
-            print("F*** yoouuuu")
+            print("Error!")
 
         # entriesEntry((self.height()-110)/2) - 30) / 5)
+
+    def makeScrollable(self, widget):
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setWidget(widget)
 
     def createGridLayout(self):
         layout_grid = QGridLayout()
@@ -106,7 +114,7 @@ class TheWindow(QWidget):
         layout_grid.addWidget(self.settings_button, 0, 0, 1, 1)
         layout_grid.addWidget(self.create_entry_button, 0, 1, 1, 8)
 
-        layout_grid.addWidget(self.entry_box, 1, 0, 1, 9)
+        layout_grid.addWidget(self.scroll, 1, 0, 1, 9)
 
         layout_grid.addWidget(self.source_text_browser, 2, 0, 1, 4)
         layout_grid.addWidget(self.run_script_button, 2, 4, 1, 1)
@@ -144,7 +152,7 @@ class TheWindow(QWidget):
         self.my_width = self.width()
         self.my_height = self.height()
 
-        self.entry_box.setFixedHeight(self.height() / 2)
+        self.scroll.setFixedHeight(int(self.height() / 2))
 
         for entry in self.entries:
             entry.setFixedHeight((((self.height() - 110) / 2) - 30) / 5)
@@ -187,7 +195,7 @@ class Entry(QGroupBox):
         #self.keyword.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self.trash_button.setIcon(
-            QtGui.QIcon("C:/Dev/python/FileOrganizer/data/error.png"))
+            QtGui.QIcon("C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/error.png"))
 
         self.createBoxLayout()
         self.setStyleSheet(entry_layout + "color: black;")
@@ -203,6 +211,7 @@ class Entry(QGroupBox):
 
         layout.setContentsMargins(5, 5, 5, 5)
         self.setLayout(layout)
+
 
 
 def window():
