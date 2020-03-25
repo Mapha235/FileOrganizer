@@ -15,7 +15,7 @@ class TheWindow(QWidget):
     def __init__(self):
         super(TheWindow, self).__init__()
         self.scroll = QScrollArea()
-        self.x = 160
+        self.x = -1160
         self.y = 200
         self.my_width = 800
         self.my_height = 500
@@ -83,22 +83,26 @@ class TheWindow(QWidget):
         self.show()
 
     def createBoxLayout(self):
-        trash_box = QVBoxLayout()
+        self.trash_box = QVBoxLayout()
 
-        trash_box.setAlignment(Qt.AlignTop)
-        trash_box.setContentsMargins(0, 0, 0, 0)
+        self.trash_box.setAlignment(Qt.AlignTop)
+        self.trash_box.setContentsMargins(0, 0, 0, 0)
 
-        #trash_box.setSpacing(10)
-        for i in range(0, 10):
+        """for i in range(0, 10):
             entry = Entry((((self.height() - 110) / 2) - 60) / 5)
             self.entries.append(entry)
-            trash_box.addWidget(entry)
+            trash_box.addWidget(entry)"""
 
-        self.entry_box.setLayout(trash_box)
+        #trash_box.addWidget(parse)
+        self.entry_box.setLayout(self.trash_box)
 
-    def parse(self, *data):
+    def parse(self, data: list):
         if len(data) != 3:
             print("Error!")
+        else:
+            print("received")
+            entry = Entry((((self.height() - 110) / 2) - 60) / 5, data[0], data[1], data[2])
+            self.trash_box.addWidget(entry)
 
         # entriesEntry((self.height()-110)/2) - 30) / 5)
 
@@ -124,6 +128,7 @@ class TheWindow(QWidget):
     def openEntry(self):
         self.entry_window = EntryWindow(self.pos().x() + (self.width() / 4), self.pos().y() + 50)
         self.entry_window.show()
+        self.entry_window.send_signal.connect(self.parse)
 
     def doAnimation(self):
         self.settings_page = Settings(self.pos().x() - 400, self.pos().y() + 60)
@@ -168,10 +173,10 @@ class TheWindow(QWidget):
 
 
 class Entry(QGroupBox):
-    def __init__(self, h):
+    def __init__(self, h, s, t, k):
         super(Entry, self).__init__()
 
-        self.script = Folder("C:/", "C:/", ".txt")
+        self.script = Folder(s, t, k)
         self.setFixedHeight(h)
 
         self.source = QLineEdit()

@@ -10,7 +10,7 @@ from stylesheets import *
 
 
 class EntryWindow(QWidget):
-    send_data = pyqtSignal([])
+    send_signal = pyqtSignal(list)
     def __init__(self, x, y):
         super(EntryWindow, self).__init__()
         self.data = [None]*3
@@ -28,6 +28,7 @@ class EntryWindow(QWidget):
         self.target_button.setObjectName("1")
 
         self.add_button = QtWidgets.QPushButton("Add", self)
+        #self.add_button.clicked.connect(self.send_data)
         self.cancel_button = QtWidgets.QPushButton("Cancel", self)
 
         self.buttons = []
@@ -43,7 +44,6 @@ class EntryWindow(QWidget):
         self.initUI()
 
     def initUI(self):
-
         self.setWindowTitle("Add New Entry")
         self.setFixedSize(400, 100)
         self.setGeometry(self.x, self.y, self.width(), self.height())
@@ -54,7 +54,7 @@ class EntryWindow(QWidget):
         self.buttons.clear()
         self.source_button.setFixedSize(int(self.width() / 2) - 6, 18)
 
-        self.setStyleSheet(entry_layout + "color: white")
+        self.setStyleSheet(entry_layout + "color: white;")
         self.label.setStyleSheet(examples)
 
         self.createGridLayout()
@@ -74,21 +74,14 @@ class EntryWindow(QWidget):
         layout_grid.addWidget(self.cancel_button, 2, 6, 1, 2)
 
     def eventFilter(self, obj, event):
-        """if event.type() == QtCore.QEvent.HoverEnter:
-            obj.setStyleSheet(entry_mouse_hover)
-        elif event.type() == QtCore.QEvent.MouseButtonPress and event.button() == QtCore.Qt.LeftButton:
-            obj.setStyleSheet(entry_mouse_hover + mouse_click)"""
         if event.type() == QtCore.QEvent.MouseButtonRelease and event.button() == QtCore.Qt.LeftButton:
             if obj == self.source_button or obj == self.target_button:
                 self.open_dialog_box(obj)
             elif obj == self.cancel_button:
                 self.close()
             elif obj == self.add_button:
-                self.get_keyword()
+                self.send_data()
                 self.close()
-            """obj.setStyleSheet(entry_mouse_hover)
-        elif event.type() == QtCore.QEvent.HoverLeave:
-            obj.setStyleSheet(entry_layout)"""
         return super(EntryWindow, self).eventFilter(obj, event)
 
     def open_dialog_box(self, btn: QtWidgets.QPushButton):
@@ -96,9 +89,11 @@ class EntryWindow(QWidget):
         counter = 0
         shortened_path_name = ""
 
+        # TODO: regular expressions
         # shortened_path_name = re.search(r'/(.*)/', path_name)
         # shortens the path to the last two folders
 
+        #saves the selected path to the respective place in data
         self.data[int(btn.objectName())] = path_name
 
         for i in reversed(path_name):
@@ -113,9 +108,13 @@ class EntryWindow(QWidget):
             btn.setText("..." + shortened_path_name)
         print(shortened_path_name)
 
-    def get_keyword(self):
-        self.data[2] = self.keyword_text_field.text()
-        print("Entry: " + self.data[2])
+    def send_data(self):
+        if self.keyword_text_field.text() != "":
+            self.data[2] = self.keyword_text_field.text()
+        if not any(x is None for x in self.data):
+            print("sent")
+            self.send_signal.emit(self.data)
+
 
     def resizeBG(self):
         # set background image
