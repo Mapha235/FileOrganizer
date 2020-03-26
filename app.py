@@ -6,16 +6,23 @@ from PyQt5.QtGui import QImage, QPalette, QBrush
 from PyQt5.QtWidgets import QApplication, QGridLayout, QSizePolicy, QWidget, QTextBrowser, QStackedWidget, \
     QStackedLayout, QGroupBox, QVBoxLayout, QHBoxLayout, QScrollArea, QLineEdit
 
-from entry import EntryWindow
+from entry import *
 from settings import Settings
 from stylesheets import *
+
+
+def makeScrollable(widget):
+    scroll = QScrollArea()
+    scroll.setWidgetResizable(True)
+    scroll.setWidget(widget)
+    return scroll
 
 
 class TheWindow(QWidget):
     def __init__(self):
         super(TheWindow, self).__init__()
         self.scroll = QScrollArea()
-        self.x = -1160
+        self.x = 160
         self.y = 200
         self.my_width = 800
         self.my_height = 500
@@ -42,9 +49,8 @@ class TheWindow(QWidget):
         self.source_text_browser = QTextBrowser(self)
         self.target_text_browser = QTextBrowser(self)
         self.entry_box = QGroupBox(self)
-        self.entry_box.setStyleSheet("font-size: 14pt; color: rgb(225,225,225); background-color: rgba(255,255,255,0.0); ")
-
-
+        self.entry_box.setStyleSheet(
+            "font-size: 14pt; color: rgb(225,225,225); background-color: rgba(255,255,255,0.0); ")
 
         self.initUI()
 
@@ -76,10 +82,10 @@ class TheWindow(QWidget):
         # self.settings_button.clicked.connect(self.rotate)
 
         # assign design layout to all widgets
+        self.scroll = makeScrollable(self.entry_box)
         self.setStyleSheet(light)
         self.createGridLayout()
         self.createBoxLayout()
-        self.makeScrollable(self.entry_box)
         self.show()
 
     def createBoxLayout(self):
@@ -88,12 +94,6 @@ class TheWindow(QWidget):
         self.trash_box.setAlignment(Qt.AlignTop)
         self.trash_box.setContentsMargins(0, 0, 0, 0)
 
-        """for i in range(0, 10):
-            entry = Entry((((self.height() - 110) / 2) - 60) / 5)
-            self.entries.append(entry)
-            trash_box.addWidget(entry)"""
-
-        #trash_box.addWidget(parse)
         self.entry_box.setLayout(self.trash_box)
 
     def parse(self, data: list):
@@ -105,10 +105,6 @@ class TheWindow(QWidget):
             self.trash_box.addWidget(entry)
 
         # entriesEntry((self.height()-110)/2) - 30) / 5)
-
-    def makeScrollable(self, widget):
-        self.scroll.setWidgetResizable(True)
-        self.scroll.setWidget(widget)
 
     def createGridLayout(self):
         layout_grid = QGridLayout()
@@ -141,6 +137,7 @@ class TheWindow(QWidget):
     def eventFilter(self, obj, event):
         if event.type() == QtCore.QEvent.HoverEnter:
             obj.setStyleSheet(mouse_hover)
+            obj.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         elif event.type() == QtCore.QEvent.MouseButtonPress and event.button() == QtCore.Qt.LeftButton:
             obj.setStyleSheet(mouse_hover + mouse_click)
         elif event.type() == QtCore.QEvent.MouseButtonRelease and event.button() == QtCore.Qt.LeftButton:
@@ -183,24 +180,39 @@ class Entry(QGroupBox):
         self.target = QLineEdit()
         self.keyword = QLineEdit()
 
+        short_source_path = shorten_path(s, 34)
+        short_target_path = shorten_path(t, 34)
+
+        self.source.insert(short_source_path)
+        self.target.insert(short_target_path)
+        self.keyword.insert(k)
+
         self.edit_button = QtWidgets.QPushButton("Edit")
+        self.edit_button.clicked.connect(self.editKeyword)
         self.trash_button = QtWidgets.QPushButton()
+
+        self.entry_list = []
+
+        self.entry_list.append(self.source)
+        self.entry_list.append(self.target)
+        self.entry_list.append(self.keyword)
+        self.entry_list.append(self.edit_button)
+        self.entry_list.append(self.trash_button)
 
         self.initUI()
 
     def initUI(self):
-        self.source.setReadOnly(True)
-        self.target.setReadOnly(True)
-        self.keyword.setReadOnly(True)
 
-        self.setFixedHeight(50)
+        for x in self.entry_list:
+            if type(x) is QLineEdit:
+                x.setReadOnly(True)
+                x.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+            else:
+                x.installEventFilter(self)
 
-        #self.source.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-       # self.target.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        #self.keyword.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.setFixedHeight(35)
 
-        self.trash_button.setIcon(
-            QtGui.QIcon("C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/error.png"))
+        self.trash_button.setIcon(QtGui.QIcon("C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/error.png"))
 
         self.createBoxLayout()
         self.setStyleSheet(entry_layout + "color: black;")
@@ -208,15 +220,23 @@ class Entry(QGroupBox):
     def createBoxLayout(self):
         layout = QHBoxLayout()
 
-        layout.addWidget(self.source)
-        layout.addWidget(self.target)
-        layout.addWidget(self.keyword)
-        layout.addWidget(self.edit_button)
-        layout.addWidget(self.trash_button)
+        for x in self.entry_list:
+            layout.addWidget(x)
 
         layout.setContentsMargins(5, 5, 5, 5)
         self.setLayout(layout)
 
+
+    def editKeyword(self):
+        self.keyword.setReadOnly(False)
+        self.edit_button.setText("Apply")
+        self.keyword.setStyleSheet(dark)
+
+
+    def eventFilter(self, obj, event):
+        if event.type() == QtCore.QEvent.HoverEnter:
+            obj.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        return super(Entry, self).eventFilter(obj, event)
 
 
 def window():
