@@ -1,3 +1,12 @@
+import sys
+import re
+from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5.QtCore import pyqtSignal, QSize, QPropertyAnimation, QRect, Qt
+from PyQt5.QtGui import QImage, QPalette, QBrush
+from PyQt5.QtWidgets import QFileDialog, QMessageBox, QWidget, QGridLayout, QApplication, QSizePolicy, QTextBrowser, \
+    QStackedLayout, QGroupBox, QVBoxLayout, QHBoxLayout, QScrollArea, QLineEdit
+from lib.folder import Folder
+
 dark = """
             font-size: 14pt;
             color: white;

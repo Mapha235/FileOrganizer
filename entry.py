@@ -1,175 +1,87 @@
-import re
-
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QFileDialog, QMessageBox
-from PyQt5.QtCore import pyqtSignal
-
 from app import *
-
 from stylesheets import *
 
-class EntryWindow(QWidget):
-    send_signal = pyqtSignal(list)
 
-    def __init__(self, x, y):
-        super(EntryWindow, self).__init__()
-        self.data = [None] * 3
-        self.data[2] = ""
-        self.x = x
-        self.y = y
+class Entry(QGroupBox):
+    def __init__(self, h, s, t, k):
+        super(Entry, self).__init__()
 
-        self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
+        self.script = Folder(s, t, k)
+        self.setFixedHeight(h)
 
-        # set Background Image
-        self.bg = QImage("C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/bg4.jpg")
+        self.source = QLineEdit()
+        self.target = QLineEdit()
+        self.keyword = QLineEdit()
 
-        self.source_button = QtWidgets.QPushButton("Browse Source Folder", self)
-        self.source_button.setObjectName("0")
-        self.target_button = QtWidgets.QPushButton("Browse Target Folder", self)
-        self.target_button.setObjectName("1")
+        short_source_path = shorten_path(s, 34)
+        short_target_path = shorten_path(t, 34)
 
-        self.add_button = QtWidgets.QPushButton("Add", self)
-        # self.add_button.clicked.connect(self.send_data)
-        self.cancel_button = QtWidgets.QPushButton("Cancel", self)
+        self.source.insert(short_source_path)
+        self.target.insert(short_target_path)
+        self.keyword.insert(k)
 
-        self.buttons = []
-        self.buttons.append(self.target_button)
-        self.buttons.append(self.source_button)
-        self.buttons.append(self.add_button)
-        self.buttons.append(self.cancel_button)
+        self.edit_button = QtWidgets.QPushButton("Edit")
+        self.edit_button.clicked.connect(self.editKeyword)
+        self.trash_button = QtWidgets.QPushButton()
 
-        self.label = QtWidgets.QLabel("Example: urlaub//.pdf//5e-43c5")
+        self.check_box = QCheckBox()
 
-        self.keyword_text_field = QtWidgets.QLineEdit(self)
-        self.keyword_text_field.setPlaceholderText("Enter keyword(s)")
-        self.keyword_text_field.returnPressed.connect(self.send_data)
+        self.entry_list = []
+
+        self.entry_list.append(self.check_box)
+        self.entry_list.append(self.source)
+        self.entry_list.append(self.target)
+        self.entry_list.append(self.keyword)
+        self.entry_list.append(self.edit_button)
+        self.entry_list.append(self.trash_button)
+
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle("Add New Entry")
-        self.setFixedSize(400, 100)
-        self.setGeometry(self.x, self.y, self.width(), self.height())
 
-        for button in self.buttons:
-            button.installEventFilter(self)
-            button.setFixedHeight(18)
-        self.buttons.clear()
-        self.source_button.setFixedSize(int(self.width() / 2) - 6, 18)
+        for x in self.entry_list:
+            if type(x) is QLineEdit:
+                x.setReadOnly(True)
+                x.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+            else:
+                x.installEventFilter(self)
 
-        self.setStyleSheet(entry_layout + "color: white;")
-        self.label.setStyleSheet(examples)
+        self.setFixedHeight(35)
 
-        self.createGridLayout()
+        self.trash_button.setIcon(QtGui.QIcon("C:/Dev/python/FileOrganizer/data/error.png"))
+        self.trash_button.clicked.connect(self.deleteEntry)
 
-    def createGridLayout(self):
-        layout_grid = QGridLayout()
+        self.createBoxLayout()
+        self.setStyleSheet(entry_layout + "color: black;")
 
-        self.setLayout(layout_grid)
-        layout_grid.setSpacing(3)
+    def createBoxLayout(self):
+        layout = QHBoxLayout()
 
-        layout_grid.addWidget(self.source_button, 0, 0, 1, 4)
-        layout_grid.addWidget(self.target_button, 0, 4, 1, 4)
-        layout_grid.addWidget(self.keyword_text_field, 1, 0, 1, 8)
+        for x in self.entry_list:
+            layout.addWidget(x)
 
-        layout_grid.addWidget(self.label, 2, 0, 1, 4)
-        layout_grid.addWidget(self.add_button, 2, 4, 1, 2)
-        layout_grid.addWidget(self.cancel_button, 2, 6, 1, 2)
+        layout.setContentsMargins(5, 5, 5, 5)
+        self.setLayout(layout)
+
+
+    def editKeyword(self):
+        self.keyword.setReadOnly(False)
+        self.edit_button.setText("Apply")
+        self.keyword.setStyleSheet("background-color: rgba(0,0,0,0.0);")
+        self.script.set_keyword(self.keyword.text())
+        self.edit_button.clicked.connect(self.applyKeyword)
+
+    def applyKeyword(self):
+        self.keyword.setReadOnly(True)
+        self.edit_button.setText("Edit")
+        self.keyword.setStyleSheet(entry_layout + "color: black;")
+        self.script.set_keyword(self.keyword.text())
+        self.edit_button.clicked.connect(self.editKeyword)
+
+    def deleteEntry(self):
+        self.close()
 
     def eventFilter(self, obj, event):
         if event.type() == QtCore.QEvent.HoverEnter:
             obj.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        elif event.type() == QtCore.QEvent.MouseButtonRelease and event.button() == QtCore.Qt.LeftButton:
-            if obj is self.source_button or obj is self.target_button:
-                self.open_dialog_box(obj)
-            elif obj is self.cancel_button:
-                self.close()
-            elif obj is self.add_button or event.key() == Qt.Key_Enter:
-                self.send_data()
-        return super(EntryWindow, self).eventFilter(obj, event)
-
-    def correct_canceled(self, btn: QtWidgets.QPushButton):
-        index = int(btn.objectName())
-        if self.data[index] is "":
-            self.data[index] = None
-        btn.setText("?")
-
-    def open_dialog_box(self, btn: QtWidgets.QPushButton):
-        path_name = QFileDialog.getExistingDirectory(self)
-
-        # TODO: regular expressions
-        # shortened_path_name = re.search(r'/(.*)/', path_name)
-        # shortens the path to the last two folders
-
-        # saves the selected path to the respective place in data
-        index = int(btn.objectName())
-        self.data[index] = path_name
-        self.correct_canceled(btn)
-
-        shortened_path_name = shorten_path(path_name, 27)
-        if shortened_path_name != "...":
-            btn.setText(shortened_path_name)
-
-    def send_data(self):
-        if self.keyword_text_field.text() != "":
-            self.data[2] = self.keyword_text_field.text()
-        self.check_integrity()
-
-        if not any(x is None for x in self.data):
-            print("sent")
-            self.send_signal.emit(self.data)
-            self.close()
-
-    def check_integrity(self):
-        msg = QMessageBox()
-
-        if not any(x is None for x in self.data):
-            if self.data[2] == "":
-                msg.setWindowTitle("Note!")
-                msg.setIcon(QMessageBox.Warning)
-                msg.setText("Note:\nUsing no keywords will move all files."
-                            + "\nClick \"Edit\" to add keywords.")
-                msg.exec()
-        else:
-            msg.setWindowTitle("Error")
-            msg.setIcon(QMessageBox.Critical)
-            if self.data[0] is None and self.data[1] is None:
-                msg.setText("Error: Source-Folder not selected.\n"
-                            + "Error: Target-Folder not selected.\n")
-            elif self.data[0] is None:
-                msg.setText("Error: Source-Folder not selected.")
-            elif self.data[1] is None:
-                msg.setText("Error: Target-Folder not selected.")
-
-            msg.exec()
-
-    def resizeBG(self):
-        # set background image
-        scaled_bg = self.bg.scaled(QSize(self.width(), self.height()))
-        palette = QPalette()
-        palette.setBrush(QPalette.Background, QBrush(scaled_bg))
-        self.setPalette(palette)
-
-    def resizeEvent(self, event):
-        self.resizeBG()
-
-def shorten_path(path_name, length):
-    counter = 0
-    shortened_path_name = ""
-
-    for i in reversed(path_name):
-        if counter >= 2:
-            break
-        elif i == '/':
-            counter += 1
-        shortened_path_name += i
-
-    shortened_path_name = shortened_path_name[::-1]
-    l = len(shortened_path_name)
-    if l >= length:
-        k = l - 1 - length
-        shortened_path_name = shortened_path_name[k:l - 1]
-
-    if l >= 1 and shortened_path_name[1] == ":":
-        return shortened_path_name
-
-    return "..." + shortened_path_name
+        return super(Entry, self).eventFilter(obj, event)

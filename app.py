@@ -1,11 +1,4 @@
-import sys
-from lib.folder import Folder
-from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtCore import QSize, QPropertyAnimation, QRect, Qt
-from PyQt5.QtGui import QImage, QPalette, QBrush
-from PyQt5.QtWidgets import QApplication, QGridLayout, QSizePolicy, QWidget, QTextBrowser, QStackedWidget, \
-    QStackedLayout, QGroupBox, QVBoxLayout, QHBoxLayout, QScrollArea, QLineEdit
-
+from entrywindow import *
 from entry import *
 from settings import Settings
 from stylesheets import *
@@ -22,7 +15,7 @@ class TheWindow(QWidget):
     def __init__(self):
         super(TheWindow, self).__init__()
         self.scroll = QScrollArea()
-        self.x = 160
+        self.x = -1160
         self.y = 200
         self.my_width = 800
         self.my_height = 500
@@ -167,76 +160,6 @@ class TheWindow(QWidget):
 
     def resizeEvent(self, event):
         self.resizeUI()
-
-
-class Entry(QGroupBox):
-    def __init__(self, h, s, t, k):
-        super(Entry, self).__init__()
-
-        self.script = Folder(s, t, k)
-        self.setFixedHeight(h)
-
-        self.source = QLineEdit()
-        self.target = QLineEdit()
-        self.keyword = QLineEdit()
-
-        short_source_path = shorten_path(s, 34)
-        short_target_path = shorten_path(t, 34)
-
-        self.source.insert(short_source_path)
-        self.target.insert(short_target_path)
-        self.keyword.insert(k)
-
-        self.edit_button = QtWidgets.QPushButton("Edit")
-        self.edit_button.clicked.connect(self.editKeyword)
-        self.trash_button = QtWidgets.QPushButton()
-
-        self.entry_list = []
-
-        self.entry_list.append(self.source)
-        self.entry_list.append(self.target)
-        self.entry_list.append(self.keyword)
-        self.entry_list.append(self.edit_button)
-        self.entry_list.append(self.trash_button)
-
-        self.initUI()
-
-    def initUI(self):
-
-        for x in self.entry_list:
-            if type(x) is QLineEdit:
-                x.setReadOnly(True)
-                x.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-            else:
-                x.installEventFilter(self)
-
-        self.setFixedHeight(35)
-
-        self.trash_button.setIcon(QtGui.QIcon("C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/error.png"))
-
-        self.createBoxLayout()
-        self.setStyleSheet(entry_layout + "color: black;")
-
-    def createBoxLayout(self):
-        layout = QHBoxLayout()
-
-        for x in self.entry_list:
-            layout.addWidget(x)
-
-        layout.setContentsMargins(5, 5, 5, 5)
-        self.setLayout(layout)
-
-
-    def editKeyword(self):
-        self.keyword.setReadOnly(False)
-        self.edit_button.setText("Apply")
-        self.keyword.setStyleSheet(dark)
-
-
-    def eventFilter(self, obj, event):
-        if event.type() == QtCore.QEvent.HoverEnter:
-            obj.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        return super(Entry, self).eventFilter(obj, event)
 
 
 def window():
