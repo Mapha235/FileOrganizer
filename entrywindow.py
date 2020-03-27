@@ -16,7 +16,7 @@ class EntryWindow(QWidget):
         self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
 
         # set Background Image
-        self.bg = QImage("C:/Dev/python/FileOrganizer/data/bg4.jpg")
+        self.bg = QImage("C:/users/willi/Desktop/pythonProjects/FileOrganizer/data/bg4")
 
         self.source_button = QtWidgets.QPushButton("Browse Source Folder", self)
         self.source_button.setObjectName("0")
@@ -24,7 +24,7 @@ class EntryWindow(QWidget):
         self.target_button.setObjectName("1")
 
         self.add_button = QtWidgets.QPushButton("Add", self)
-        # self.add_button.clicked.connect(self.send_data)
+        self.add_button.clicked.connect(self.send_data)
         self.cancel_button = QtWidgets.QPushButton("Cancel", self)
 
         self.buttons = []
@@ -78,9 +78,12 @@ class EntryWindow(QWidget):
                 self.open_dialog_box(obj)
             elif obj is self.cancel_button:
                 self.close()
-            elif obj is self.add_button or event.key() == Qt.Key_Enter:
+            elif obj is self.add_button:
                 self.send_data()
         return super(EntryWindow, self).eventFilter(obj, event)
+
+    def mousePressEvent(self, a0: QtGui.QMouseEvent):
+        pass
 
     def correct_canceled(self, btn: QtWidgets.QPushButton):
         index = int(btn.objectName())

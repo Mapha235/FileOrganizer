@@ -1,3 +1,5 @@
+from PyQt5.QtWidgets import QTableWidgetItem
+
 from entrywindow import *
 from entry import *
 from settings import Settings
@@ -15,7 +17,7 @@ class TheWindow(QWidget):
     def __init__(self):
         super(TheWindow, self).__init__()
         self.scroll = QScrollArea()
-        self.x = -1160
+        self.x = 160
         self.y = 200
         self.my_width = 800
         self.my_height = 500
@@ -39,8 +41,22 @@ class TheWindow(QWidget):
         self.buttons.append(self.create_entry_button)
         self.buttons.append(self.run_script_button)
 
-        self.source_text_browser = QTextBrowser(self)
-        self.target_text_browser = QTextBrowser(self)
+        self.source_text_browser = QTableWidget()
+        self.source_text_browser.setStyleSheet(entry_layout + "color: black;")
+        self.source_text_browser.setColumnCount(1)
+
+        header = self.source_text_browser.horizontalHeader()
+        header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+        header.hide()
+
+        self.target_text_browser = QTableWidget(self)
+        self.target_text_browser.setStyleSheet(entry_layout + "color: black;")
+        self.target_text_browser.setColumnCount(1)
+
+        header2 = self.target_text_browser.horizontalHeader()
+        header2.hide()
+        header2.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+
         self.entry_box = QGroupBox(self)
         self.entry_box.setStyleSheet(
             "font-size: 14pt; color: rgb(225,225,225); background-color: rgba(255,255,255,0.0); ")
@@ -96,22 +112,46 @@ class TheWindow(QWidget):
             print("received")
             entry = Entry((((self.height() - 110) / 2) - 60) / 5, data[0], data[1], data[2])
             self.trash_box.addWidget(entry)
+            entry.clicked_signal.connect(self.show_content)
 
         # entriesEntry((self.height()-110)/2) - 30) / 5)
+
+    def show_content(self, source_data: list, target_data: list):
+
+        self.source_text_browser.setRowCount(len(source_data))
+        self.target_text_browser.setRowCount(len(target_data))
+
+        for i in range(0, len(source_data)):
+            # source_content += source_data[i]
+            self.source_text_browser.setItem(i, 0, QTableWidgetItem(source_data[i]))
+            print(str(i) + source_data[i])
+
+        for i in range(0, len(target_data) ):
+            self.target_text_browser.setItem(i, 0, QTableWidgetItem(target_data[i]))
+            # target_content += target_data[i]
 
     def createGridLayout(self):
         layout_grid = QGridLayout()
 
         layout_grid.setSpacing(10)
 
+        label = QLabel("Source Content")
+        label.setAlignment(Qt.AlignCenter)
+        label2 = QLabel("Target Content")
+        label2.setAlignment(Qt.AlignCenter)
+
+
         layout_grid.addWidget(self.settings_button, 0, 0, 1, 1)
         layout_grid.addWidget(self.create_entry_button, 0, 1, 1, 8)
 
         layout_grid.addWidget(self.scroll, 1, 0, 1, 9)
 
-        layout_grid.addWidget(self.source_text_browser, 2, 0, 1, 4)
-        layout_grid.addWidget(self.run_script_button, 2, 4, 1, 1)
-        layout_grid.addWidget(self.target_text_browser, 2, 5, 1, 4)
+        layout_grid.addWidget(label, 2, 0, 1, 4)
+        layout_grid.addWidget(label2, 2, 5, 1, 4)
+
+        layout_grid.addWidget(self.source_text_browser, 3, 0, 1, 4)
+        layout_grid.addWidget(self.run_script_button, 3, 4, 1, 1)
+        layout_grid.addWidget(self.target_text_browser, 3, 5, 1, 4)
         self.setLayout(layout_grid)
 
     def openEntry(self):
@@ -147,7 +187,7 @@ class TheWindow(QWidget):
         self.my_width = self.width()
         self.my_height = self.height()
 
-        self.scroll.setFixedHeight(int(self.height() / 2))
+        self.scroll.setFixedHeight(int(self.height() / 3))
 
         for entry in self.entries:
             entry.setFixedHeight((((self.height() - 110) / 2) - 30) / 5)

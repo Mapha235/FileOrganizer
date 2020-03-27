@@ -5,6 +5,7 @@ class Folder:
     source = ""
     target = ""
     source_content = []
+    target_content = []
     keyword = ""
 
     def __init__(self, s, t, k):
@@ -16,11 +17,13 @@ class Folder:
             os.chdir(self.source)
 
             # listdir sorts its content by ascii-value
-            self.source_content = os.listdir(os.getcwd())
+            self.source_content = os.listdir(s)
 
             self.target = t
             is_source = False
             os.chdir(self.target)
+
+            self.target_content = os.listdir(t)
 
         except OSError:
             if is_source:
@@ -29,9 +32,11 @@ class Folder:
             else:
                 self.create_directory()
 
-    def my_print(self):
-        for i in self.source_content:
-            print(i)
+    def get_source_content(self):
+        return self.source_content
+
+    def get_target_content(self):
+        return self.target_content
 
     def set_keyword(self, k):
         self.keyword = k
