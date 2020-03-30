@@ -10,7 +10,7 @@ class Folder:
 
     def __init__(self, s, t, k):
         is_source = False
-        keyword = k
+        self.keyword = k
         try:
             self.source = s
             is_source = True
@@ -40,6 +40,9 @@ class Folder:
 
     def set_keyword(self, k):
         self.keyword = k
+
+    def get_keyword(self):
+        print(self.keyword)
 
     def create_directory(self):
         while 1:

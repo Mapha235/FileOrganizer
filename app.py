@@ -1,23 +1,16 @@
-from PyQt5.QtWidgets import QTableWidgetItem
-
-from entrywindow import *
-from entry import *
-from settings import Settings
+from main import makeScrollable
 from stylesheets import *
+from entrywindow import EntryWindow
+from entry import Entry
+from settings import Settings
 
-
-def makeScrollable(widget):
-    scroll = QScrollArea()
-    scroll.setWidgetResizable(True)
-    scroll.setWidget(widget)
-    return scroll
 
 
 class TheWindow(QWidget):
     def __init__(self):
         super(TheWindow, self).__init__()
         self.scroll = QScrollArea()
-        self.x = 160
+        self.x = -1160
         self.y = 200
         self.my_width = 800
         self.my_height = 500
@@ -109,26 +102,28 @@ class TheWindow(QWidget):
         if len(data) != 3:
             print("Error!")
         else:
-            print("received")
-            entry = Entry((((self.height() - 110) / 2) - 60) / 5, data[0], data[1], data[2])
-            self.trash_box.addWidget(entry)
-            entry.clicked_signal.connect(self.show_content)
+            self.entry = Entry((((self.height() - 110) / 2) - 60) / 5, data[0], data[1], data[2])
+            #print(entry.id)
+            #self.entries.append(entry)
+            self.run_script_button.clicked.connect(self.run_task)
+            self.trash_box.addWidget(self.entry)
+            self.entry.clicked_signal.connect(self.show_content)
 
         # entriesEntry((self.height()-110)/2) - 30) / 5)
 
-    def show_content(self, source_data: list, target_data: list):
+    def run_task(self):
+        if self.entry.get_check_box():
+            self.entry.script.move()
 
+    def show_content(self, source_data: list, target_data: list):
         self.source_text_browser.setRowCount(len(source_data))
         self.target_text_browser.setRowCount(len(target_data))
 
         for i in range(0, len(source_data)):
-            # source_content += source_data[i]
             self.source_text_browser.setItem(i, 0, QTableWidgetItem(source_data[i]))
-            print(str(i) + source_data[i])
 
-        for i in range(0, len(target_data) ):
+        for i in range(0, len(target_data)):
             self.target_text_browser.setItem(i, 0, QTableWidgetItem(target_data[i]))
-            # target_content += target_data[i]
 
     def createGridLayout(self):
         layout_grid = QGridLayout()
@@ -139,7 +134,6 @@ class TheWindow(QWidget):
         label.setAlignment(Qt.AlignCenter)
         label2 = QLabel("Target Content")
         label2.setAlignment(Qt.AlignCenter)
-
 
         layout_grid.addWidget(self.settings_button, 0, 0, 1, 1)
         layout_grid.addWidget(self.create_entry_button, 0, 1, 1, 8)
@@ -200,10 +194,3 @@ class TheWindow(QWidget):
 
     def resizeEvent(self, event):
         self.resizeUI()
-
-
-def window():
-    app = QApplication(sys.argv)
-    win = TheWindow()
-
-    sys.exit(app.exec_())

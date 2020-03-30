@@ -1,33 +1,61 @@
-from PyQt5 import QtGui, QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QFrame, QTextEdit
-from PyQt5.QtCore import QPropertyAnimation, QRect
-import sys
 from stylesheets import *
 from app import *
 
-
-class Window(QMainWindow):
-    def __init__(self):
-        super().__init__()
-
-        self.title = "PyQt5 Window"
-        self.top = 100
-        self.left = 100
-        self.width = 680
-        self.height = 500
-
-        self.InitWindow()
-
-    def InitWindow(self):
-        self.setWindowIcon(QtGui.QIcon("icon.png"))
-        self.setWindowTitle(self.title)
-        self.setGeometry(self.top, self.left, self.width, self.height)
-
-        self.button = QPushButton("Start", self)
-        self.button.move(30, 30)
-        self.button.clicked.connect(self.doAnimation)
+"""
+TODO:
+    - alle Entries organisieren in einer Datenstruktur oder Multithreading einbauen und mit thread_id's identifizieren
+    - filtern nach mehreren keywords implementieren
+    - duplikate erkennen in Entry
+    - Ausnahme-keywords einbauen
+    - savefile
+    - settings
+        - custom hintergrund
+        - light/dark mode
+        - sprachen
+    - linux support(?)
+    - If schleifen in eventFilter verbessern
+    - regular expressions einbauen
+    - wenn möglich eventFilter mit connect ersetzen
+    
+"""
 
 
+def makeScrollable(widget):
+    scroll = QScrollArea()
+    scroll.setWidgetResizable(True)
+    scroll.setWidget(widget)
+    return scroll
 
-window()
 
+def shorten_path(path_name, length):
+    counter = 0
+    shortened_path_name = ""
+
+    for i in reversed(path_name):
+        if counter >= 2:
+            break
+        elif i == '/':
+            counter += 1
+        shortened_path_name += i
+
+    shortened_path_name = shortened_path_name[::-1]
+    l = len(shortened_path_name)
+    if l >= length:
+        k = l - 1 - length
+        shortened_path_name = shortened_path_name[k:l - 1]
+
+    if l >= 1 and shortened_path_name[1] == ":":
+        return shortened_path_name
+
+    return "..." + shortened_path_name
+
+
+def main():
+    app = QApplication(sys.argv)
+    win = TheWindow()
+
+    sys.exit(app.exec_())
+
+
+if __name__ == "__main__":
+    main()

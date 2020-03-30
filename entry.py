@@ -1,12 +1,15 @@
-from app import *
+from main import shorten_path
 from stylesheets import *
 
 
 class Entry(QGroupBox):
     clicked_signal = pyqtSignal(list, list)
+    id = 0
 
     def __init__(self, h, s, t, k):
         super(Entry, self).__init__()
+
+        type(self).id += 1
 
         self.script = Folder(s, t, k)
         self.setFixedHeight(h)
@@ -14,7 +17,6 @@ class Entry(QGroupBox):
         self.source = QLabel()
         self.target = QLabel()
         self.keyword = QLineEdit()
-
 
         short_source_path = shorten_path(s, 30)
         short_target_path = shorten_path(t, 30)
@@ -40,6 +42,12 @@ class Entry(QGroupBox):
 
         self.initUI()
 
+    def __del__(self):
+        type(self).id -= 1
+
+    def get_check_box(self):
+        return self.check_box.isChecked()
+
     def initUI(self):
 
         for x in self.entry_list:
@@ -53,7 +61,7 @@ class Entry(QGroupBox):
 
         self.setFixedHeight(35)
 
-        self.trash_button.setIcon(QtGui.QIcon("C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/error.png"))
+        self.trash_button.setIcon(QtGui.QIcon("C:/Dev/python/FileOrganizer/data/error.png"))
         self.trash_button.clicked.connect(self.deleteEntry)
 
         self.createBoxLayout()
@@ -67,7 +75,6 @@ class Entry(QGroupBox):
 
         layout.setContentsMargins(7, 7, 7, 7)
         self.setLayout(layout)
-
 
     def editKeyword(self):
         self.keyword.setReadOnly(False)
@@ -85,10 +92,10 @@ class Entry(QGroupBox):
 
     def deleteEntry(self):
         self.close()
+        self.__del__()
 
     def mousePressEvent(self, a0: QtGui.QMouseEvent):
         self.clicked_signal.emit(self.script.get_source_content(), self.script.get_target_content())
-
 
     def eventFilter(self, obj, event):
         if event.type() == QtCore.QEvent.HoverEnter:

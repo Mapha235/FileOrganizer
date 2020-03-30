@@ -1,5 +1,4 @@
-from app import *
-
+from main import shorten_path
 from stylesheets import *
 
 
@@ -16,7 +15,7 @@ class EntryWindow(QWidget):
         self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
 
         # set Background Image
-        self.bg = QImage("C:/users/willi/Desktop/pythonProjects/FileOrganizer/data/bg4")
+        self.bg = QImage("C:/Dev/python/FileOrganizer/data/bg4")
 
         self.source_button = QtWidgets.QPushButton("Browse Source Folder", self)
         self.source_button.setObjectName("0")
@@ -110,23 +109,34 @@ class EntryWindow(QWidget):
     def send_data(self):
         if self.keyword_text_field.text() != "":
             self.data[2] = self.keyword_text_field.text()
-        self.check_integrity()
 
-        if not any(x is None for x in self.data):
-            print("sent")
+        if self.check_integrity():
             self.send_signal.emit(self.data)
             self.close()
+
+    # checks whether source and target folder are the same
+    def is_equal(self):
+        if self.source_button.text() == self.target_button.text():
+            return True
+        return False
 
     def check_integrity(self):
         msg = QMessageBox()
 
         if not any(x is None for x in self.data):
-            if self.data[2] == "":
+            if self.is_equal():
+                msg.setWindowTitle("Error")
+                msg.setIcon(QMessageBox.Critical)
+                msg.setText("Error: Source and Target Folder cannot be the same.")
+                msg.exec()
+                return False
+            elif self.data[2] == "":
                 msg.setWindowTitle("Note!")
                 msg.setIcon(QMessageBox.Warning)
                 msg.setText("Note:\nUsing no keywords will move all files."
                             + "\nClick \"Edit\" to add keywords.")
                 msg.exec()
+            return True
         else:
             msg.setWindowTitle("Error")
             msg.setIcon(QMessageBox.Critical)
@@ -140,6 +150,8 @@ class EntryWindow(QWidget):
 
             msg.exec()
 
+        return False
+
     def resizeBG(self):
         # set background image
         scaled_bg = self.bg.scaled(QSize(self.width(), self.height()))
@@ -149,26 +161,3 @@ class EntryWindow(QWidget):
 
     def resizeEvent(self, event):
         self.resizeBG()
-
-
-def shorten_path(path_name, length):
-    counter = 0
-    shortened_path_name = ""
-
-    for i in reversed(path_name):
-        if counter >= 2:
-            break
-        elif i == '/':
-            counter += 1
-        shortened_path_name += i
-
-    shortened_path_name = shortened_path_name[::-1]
-    l = len(shortened_path_name)
-    if l >= length:
-        k = l - 1 - length
-        shortened_path_name = shortened_path_name[k:l - 1]
-
-    if l >= 1 and shortened_path_name[1] == ":":
-        return shortened_path_name
-
-    return "..." + shortened_path_name
