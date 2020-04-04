@@ -4,29 +4,27 @@ from stylesheets import *
 
 class Entry(QGroupBox):
     clicked_signal = pyqtSignal(list, list, str)
-    id = 0
+    update_signal = pyqtSignal()
 
     def __init__(self, h, s, t, k):
         super(Entry, self).__init__()
-
-        type(self).id += 1
 
         self.script = Folder(s, t, k)
         self.setFixedHeight(h)
 
         self.source = QLabel()
         self.target = QLabel()
-        self.keyword = QLineEdit()
+        self.keywords = QLineEdit()
 
         short_source_path = shorten_path(s, 30)
         short_target_path = shorten_path(t, 30)
 
         self.source.setText(short_source_path)
         self.target.setText(short_target_path)
-        self.keyword.insert(k)
+        self.keywords.insert(k)
 
         self.edit_button = QtWidgets.QPushButton("Edit")
-        self.edit_button.clicked.connect(self.editKeyword)
+        self.edit_button.clicked.connect(self.editKeywords)
         self.trash_button = QtWidgets.QPushButton()
 
         self.check_box = QCheckBox()
@@ -36,14 +34,11 @@ class Entry(QGroupBox):
         self.entry_list.append(self.check_box)
         self.entry_list.append(self.source)
         self.entry_list.append(self.target)
-        self.entry_list.append(self.keyword)
+        self.entry_list.append(self.keywords)
         self.entry_list.append(self.edit_button)
         self.entry_list.append(self.trash_button)
 
         self.initUI()
-
-    def __del__(self):
-        type(self).id -= 1
 
     def get_check_box(self):
         return self.check_box.isChecked()
@@ -61,7 +56,7 @@ class Entry(QGroupBox):
 
         self.setFixedHeight(35)
 
-        self.trash_button.setIcon(QtGui.QIcon("C:/Dev/python/FileOrganizer/data/error.png"))
+        self.trash_button.setIcon(QtGui.QIcon("C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/error.png"))
         self.trash_button.clicked.connect(self.deleteEntry)
 
         self.createBoxLayout()
@@ -76,26 +71,26 @@ class Entry(QGroupBox):
         layout.setContentsMargins(7, 7, 7, 7)
         self.setLayout(layout)
 
-    def editKeyword(self):
-        self.keyword.setReadOnly(False)
+    def editKeywords(self):
+        self.keywords.setReadOnly(False)
         self.edit_button.setText("Apply")
-        self.keyword.setStyleSheet("background-color: rgba(0,0,0,0.0);")
-        self.script.set_keyword(self.keyword.text())
-        self.edit_button.clicked.connect(self.applyKeyword)
+        self.keywords.setStyleSheet("background-color: rgba(0,0,0,0.0);")
+        self.script.set_keywords(self.keywords.text())
+        self.edit_button.clicked.connect(self.applyKeywords)
 
-    def applyKeyword(self):
-        self.keyword.setReadOnly(True)
+    def applyKeywords(self):
+        self.keywords.setReadOnly(True)
         self.edit_button.setText("Edit")
-        self.keyword.setStyleSheet(entry_layout + "color: black;")
-        self.script.set_keyword(self.keyword.text())
-        self.edit_button.clicked.connect(self.editKeyword)
+        self.keywords.setStyleSheet(entry_layout + "color: black;")
+        self.script.set_keywords(self.keywords.text())
+        self.edit_button.clicked.connect(self.editKeywords)
+        self.update_signal.emit()
 
     def deleteEntry(self):
         self.close()
-        self.__del__()
 
     def mousePressEvent(self, a0: QtGui.QMouseEvent):
-        self.clicked_signal.emit(self.script.get_source_content(), self.script.get_target_content(), self.script.keyword)
+        self.clicked_signal.emit(self.script.get_source_content(), self.script.get_target_content(), self.script.keywords)
 
     def eventFilter(self, obj, event):
         if event.type() == QtCore.QEvent.HoverEnter:

@@ -6,11 +6,11 @@ class Folder:
     target_dir = ""
     source_content = []
     target_content = []
-    keyword = ""
+    keywords = ""
 
     def __init__(self, s, t, k):
         is_source_dir = False
-        self.keyword = k
+        self.keywords = k
         try:
             self.source_dir = s
             is_source_dir = True
@@ -24,10 +24,11 @@ class Folder:
             os.chdir(self.target_dir)
 
             self.target_content = os.listdir(t)
+            keywords = self.split_keywords()
 
         except OSError:
             if is_source_dir:
-                print("source_dir-Directory not found.")
+                print("Source-Directory not found.")
                 return
             else:
                 self.create_directory()
@@ -38,24 +39,31 @@ class Folder:
     def get_target_content(self):
         return self.target_content
 
-    def set_keyword(self, k):
-        self.keyword = k
+    def set_keywords(self, k):
+        self.keywords = k
+        keywords = self.split_keywords()
 
-    def get_keyword(self):
-        print(self.keyword)
+    def get_keywords(self):
+        print(self.keywords)
 
     def create_directory(self):
         while 1:
-            inp = input("target_dir-Directory not found. Create missing Directory? [y/n]")
+            inp = input("Target-Directory not found. Create missing Directory? [y/n]")
             if inp == 'y':
                 os.system("mkdir " + "\"" + self.target_dir + "\"")
-                print("Successfully created target_dir-Directory.")
+                print("Successfully created Target-Directory.")
                 break
             elif inp == 'n':
-                print("Error: target_dir-Directory does not exist.")
+                print("Error: Target-Directory does not exist.")
                 return
             else:
                 continue
+
+    def split_keywords(self):
+        keywords = self.keywords.split("//")
+        print(keywords)
+        return keywords
+
 
     # replaces the forwardslashes in source_dir and target_dir to backslashes
     def backslashes(self):
@@ -63,26 +71,22 @@ class Folder:
         target_dir_copy = self.target_dir.replace("/", "\\")
         return [source_dir_copy, target_dir_copy]
 
-    def has_keyword(self):
-        content_copy = []
-        for iterator in self.source_content:
-            if iterator.__contains__(self.keyword):
-                content_copy.append(iterator)
-                self.source_content.remove(iterator)
-
-        return content_copy
 
     def move(self):
         s = self.backslashes()
-        content_copy = self.has_keyword()
+        i = 0
+        while 1:
+            if self.source_content[i].__contains__(self.keywords) or self.keywords == "":
+                print(f"move \"{s[0]}\\{self.source_content[i]}\" \"{s[1]}\"")
+                os.system(f"move \"{s[0]}\\{self.source_content[i]}\" \"{s[1]}\"")
+                self.target_content.append(self.source_content.pop(i))
+            else:
+                i += 1
 
-        for iterator in content_copy:
-            print("move " + "\"" + s[0] + "\\" + iterator + "\"" + " " + s[1])
-            os.system("move " + "\"" + s[0] + "\\" + iterator + "\"" + " \"" + s[1] + "\"")
-            self.target_content.append(iterator)
-        
-        self.target_content.sort(reverse=False)
-    
+            if len(self.source_content) == 0 or i == len(self.source_content):
+                break
+
+
     
 
 """

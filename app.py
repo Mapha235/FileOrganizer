@@ -9,7 +9,7 @@ class TheWindow(QWidget):
     def __init__(self):
         super(TheWindow, self).__init__()
         self.scroll = QScrollArea()
-        self.x = -1160
+        self.x = 160
         self.y = 200
         self.my_width = 800
         self.my_height = 500
