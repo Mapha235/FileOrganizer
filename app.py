@@ -106,7 +106,7 @@ class TheWindow(QWidget):
             def run_task():
                 if entry.get_check_box():
                     entry.script.move()
-
+                    entry.mousePressEvent(entry.clicked)
             self.run_script_button.clicked.connect(run_task)
 
             self.trash_box.addWidget(entry)
