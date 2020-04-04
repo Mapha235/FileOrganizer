@@ -3,7 +3,7 @@ from stylesheets import *
 
 
 class Entry(QGroupBox):
-    clicked_signal = pyqtSignal(list, list)
+    clicked_signal = pyqtSignal(list, list, str)
     id = 0
 
     def __init__(self, h, s, t, k):
@@ -95,7 +95,7 @@ class Entry(QGroupBox):
         self.__del__()
 
     def mousePressEvent(self, a0: QtGui.QMouseEvent):
-        self.clicked_signal.emit(self.script.get_source_content(), self.script.get_target_content())
+        self.clicked_signal.emit(self.script.get_source_content(), self.script.get_target_content(), self.script.keyword)
 
     def eventFilter(self, obj, event):
         if event.type() == QtCore.QEvent.HoverEnter:

@@ -5,7 +5,6 @@ from entry import Entry
 from settings import Settings
 
 
-
 class TheWindow(QWidget):
     def __init__(self):
         super(TheWindow, self).__init__()
@@ -34,19 +33,19 @@ class TheWindow(QWidget):
         self.buttons.append(self.create_entry_button)
         self.buttons.append(self.run_script_button)
 
-        self.source_text_browser = QTableWidget()
-        self.source_text_browser.setStyleSheet(entry_layout + "color: black;")
-        self.source_text_browser.setColumnCount(1)
+        self.source_table = QTableWidget()
+        self.source_table.setStyleSheet(entry_layout + "color: black;")
+        self.source_table.setColumnCount(1)
 
-        header = self.source_text_browser.horizontalHeader()
+        header = self.source_table.horizontalHeader()
         header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
         header.hide()
 
-        self.target_text_browser = QTableWidget(self)
-        self.target_text_browser.setStyleSheet(entry_layout + "color: black;")
-        self.target_text_browser.setColumnCount(1)
+        self.target_table = QTableWidget(self)
+        self.target_table.setStyleSheet(entry_layout + "color: black;")
+        self.target_table.setColumnCount(1)
 
-        header2 = self.target_text_browser.horizontalHeader()
+        header2 = self.target_table.horizontalHeader()
         header2.hide()
         header2.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
 
@@ -102,28 +101,30 @@ class TheWindow(QWidget):
         if len(data) != 3:
             print("Error!")
         else:
-            self.entry = Entry((((self.height() - 110) / 2) - 60) / 5, data[0], data[1], data[2])
-            #print(entry.id)
-            #self.entries.append(entry)
-            self.run_script_button.clicked.connect(self.run_task)
-            self.trash_box.addWidget(self.entry)
-            self.entry.clicked_signal.connect(self.show_content)
+            entry = Entry((((self.height() - 110) / 2) - 60) / 5, data[0], data[1], data[2])
 
-        # entriesEntry((self.height()-110)/2) - 30) / 5)
+            def run_task():
+                if entry.get_check_box():
+                    entry.script.move()
 
-    def run_task(self):
-        if self.entry.get_check_box():
-            self.entry.script.move()
+            self.run_script_button.clicked.connect(run_task)
 
-    def show_content(self, source_data: list, target_data: list):
-        self.source_text_browser.setRowCount(len(source_data))
-        self.target_text_browser.setRowCount(len(target_data))
+            self.trash_box.addWidget(entry)
+            entry.clicked_signal.connect(self.show_content)
+
+    def show_content(self, source_data: list, target_data: list, keyword: str):
+        self.source_table.setRowCount(len(source_data))
+        self.target_table.setRowCount(len(target_data))
 
         for i in range(0, len(source_data)):
-            self.source_text_browser.setItem(i, 0, QTableWidgetItem(source_data[i]))
+            temp = QTableWidgetItem(source_data[i])
+            self.source_table.setItem(i, 0, temp)
+            self.source_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+            if source_data[i].__contains__(keyword):
+                temp.setForeground(QBrush(QColor(255, 0, 0)))
 
         for i in range(0, len(target_data)):
-            self.target_text_browser.setItem(i, 0, QTableWidgetItem(target_data[i]))
+            self.target_table.setItem(i, 0, QTableWidgetItem(target_data[i]))
 
     def createGridLayout(self):
         layout_grid = QGridLayout()
@@ -143,9 +144,9 @@ class TheWindow(QWidget):
         layout_grid.addWidget(label, 2, 0, 1, 4)
         layout_grid.addWidget(label2, 2, 5, 1, 4)
 
-        layout_grid.addWidget(self.source_text_browser, 3, 0, 1, 4)
+        layout_grid.addWidget(self.source_table, 3, 0, 1, 4)
         layout_grid.addWidget(self.run_script_button, 3, 4, 1, 1)
-        layout_grid.addWidget(self.target_text_browser, 3, 5, 1, 4)
+        layout_grid.addWidget(self.target_table, 3, 5, 1, 4)
         self.setLayout(layout_grid)
 
     def openEntry(self):

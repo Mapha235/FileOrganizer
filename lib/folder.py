@@ -2,32 +2,32 @@ import os
 
 
 class Folder:
-    source = ""
-    target = ""
+    source_dir = ""
+    target_dir = ""
     source_content = []
     target_content = []
     keyword = ""
 
     def __init__(self, s, t, k):
-        is_source = False
+        is_source_dir = False
         self.keyword = k
         try:
-            self.source = s
-            is_source = True
-            os.chdir(self.source)
+            self.source_dir = s
+            is_source_dir = True
+            os.chdir(self.source_dir)
 
             # listdir sorts its content by ascii-value
             self.source_content = os.listdir(s)
 
-            self.target = t
-            is_source = False
-            os.chdir(self.target)
+            self.target_dir = t
+            is_source_dir = False
+            os.chdir(self.target_dir)
 
             self.target_content = os.listdir(t)
 
         except OSError:
-            if is_source:
-                print("Source-Directory not found.")
+            if is_source_dir:
+                print("source_dir-Directory not found.")
                 return
             else:
                 self.create_directory()
@@ -46,26 +46,46 @@ class Folder:
 
     def create_directory(self):
         while 1:
-            inp = input("Target-Directory not found. Create missing Directory? [y/n]")
+            inp = input("target_dir-Directory not found. Create missing Directory? [y/n]")
             if inp == 'y':
-                os.system("mkdir " + "\"" + self.target + "\"")
-                print("Successfully created Target-Directory.")
+                os.system("mkdir " + "\"" + self.target_dir + "\"")
+                print("Successfully created target_dir-Directory.")
                 break
             elif inp == 'n':
-                print("Error: Target-Directory does not exist.")
+                print("Error: target_dir-Directory does not exist.")
                 return
             else:
                 continue
 
-    # replaces the forwardslashes in source and target to backslashes
+    # replaces the forwardslashes in source_dir and target_dir to backslashes
     def backslashes(self):
-        source_copy = self.source.replace("/", "\\")
-        target_copy = self.target.replace("/", "\\")
-        return [source_copy, target_copy]
+        source_dir_copy = self.source_dir.replace("/", "\\")
+        target_dir_copy = self.target_dir.replace("/", "\\")
+        return [source_dir_copy, target_dir_copy]
+
+    def has_keyword(self):
+        content_copy = []
+        for iterator in self.source_content:
+            if iterator.__contains__(self.keyword):
+                content_copy.append(iterator)
+                self.source_content.remove(iterator)
+
+        return content_copy
 
     def move(self):
         s = self.backslashes()
-        for iterator in self.source_content:
-            if iterator.__contains__(self.keyword):
-                print("move " + "\"" + s[0] + "\\" + iterator + "\"" + " " + s[1])
-                os.system("move " + "\"" + s[0] + "\\" + iterator + "\"" + " \"" + s[1] + "\"")
+        content_copy = self.has_keyword()
+
+        for iterator in content_copy:
+            print("move " + "\"" + s[0] + "\\" + iterator + "\"" + " " + s[1])
+            os.system("move " + "\"" + s[0] + "\\" + iterator + "\"" + " \"" + s[1] + "\"")
+            self.target_content.append(iterator)
+        
+        self.target_content.sort(reverse=False)
+    
+    
+
+"""
+- dictionary -> (word, flag) -> zip
+"""
+        
