@@ -9,7 +9,7 @@ class TheWindow(QWidget):
     def __init__(self):
         super(TheWindow, self).__init__()
         self.scroll = QScrollArea()
-        self.x = 160
+        self.x = -1160
         self.y = 200
         self.my_width = 800
         self.my_height = 500
@@ -115,12 +115,14 @@ class TheWindow(QWidget):
     def show_content(self, source_data: list, target_data: list, keyword: str):
         self.source_table.setRowCount(len(source_data))
         self.target_table.setRowCount(len(target_data))
+        keyword_list = keyword.split("//")
 
         for i in range(0, len(source_data)):
             temp = QTableWidgetItem(source_data[i])
             self.source_table.setItem(i, 0, temp)
             self.source_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
-            if source_data[i].__contains__(keyword):
+
+            if any(key in source_data[i] for key in keyword_list):
                 temp.setForeground(QBrush(QColor(255, 0, 0)))
 
         for i in range(0, len(target_data)):

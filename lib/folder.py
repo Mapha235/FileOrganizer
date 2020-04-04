@@ -24,7 +24,6 @@ class Folder:
             os.chdir(self.target_dir)
 
             self.target_content = os.listdir(t)
-            keywords = self.split_keywords()
 
         except OSError:
             if is_source_dir:
@@ -41,7 +40,6 @@ class Folder:
 
     def set_keywords(self, k):
         self.keywords = k
-        keywords = self.split_keywords()
 
     def get_keywords(self):
         print(self.keywords)
@@ -61,7 +59,6 @@ class Folder:
 
     def split_keywords(self):
         keywords = self.keywords.split("//")
-        print(keywords)
         return keywords
 
 
@@ -75,8 +72,11 @@ class Folder:
     def move(self):
         s = self.backslashes()
         i = 0
+        keyword_list = self.split_keywords()
+
         while 1:
-            if self.source_content[i].__contains__(self.keywords) or self.keywords == "":
+            #if self.source_content[i].__contains__(self.keywords) or self.keywords == "":
+            if any(key in self.source_content[i] for key in keyword_list) or self.keywords == "":
                 print(f"move \"{s[0]}\\{self.source_content[i]}\" \"{s[1]}\"")
                 os.system(f"move \"{s[0]}\\{self.source_content[i]}\" \"{s[1]}\"")
                 self.target_content.append(self.source_content.pop(i))
@@ -85,11 +85,3 @@ class Folder:
 
             if len(self.source_content) == 0 or i == len(self.source_content):
                 break
-
-
-    
-
-"""
-- dictionary -> (word, flag) -> zip
-"""
-        

@@ -84,7 +84,7 @@ class Entry(QGroupBox):
         self.keywords.setStyleSheet(entry_layout + "color: black;")
         self.script.set_keywords(self.keywords.text())
         self.edit_button.clicked.connect(self.editKeywords)
-        self.update_signal.emit()
+        self.mousePressEvent(self.clicked)
 
     def deleteEntry(self):
         self.close()
