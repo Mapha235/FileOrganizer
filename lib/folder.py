@@ -4,8 +4,7 @@ import os
 class Folder:
     source_dir = ""
     target_dir = ""
-    source_content = []
-    target_content = []
+
     keywords = ""
 
     def __init__(self, s, t, k):
@@ -16,14 +15,10 @@ class Folder:
             is_source_dir = True
             os.chdir(self.source_dir)
 
-            # listdir sorts its content by ascii-value
-            self.source_content = os.listdir(s)
 
             self.target_dir = t
             is_source_dir = False
             os.chdir(self.target_dir)
-
-            self.target_content = os.listdir(t)
 
         except OSError:
             if is_source_dir:
@@ -33,10 +28,10 @@ class Folder:
                 self.create_directory()
 
     def get_source_content(self):
-        return self.source_content
+        return os.listdir(self.source_dir)
 
     def get_target_content(self):
-        return self.target_content
+        return os.listdir(self.target_dir)
 
     def set_keywords(self, k):
         self.keywords = k
@@ -70,18 +65,21 @@ class Folder:
 
 
     def move(self):
+        source_content = self.get_source_content()
+        target_content = self.get_target_content()
         s = self.backslashes()
         i = 0
         keyword_list = self.split_keywords()
 
         while 1:
-            #if self.source_content[i].__contains__(self.keywords) or self.keywords == "":
-            if any(key in self.source_content[i] for key in keyword_list) or self.keywords == "":
-                print(f"move \"{s[0]}\\{self.source_content[i]}\" \"{s[1]}\"")
-                os.system(f"move \"{s[0]}\\{self.source_content[i]}\" \"{s[1]}\"")
-                self.target_content.append(self.source_content.pop(i))
+            if any(key in source_content[i] for key in keyword_list) or self.keywords == "":
+                print(f"move \"{s[0]}\\{source_content[i]}\" \"{s[1]}\"")
+                os.system(f"move \"{s[0]}\\{source_content[i]}\" \"{s[1]}\"")
+                target_content.append(source_content.pop(i))
             else:
                 i += 1
 
-            if len(self.source_content) == 0 or i == len(self.source_content):
+            if len(source_content) == 0 or i == len(source_content):
                 break
+
+

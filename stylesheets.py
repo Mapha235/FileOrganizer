@@ -1,5 +1,6 @@
 import sys
 import re
+import os
 from itertools import count
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import pyqtSignal, QSize, QPropertyAnimation, QRect, Qt
@@ -40,22 +41,16 @@ entry_mouse_hover = """
                 border-radius: 5px;
                 """
 
+
 mouse_click = """
         color: white;
         background-color: rgba(255, 255, 255, 0.5);
 """
+
 examples = """
         font-size: 8pt;
         color: white;
         background-color: rgba(255, 255, 255, 0.0);
         margin: 10px;
         """
-marked = """
-        font-size: 10pt;
-        font-weight: bold;
-        text-decoration: line-through;
-        
-"""
-
-
 

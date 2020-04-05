@@ -4,7 +4,6 @@ from stylesheets import *
 
 class Entry(QGroupBox):
     clicked_signal = pyqtSignal(list, list, str)
-    update_signal = pyqtSignal()
 
     def __init__(self, h, s, t, k):
         super(Entry, self).__init__()
