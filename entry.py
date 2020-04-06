@@ -4,8 +4,13 @@ from stylesheets import *
 
 class Entry(QGroupBox):
     clicked_signal = pyqtSignal(list, list, str)
+    send_id = pyqtSignal(int)
+    id = 0
 
     def __init__(self, h, s, t, k):
+        self.my_id = self.__class__.id
+        self.__class__.id += 1
+
         super(Entry, self).__init__()
 
         self.script = Folder(s, t, k)
@@ -24,7 +29,7 @@ class Entry(QGroupBox):
 
         self.edit_button = QtWidgets.QPushButton("Edit")
         self.edit_button.clicked.connect(self.editKeywords)
-        self.trash_button = QtWidgets.QPushButton()
+        self.delete_button = QtWidgets.QPushButton()
 
         self.check_box = QCheckBox()
 
@@ -35,9 +40,17 @@ class Entry(QGroupBox):
         self.entry_list.append(self.target)
         self.entry_list.append(self.keywords)
         self.entry_list.append(self.edit_button)
-        self.entry_list.append(self.trash_button)
+        self.entry_list.append(self.delete_button)
 
         self.initUI()
+
+    def __del__(self):
+        self.close()
+        self.__class__.id -= 1
+        self.send_id.emit(self.my_id)
+
+    def adjustID(self):
+        self.my_id -= 1
 
     def get_check_box(self):
         return self.check_box.isChecked()
@@ -55,8 +68,8 @@ class Entry(QGroupBox):
 
         self.setFixedHeight(35)
 
-        self.trash_button.setIcon(QtGui.QIcon("C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/error.png"))
-        self.trash_button.clicked.connect(self.deleteEntry)
+        self.delete_button.setIcon(QtGui.QIcon(f"{os.getcwd()}/data/error.png"))
+        self.delete_button.clicked.connect(self.__del__)
 
         self.createBoxLayout()
         self.setStyleSheet(entry_layout + "color: black;")
@@ -85,11 +98,9 @@ class Entry(QGroupBox):
         self.edit_button.clicked.connect(self.editKeywords)
         self.mousePressEvent(self.clicked)
 
-    def deleteEntry(self):
-        self.close()
-
     def mousePressEvent(self, a0: QtGui.QMouseEvent):
-        self.clicked_signal.emit(self.script.get_source_content(), self.script.get_target_content(), self.script.keywords)
+        self.clicked_signal.emit(self.script.get_source_content(), self.script.get_target_content(),
+                                 self.script.keywords)
 
     def eventFilter(self, obj, event):
         if event.type() == QtCore.QEvent.HoverEnter:

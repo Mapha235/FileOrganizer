@@ -9,7 +9,7 @@ class TheWindow(QWidget):
     def __init__(self):
         super(TheWindow, self).__init__()
         self.scroll = QScrollArea()
-        self.x = 160
+        self.x = -1160
         self.y = 200
         self.my_width = 800
         self.my_height = 500
@@ -102,15 +102,24 @@ class TheWindow(QWidget):
             print("Error!")
         else:
             entry = Entry((((self.height() - 110) / 2) - 60) / 5, data[0], data[1], data[2])
-
-            def run_task():
-                if entry.get_check_box():
-                    entry.script.move()
-                    entry.mousePressEvent(entry.clicked)
-            self.run_script_button.clicked.connect(run_task)
-
+            self.entries.append((entry.my_id, entry))
             self.trash_box.addWidget(entry)
+
+            self.run_script_button.clicked.connect(self.run_task)
             entry.clicked_signal.connect(self.show_content)
+            entry.send_id.connect(self.organize_entries)
+
+    def run_task(self):
+        for i in self.entries:
+            if i[1].get_check_box():
+                i[1].script.move()
+                i[1].mousePressEvent(i[1].clicked)
+
+    def organize_entries(self, index):
+        for i in range(index + 1, len(self.entries)):
+            self.entries[i][1].adjustID()
+            self.entries[i] = (self.entries[i][1].my_id,) + self.entries[i][1:]
+        self.entries.pop(index)
 
     def show_content(self, source_data: list, target_data: list, keyword: str):
         self.source_table.setRowCount(len(source_data))
