@@ -80,8 +80,6 @@ class TheWindow(QWidget):
 
         self.buttons.clear()
 
-        # self.settings_button.clicked.connect(self.rotate)
-
         # assign design layout to all widgets
         self.scroll = makeScrollable(self.entry_box)
         self.setStyleSheet(light)
@@ -97,10 +95,22 @@ class TheWindow(QWidget):
 
         self.entry_box.setLayout(self.trash_box)
 
+    def has_duplicate(self, s: str, t: str):
+        msg = QMessageBox()
+        for it in self.entries:
+            if it[1].script.get_source_dir() == s and it[1].script.get_target_dir() == t:
+                msg.setWindowTitle("Error")
+                msg.setText("Error: An identical entry already exists.\nMerge with existing entry?")
+                msg.setIcon(QMessageBox.Question)
+                msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+                msg.exec()
+                return True
+        return False
+
     def parse(self, data: list):
         if len(data) != 3:
             print("Error!")
-        else:
+        elif not self.has_duplicate(data[0], data[1]):
             entry = Entry((((self.height() - 110) / 2) - 60) / 5, data[0], data[1], data[2])
             self.entries.append((entry.my_id, entry))
             self.trash_box.addWidget(entry)
@@ -137,6 +147,11 @@ class TheWindow(QWidget):
         for i in range(0, len(target_data)):
             self.target_table.setItem(i, 0, QTableWidgetItem(target_data[i]))
 
+    def openEntry(self):
+        self.entry_window = EntryWindow(self.pos().x() + (self.width() / 4), self.pos().y() + 50)
+        self.entry_window.show()
+        self.entry_window.send_signal.connect(self.parse)
+
     def createGridLayout(self):
         layout_grid = QGridLayout()
 
@@ -159,11 +174,6 @@ class TheWindow(QWidget):
         layout_grid.addWidget(self.run_script_button, 3, 4, 1, 1)
         layout_grid.addWidget(self.target_table, 3, 5, 1, 4)
         self.setLayout(layout_grid)
-
-    def openEntry(self):
-        self.entry_window = EntryWindow(self.pos().x() + (self.width() / 4), self.pos().y() + 50)
-        self.entry_window.show()
-        self.entry_window.send_signal.connect(self.parse)
 
     def doAnimation(self):
         self.settings_page = Settings(self.pos().x() - 400, self.pos().y() + 60)

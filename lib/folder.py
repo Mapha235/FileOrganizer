@@ -15,7 +15,6 @@ class Folder:
             is_source_dir = True
             os.chdir(self.source_dir)
 
-
             self.target_dir = t
             is_source_dir = False
             os.chdir(self.target_dir)
@@ -26,6 +25,12 @@ class Folder:
                 return
             else:
                 self.create_directory()
+
+    def get_source_dir(self):
+        return self.source_dir
+
+    def get_target_dir(self):
+        return self.target_dir
 
     def get_source_content(self):
         return os.listdir(self.source_dir)
@@ -56,13 +61,11 @@ class Folder:
         keywords = self.keywords.split("//")
         return keywords
 
-
     # replaces the forwardslashes in source_dir and target_dir to backslashes
     def backslashes(self):
         source_dir_copy = self.source_dir.replace("/", "\\")
         target_dir_copy = self.target_dir.replace("/", "\\")
         return [source_dir_copy, target_dir_copy]
-
 
     def move(self):
         source_content = self.get_source_content()
@@ -81,5 +84,3 @@ class Folder:
 
             if len(source_content) == 0 or i == len(source_content):
                 break
-
-

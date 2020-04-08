@@ -15,7 +15,8 @@ class EntryWindow(QWidget):
         self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
 
         # set Background Image
-        self.bg = QImage(f"{os.getcwd()}/data/bg4.jpg")
+        os.chdir("C:/Dev/python/FileOrganizer")
+        self.bg = QImage("./data/bg4.jpg")
 
         self.source_button = QtWidgets.QPushButton("Browse Source Folder", self)
         self.source_button.setObjectName("0")
@@ -80,9 +81,6 @@ class EntryWindow(QWidget):
             elif obj is self.add_button:
                 self.send_data()
         return super(EntryWindow, self).eventFilter(obj, event)
-
-    def mousePressEvent(self, a0: QtGui.QMouseEvent):
-        pass
 
     def correct_canceled(self, btn: QtWidgets.QPushButton):
         index = int(btn.objectName())
