@@ -42,7 +42,7 @@ class Folder:
         self.keywords = k
 
     def get_keywords(self):
-        print(self.keywords)
+        return self.keywords
 
     def create_directory(self):
         while 1:
@@ -62,6 +62,8 @@ class Folder:
         return keywords
 
     # replaces the forwardslashes in source_dir and target_dir to backslashes
+
+
     def backslashes(self):
         source_dir_copy = self.source_dir.replace("/", "\\")
         target_dir_copy = self.target_dir.replace("/", "\\")
@@ -75,7 +77,7 @@ class Folder:
         keyword_list = self.split_keywords()
 
         while 1:
-            if any(key in source_content[i] for key in keyword_list) or self.keywords == "":
+            if any(key in source_content[i] for key in keyword_list) and key  or self.keywords == "":
                 print(f"move \"{s[0]}\\{source_content[i]}\" \"{s[1]}\"")
                 os.system(f"move \"{s[0]}\\{source_content[i]}\" \"{s[1]}\"")
                 target_content.append(source_content.pop(i))

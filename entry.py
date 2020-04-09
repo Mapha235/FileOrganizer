@@ -32,6 +32,7 @@ class Entry(QGroupBox):
         self.delete_button = QtWidgets.QPushButton()
 
         self.check_box = QCheckBox()
+        self.check_box.setChecked(True)
 
         self.entry_list = []
 
@@ -68,7 +69,8 @@ class Entry(QGroupBox):
 
         self.setFixedHeight(35)
 
-        self.delete_button.setIcon(QtGui.QIcon(f"{os.getcwd()}/data/error.png"))
+        os.chdir("C:/Users/willi/Desktop/pythonProjects/FileOrganizer")
+        self.delete_button.setIcon(QtGui.QIcon("./data/error.png"))
         self.delete_button.clicked.connect(self.__del__)
 
         self.createBoxLayout()

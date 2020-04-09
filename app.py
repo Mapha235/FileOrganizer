@@ -9,7 +9,7 @@ class TheWindow(QWidget):
     def __init__(self):
         super(TheWindow, self).__init__()
         self.scroll = QScrollArea()
-        self.x = -1160
+        self.x = 160
         self.y = 200
         self.my_width = 800
         self.my_height = 500
@@ -20,7 +20,7 @@ class TheWindow(QWidget):
         self.entries = []
 
         # set Background Image
-        self.bg = QImage("./data/bg4.jpg")
+        self.bg = QImage("./data/bg.png")
 
         self.settings_button = QtWidgets.QPushButton(self)
         self.create_entry_button = QtWidgets.QPushButton("Create New Entry", self)
@@ -95,7 +95,7 @@ class TheWindow(QWidget):
 
         self.entry_box.setLayout(self.trash_box)
 
-    def has_duplicate(self, s: str, t: str):
+    def has_duplicate(self, s: str, t: str, k: str):
         msg = QMessageBox()
         for it in self.entries:
             if it[1].script.get_source_dir() == s and it[1].script.get_target_dir() == t:
@@ -103,14 +103,24 @@ class TheWindow(QWidget):
                 msg.setText("Error: An identical entry already exists.\nMerge with existing entry?")
                 msg.setIcon(QMessageBox.Question)
                 msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-                msg.exec()
+                ret = msg.exec()
+                if ret == QMessageBox.Yes:
+                    if not it[1].keywords.text():
+                        temp = k
+                    else:
+                        temp = f"//{k}"
+                    it[1].script.set_keywords(it[1].script.get_keywords() + temp)
+                    it[1].keywords.insert(temp)
+                elif ret == QMessageBox.No:
+                    pass
                 return True
-        return False
+            else:
+                return False
 
     def parse(self, data: list):
         if len(data) != 3:
             print("Error!")
-        elif not self.has_duplicate(data[0], data[1]):
+        elif not self.has_duplicate(data[0], data[1], data[2]):
             entry = Entry((((self.height() - 110) / 2) - 60) / 5, data[0], data[1], data[2])
             self.entries.append((entry.my_id, entry))
             self.trash_box.addWidget(entry)
