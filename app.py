@@ -6,10 +6,11 @@ from settings import Settings
 
 
 class TheWindow(QWidget):
-    def __init__(self):
+    def __init__(self, values: list):
         super(TheWindow, self).__init__()
+        self.entry_box_layout = QVBoxLayout()
         self.scroll = QScrollArea()
-        self.x = 160
+        self.x = -1160
         self.y = 200
         self.my_width = 800
         self.my_height = 500
@@ -20,7 +21,7 @@ class TheWindow(QWidget):
         self.entries = []
 
         # set Background Image
-        self.bg = QImage("./data/bg.png")
+        self.bg = QImage("./data/bg4.jpg")
 
         self.settings_button = QtWidgets.QPushButton(self)
         self.create_entry_button = QtWidgets.QPushButton("Create New Entry", self)
@@ -53,7 +54,20 @@ class TheWindow(QWidget):
         self.entry_box.setStyleSheet(
             "font-size: 14pt; color: rgb(225,225,225); background-color: rgba(255,255,255,0.0); ")
 
+        for it in values:
+            self.parse(it[1:5])
+
         self.initUI()
+
+    def __del__(self):
+        file = open("./data/save.txt", "w")
+        for it in self.entries:
+            file.write(f"{it[0]},"
+                       f"{it[1].script.get_source_dir()},"
+                       f"{it[1].script.get_target_dir()},"
+                       f"{it[1].script.get_keywords()},"
+                       f"{it[1].get_check_box()},\n")
+        file.close()
 
     def initUI(self):
         self.setWindowTitle("File Organizer")
@@ -85,15 +99,17 @@ class TheWindow(QWidget):
         self.setStyleSheet(light)
         self.createGridLayout()
         self.createBoxLayout()
+
+        for it in self.entries:
+            self.entry_box_layout.addWidget(it[1])
+
         self.show()
 
     def createBoxLayout(self):
-        self.trash_box = QVBoxLayout()
+        self.entry_box_layout.setAlignment(Qt.AlignTop)
+        self.entry_box_layout.setContentsMargins(0, 0, 0, 0)
 
-        self.trash_box.setAlignment(Qt.AlignTop)
-        self.trash_box.setContentsMargins(0, 0, 0, 0)
-
-        self.entry_box.setLayout(self.trash_box)
+        self.entry_box.setLayout(self.entry_box_layout)
 
     def has_duplicate(self, s: str, t: str, k: str):
         msg = QMessageBox()
@@ -118,12 +134,14 @@ class TheWindow(QWidget):
                 return False
 
     def parse(self, data: list):
-        if len(data) != 3:
+        if len(data) < 3:
             print("Error!")
         elif not self.has_duplicate(data[0], data[1], data[2]):
-            entry = Entry((((self.height() - 110) / 2) - 60) / 5, data[0], data[1], data[2])
+            entry = Entry(data[0], data[1], data[2])
             self.entries.append((entry.my_id, entry))
-            self.trash_box.addWidget(entry)
+            self.entry_box_layout.addWidget(entry)
+            if len(data) == 4:
+                entry.check_box.setChecked(data[3] == 'True')
 
             self.run_script_button.clicked.connect(self.run_task)
             entry.clicked_signal.connect(self.show_content)
@@ -215,8 +233,8 @@ class TheWindow(QWidget):
 
         self.scroll.setFixedHeight(int(self.height() / 3))
 
-        for entry in self.entries:
-            entry.setFixedHeight((((self.height() - 110) / 2) - 30) / 5)
+        # for entry in self.entries:
+        #    entry.setFixedHeight((((self.height() - 110) / 2) - 30) / 5)
 
         # set background image
         scaled_bg = self.bg.scaled(QSize(self.my_width, self.my_height))

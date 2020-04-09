@@ -7,14 +7,14 @@ class Entry(QGroupBox):
     send_id = pyqtSignal(int)
     id = 0
 
-    def __init__(self, h, s, t, k):
+    def __init__(self, s, t, k, b=True):
         self.my_id = self.__class__.id
         self.__class__.id += 1
 
         super(Entry, self).__init__()
 
         self.script = Folder(s, t, k)
-        self.setFixedHeight(h)
+        self.setFixedHeight(27)
 
         self.source = QLabel()
         self.target = QLabel()
@@ -32,7 +32,7 @@ class Entry(QGroupBox):
         self.delete_button = QtWidgets.QPushButton()
 
         self.check_box = QCheckBox()
-        self.check_box.setChecked(True)
+        self.check_box.setChecked(b)
 
         self.entry_list = []
 
@@ -69,7 +69,7 @@ class Entry(QGroupBox):
 
         self.setFixedHeight(35)
 
-        os.chdir("C:/Users/willi/Desktop/pythonProjects/FileOrganizer")
+        os.chdir("C:/Dev/python/FileOrganizer")
         self.delete_button.setIcon(QtGui.QIcon("./data/error.png"))
         self.delete_button.clicked.connect(self.__del__)
 
