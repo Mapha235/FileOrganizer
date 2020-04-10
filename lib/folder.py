@@ -76,13 +76,13 @@ class Folder:
         i = 0
         keyword_list = self.split_keywords()
 
-        while 1:
-            if any(key in source_content[i] for key in keyword_list) or self.keywords == "":
-                print(f"move \"{s[0]}\\{source_content[i]}\" \"{s[1]}\"")
-                os.system(f"move \"{s[0]}\\{source_content[i]}\" \"{s[1]}\"")
-                target_content.append(source_content.pop(i))
-            else:
-                i += 1
+        #while not (len(source_content) == 0 or i == len(source_content)):
+            #if any(key in source_content[i] for key in keyword_list) or self.keywords == "":
+                #print(f"move \"{s[0]}\\{source_content[i]}\" \"{s[1]}\"")
+                #os.system(f"move \"{s[0]}\\{source_content[i]}\" \"{s[1]}\"")
+                #target_content.append(source_content.pop(i))
+            #else:
+                #i += 1
 
-            if len(source_content) == 0 or i == len(source_content):
-                break
+        for it in keyword_list:
+            os.system(f"move \"{s[0]}\\*{it}*\" \"{s[1]}\"")

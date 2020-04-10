@@ -82,12 +82,6 @@ class EntryWindow(QWidget):
                 self.send_data()
         return super(EntryWindow, self).eventFilter(obj, event)
 
-    def correct_canceled(self, btn: QtWidgets.QPushButton):
-        index = int(btn.objectName())
-        if self.data[index] is "":
-            self.data[index] = None
-        btn.setText("?")
-
     def open_dialog_box(self, btn: QtWidgets.QPushButton):
         path_name = QFileDialog.getExistingDirectory(self)
 
@@ -98,7 +92,6 @@ class EntryWindow(QWidget):
         # saves the selected path to the respective place in data
         index = int(btn.objectName())
         self.data[index] = path_name
-        self.correct_canceled(btn)
 
         shortened_path_name = shorten_path(path_name, 27)
         if shortened_path_name != "...":

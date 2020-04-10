@@ -10,7 +10,7 @@ class TheWindow(QWidget):
         super(TheWindow, self).__init__()
         self.entry_box_layout = QVBoxLayout()
         self.scroll = QScrollArea()
-        self.x = -1160
+        self.x = 160
         self.y = 200
         self.my_width = 800
         self.my_height = 500
@@ -21,7 +21,7 @@ class TheWindow(QWidget):
         self.entries = []
 
         # set Background Image
-        self.bg = QImage("./data/bg4.jpg")
+        self.bg = QImage("./data/bg.png")
 
         self.settings_button = QtWidgets.QPushButton(self)
         self.create_entry_button = QtWidgets.QPushButton("Create New Entry", self)
@@ -37,6 +37,8 @@ class TheWindow(QWidget):
         self.source_table = QTableWidget()
         self.source_table.setStyleSheet(entry_layout + "color: black;")
         self.source_table.setColumnCount(1)
+
+        self.shortcut = QShortcut(QKeySequence("Ctrl+M"), self)
 
         header = self.source_table.horizontalHeader()
         header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
@@ -58,6 +60,7 @@ class TheWindow(QWidget):
             self.parse(it[1:5])
 
         self.initUI()
+        self.button_handler()
 
     def __del__(self):
         file = open("./data/save.txt", "w")
@@ -67,7 +70,6 @@ class TheWindow(QWidget):
                        f"{it[1].script.get_target_dir()},"
                        f"{it[1].script.get_keywords()},"
                        f"{it[1].get_check_box()},\n")
-        file.close()
 
     def initUI(self):
         self.setWindowTitle("File Organizer")
@@ -104,6 +106,10 @@ class TheWindow(QWidget):
             self.entry_box_layout.addWidget(it[1])
 
         self.show()
+
+    def button_handler(self):
+        self.run_script_button.clicked.connect(self.run_task)
+        self.shortcut.activated.connect(self.run_task)
 
     def createBoxLayout(self):
         self.entry_box_layout.setAlignment(Qt.AlignTop)
@@ -143,7 +149,6 @@ class TheWindow(QWidget):
             if len(data) == 4:
                 entry.check_box.setChecked(data[3] == 'True')
 
-            self.run_script_button.clicked.connect(self.run_task)
             entry.clicked_signal.connect(self.show_content)
             entry.send_id.connect(self.organize_entries)
 
@@ -232,9 +237,6 @@ class TheWindow(QWidget):
         self.my_height = self.height()
 
         self.scroll.setFixedHeight(int(self.height() / 3))
-
-        # for entry in self.entries:
-        #    entry.setFixedHeight((((self.height() - 110) / 2) - 30) / 5)
 
         # set background image
         scaled_bg = self.bg.scaled(QSize(self.my_width, self.my_height))
