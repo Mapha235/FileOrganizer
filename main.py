@@ -14,6 +14,7 @@ TODO:
         - light/dark mode
         - sprachen
         - slider zum einstellen der transparenz
+        - Duplikat im Target ersetzen/nicht ersetzen/selbst entscheiden? /-Y == enable confirmation prompt
     - linux support(?)
     - If schleifen in eventFilter verbessern
     - regular expressions einbauen
@@ -23,15 +24,16 @@ TODO:
     
     - after clicking run_script_button with multiple entries(>1) that all have no keyword, the program crashes
     
-  3 - anzahl dateien verschoben anzeigen
-    - zu verschiebene Datei existiert schon im target folder(?)
+    - zu verschiebene Datei existiert schon im target folder -> wird ersetzt
     
-    - mögliche Konflikte:
+    - mögliche Konflikte:   
         - File im Source existiert schon im target
         - k > 2 keywords stehen im Konflikt (z.B. *2//8 -> 82.txt)
         - mehr als 2 Entries haben gleichen Source und versch. Targets und überschneidende Keywords -> datei kopieren
         
         - allg. Lösung: neues Fenster mit entsprechenden Fehlermeldungen und evtl. Fixes
+    - Optimierung;
+        - os.scandir() statt os.listdir() in folder.py
 """
 
 
@@ -43,33 +45,33 @@ def makeScrollable(widget):
 
 
 def shorten_path(path_name, length):
-    counter = 0
     shortened_path_name = ""
 
-    for i in reversed(path_name):
-        if counter >= 2:
-            break
-        elif i == '/':
-            counter += 1
-        shortened_path_name += i
+    folders = path_name.split('/')
+    # folder_num limits the number of folders that are displayed
+    folder_num = int(length / 10)
 
-    shortened_path_name = shortened_path_name[::-1]
-    l = len(shortened_path_name)
-    if l >= length:
-        k = l - 1 - length
-        shortened_path_name = shortened_path_name[k:l - 1]
+    folders = folders[(len(folders) - folder_num):len(folders)]
 
-    if l >= 1 and shortened_path_name[1] == ":":
+    for f in folders:
+        slash = '/'
+        # this condition is only met when f equals the path-letter (such as C:). This way the
+        # shortened_path_name does not have a slash as its first character
+        if f[1] == ':':
+            slash = ''
+        shortened_path_name = shortened_path_name + slash + f
+
+    if len(shortened_path_name) >= 1 and shortened_path_name[1] == ':':
         return shortened_path_name
 
     return "..." + shortened_path_name
 
 
 def read_file():
-    file = open("./data/save.txt", "r")
+    file = open("C:/Dev/python/FileOrganizer/data/save.txt", "r")
     values = []
     for i in file:
-        temp = i.split(",")
+        temp = i.split(',')
         temp.pop()
         values.append(temp)
     return values

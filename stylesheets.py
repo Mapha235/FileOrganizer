@@ -18,7 +18,7 @@ dark = """
 
 light = """
             font-size: 14pt;
-            font-weight: normal;
+            font-weight: bold;
             color: rgb(70,70,70);
             background-color: rgba(255,255,255,0.4);
             """

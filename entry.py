@@ -5,6 +5,7 @@ from stylesheets import *
 class Entry(QGroupBox):
     clicked_signal = pyqtSignal(list, list, str)
     send_id = pyqtSignal(int)
+    send_id2 = pyqtSignal(int)
     id = 0
 
     def __init__(self, s, t, k, b=True):
@@ -20,8 +21,8 @@ class Entry(QGroupBox):
         self.target = QLabel()
         self.keywords = QLineEdit()
 
-        short_source_path = shorten_path(s, 30)
-        short_target_path = shorten_path(t, 30)
+        short_source_path = shorten_path(s, 29)
+        short_target_path = shorten_path(t, 29)
 
         self.source.setText(short_source_path)
         self.target.setText(short_target_path)
@@ -101,8 +102,12 @@ class Entry(QGroupBox):
         self.mousePressEvent(self.clicked)
 
     def mousePressEvent(self, a0: QtGui.QMouseEvent):
-        self.clicked_signal.emit(self.script.get_source_content(), self.script.get_target_content(),
+        self.clicked_signal.emit(self.script.get_source_content(),
+                                 self.script.get_target_content(),
                                  self.script.keywords)
+
+    def send_index(self):
+        self.send_id2.emit(self.my_id)
 
     def eventFilter(self, obj, event):
         if event.type() == QtCore.QEvent.HoverEnter:

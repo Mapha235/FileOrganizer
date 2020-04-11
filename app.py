@@ -1,4 +1,5 @@
 from main import makeScrollable
+from main import shorten_path
 from stylesheets import *
 from entrywindow import EntryWindow
 from entry import Entry
@@ -21,11 +22,13 @@ class TheWindow(QWidget):
         self.entries = []
 
         # set Background Image
-        self.bg = QImage("./data/bg.png")
+        self.bg = QImage("./data/bg4.jpg")
 
         self.settings_button = QtWidgets.QPushButton(self)
         self.create_entry_button = QtWidgets.QPushButton("Create New Entry", self)
         self.run_script_button = QtWidgets.QPushButton(self)
+        self.target_button = QtWidgets.QPushButton("Target Content")
+        self.source_button = QtWidgets.QPushButton("Source Content")
 
         # list of all buttons
         self.buttons = []
@@ -33,6 +36,8 @@ class TheWindow(QWidget):
         self.buttons.append(self.settings_button)
         self.buttons.append(self.create_entry_button)
         self.buttons.append(self.run_script_button)
+        self.buttons.append(self.source_button)
+        self.buttons.append(self.target_button)
 
         self.source_table = QTableWidget()
         self.source_table.setStyleSheet(entry_layout + "color: black;")
@@ -59,6 +64,7 @@ class TheWindow(QWidget):
         for it in values:
             self.parse(it[1:5])
 
+        self.initFuncs()
         self.initUI()
         self.button_handler()
 
@@ -70,6 +76,11 @@ class TheWindow(QWidget):
                        f"{it[1].script.get_target_dir()},"
                        f"{it[1].script.get_keywords()},"
                        f"{it[1].get_check_box()},\n")
+
+    def initFuncs(self):
+        for it in self.entries:
+            it[1].clicked_signal.connect(self.show_content)
+            it[1].send_id.connect(self.organize_entries)
 
     def initUI(self):
         self.setWindowTitle("File Organizer")
@@ -89,6 +100,11 @@ class TheWindow(QWidget):
         self.run_script_button.setIconSize(QtCore.QSize(60, 60))
 
         self.create_entry_button.setFixedHeight(70)
+
+        self.source_button.setFixedWidth(345)
+        self.target_button.setFixedWidth(345)
+        self.source_button.setStyleSheet("font-size: 10pt")
+        self.target_button.setStyleSheet("font-size: 10pt")
 
         for button in self.buttons:
             # used for mouse hover event
@@ -190,18 +206,13 @@ class TheWindow(QWidget):
 
         layout_grid.setSpacing(10)
 
-        label = QLabel("Source Content")
-        label.setAlignment(Qt.AlignCenter)
-        label2 = QLabel("Target Content")
-        label2.setAlignment(Qt.AlignCenter)
-
         layout_grid.addWidget(self.settings_button, 0, 0, 1, 1)
         layout_grid.addWidget(self.create_entry_button, 0, 1, 1, 8)
 
         layout_grid.addWidget(self.scroll, 1, 0, 1, 9)
 
-        layout_grid.addWidget(label, 2, 0, 1, 4)
-        layout_grid.addWidget(label2, 2, 5, 1, 4)
+        layout_grid.addWidget(self.source_button, 2, 0, 1, 4)
+        layout_grid.addWidget(self.target_button, 2, 5, 1, 4)
 
         layout_grid.addWidget(self.source_table, 3, 0, 1, 4)
         layout_grid.addWidget(self.run_script_button, 3, 4, 1, 1)
@@ -217,19 +228,24 @@ class TheWindow(QWidget):
         self.anim.start()
 
     def eventFilter(self, obj, event):
+        if obj == self.source_button or obj == self.target_button:
+            font_size = "font-size:10pt;"
+        else:
+            font_size = ""
+
         if event.type() == QtCore.QEvent.HoverEnter:
-            obj.setStyleSheet(mouse_hover)
+            obj.setStyleSheet(mouse_hover + font_size)
             obj.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         elif event.type() == QtCore.QEvent.MouseButtonPress and event.button() == QtCore.Qt.LeftButton:
-            obj.setStyleSheet(mouse_hover + mouse_click)
+            obj.setStyleSheet(mouse_hover + mouse_click + font_size)
         elif event.type() == QtCore.QEvent.MouseButtonRelease and event.button() == QtCore.Qt.LeftButton:
-            obj.setStyleSheet(mouse_hover)
+            obj.setStyleSheet(mouse_hover + font_size)
             if obj == self.create_entry_button:
                 self.openEntry()
             elif obj == self.settings_button:
                 self.doAnimation()
         elif event.type() == QtCore.QEvent.HoverLeave:
-            obj.setStyleSheet(light)
+            obj.setStyleSheet(light + font_size)
         return super(TheWindow, self).eventFilter(obj, event)
 
     def resizeUI(self):
