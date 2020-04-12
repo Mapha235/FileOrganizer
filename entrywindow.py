@@ -82,6 +82,17 @@ class EntryWindow(QWidget):
                 self.send_data()
         return super(EntryWindow, self).eventFilter(obj, event)
 
+    def correct_canceled(self, btn: QtWidgets.QPushButton):
+        index = int(btn.objectName())
+        name = "Target"
+        if index == 0:
+            name = "Source"
+        if self.data[index] is "":
+            self.data[index] = None
+        temp = btn.text()
+        btn.setText(f"Browse {name} Folder")
+        return temp
+
     def open_dialog_box(self, btn: QtWidgets.QPushButton):
         path_name = QFileDialog.getExistingDirectory(self)
 
@@ -92,10 +103,12 @@ class EntryWindow(QWidget):
         # saves the selected path to the respective place in data
         index = int(btn.objectName())
         self.data[index] = path_name
+        self.correct_canceled(btn)
 
-        shortened_path_name = shorten_path(path_name, 27)
-        if shortened_path_name != "...":
-            btn.setText(shortened_path_name)
+        if path_name != "":
+            shortened_path_name = shorten_path(path_name, 27)
+            if shortened_path_name != "...":
+                btn.setText(shortened_path_name)
 
     def send_data(self):
         if self.keyword_text_field.text() != "":
@@ -113,7 +126,7 @@ class EntryWindow(QWidget):
 
     def check_integrity(self):
         msg = QMessageBox()
-
+        msg.setWindowFlag(QtCore.Qt.WindowStaysOnBottomHint)
         if not any(x is None for x in self.data):
             if self.is_equal():
                 msg.setWindowTitle("Error")

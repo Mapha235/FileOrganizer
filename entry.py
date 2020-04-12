@@ -70,7 +70,7 @@ class Entry(QGroupBox):
 
         self.setFixedHeight(35)
 
-        os.chdir("C:/Dev/python/FileOrganizer")
+        os.chdir("C:/Users/willi/Desktop/pythonProjects/FileOrganizer")
         self.delete_button.setIcon(QtGui.QIcon("./data/error.png"))
         self.delete_button.clicked.connect(self.__del__)
 
@@ -106,7 +106,6 @@ class Entry(QGroupBox):
                                  self.script.get_target_content(),
                                  self.script.keywords)
 
-    def send_index(self):
         self.send_id2.emit(self.my_id)
 
     def eventFilter(self, obj, event):

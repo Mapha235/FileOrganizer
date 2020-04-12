@@ -15,11 +15,14 @@ class TheWindow(QWidget):
         self.y = 200
         self.my_width = 800
         self.my_height = 500
+        self.source_path = ""
+        self.target_path = ""
 
         self.entry_window = None
         self.settings_page = None
 
         self.entries = []
+        self.analyze_values(values)
 
         # set Background Image
         self.bg = QImage("./data/bg4.jpg")
@@ -61,14 +64,11 @@ class TheWindow(QWidget):
         self.entry_box.setStyleSheet(
             "font-size: 14pt; color: rgb(225,225,225); background-color: rgba(255,255,255,0.0); ")
 
-        for it in values:
-            self.parse(it[1:5])
-
         self.initFuncs()
         self.initUI()
         self.button_handler()
 
-    def __del__(self):
+    def save_state(self):
         file = open("./data/save.txt", "w")
         for it in self.entries:
             file.write(f"{it[0]},"
@@ -77,10 +77,16 @@ class TheWindow(QWidget):
                        f"{it[1].script.get_keywords()},"
                        f"{it[1].get_check_box()},\n")
 
+
+    def analyze_values(self, values: list):
+        for it in values:
+            self.entries.append((int(it[0]), Entry(it[1], it[2], it[3], it[4] == "True")))
+
     def initFuncs(self):
         for it in self.entries:
             it[1].clicked_signal.connect(self.show_content)
             it[1].send_id.connect(self.organize_entries)
+            it[1].send_id2.connect(self.adjust_buttons)
 
     def initUI(self):
         self.setWindowTitle("File Organizer")
@@ -105,6 +111,8 @@ class TheWindow(QWidget):
         self.target_button.setFixedWidth(345)
         self.source_button.setStyleSheet("font-size: 10pt")
         self.target_button.setStyleSheet("font-size: 10pt")
+        self.source_button.clicked.connect(lambda: os.system(f"explorer {self.source_path}"))
+        self.target_button.clicked.connect(lambda: os.system(f"explorer {self.target_path}"))
 
         for button in self.buttons:
             # used for mouse hover event
@@ -141,6 +149,7 @@ class TheWindow(QWidget):
                 msg.setText("Error: An identical entry already exists.\nMerge with existing entry?")
                 msg.setIcon(QMessageBox.Question)
                 msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+                msg.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
                 ret = msg.exec()
                 if ret == QMessageBox.Yes:
                     if not it[1].keywords.text():
@@ -153,7 +162,9 @@ class TheWindow(QWidget):
                     pass
                 return True
             else:
-                return False
+                continue
+        return False
+
 
     def parse(self, data: list):
         if len(data) < 3:
@@ -162,11 +173,10 @@ class TheWindow(QWidget):
             entry = Entry(data[0], data[1], data[2])
             self.entries.append((entry.my_id, entry))
             self.entry_box_layout.addWidget(entry)
-            if len(data) == 4:
-                entry.check_box.setChecked(data[3] == 'True')
 
             entry.clicked_signal.connect(self.show_content)
             entry.send_id.connect(self.organize_entries)
+            entry.send_id2.connect(self.adjust_buttons)
 
     def run_task(self):
         for i in self.entries:
@@ -195,6 +205,16 @@ class TheWindow(QWidget):
 
         for i in range(0, len(target_data)):
             self.target_table.setItem(i, 0, QTableWidgetItem(target_data[i]))
+
+
+    def adjust_buttons(self, index):
+        entry = self.entries[index][1]
+        s = entry.script.get_source_dir()
+        t = entry.script.get_target_dir()
+        self.source_button.setText(entry.source.text())
+        self.target_button.setText(entry.target.text())
+        self.source_path = entry.script.backslashes(s)
+        self.target_path = entry.script.backslashes(t)
 
     def openEntry(self):
         self.entry_window = EntryWindow(self.pos().x() + (self.width() / 4), self.pos().y() + 50)
@@ -262,3 +282,7 @@ class TheWindow(QWidget):
 
     def resizeEvent(self, event):
         self.resizeUI()
+
+
+    def closeEvent(self, a0: QtGui.QCloseEvent):
+        self.save_state()

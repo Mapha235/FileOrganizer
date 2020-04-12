@@ -64,15 +64,15 @@ class Folder:
     # replaces the forwardslashes in source_dir and target_dir to backslashes
 
 
-    def backslashes(self):
-        source_dir_copy = self.source_dir.replace("/", "\\")
-        target_dir_copy = self.target_dir.replace("/", "\\")
-        return [source_dir_copy, target_dir_copy]
+    def backslashes(self, path: str):
+        return path.replace("/", "\\")
 
     def move(self):
         source_content = self.get_source_content()
         target_content = self.get_target_content()
-        s = self.backslashes()
+        s = self.backslashes(self.source_dir)
+        t = self.backslashes(self.target_dir)
+
         i = 0
         keyword_list = self.split_keywords()
 
@@ -85,4 +85,4 @@ class Folder:
                 #i += 1
 
         for it in keyword_list:
-            os.system(f"move \"{s[0]}\\*{it}*\" \"{s[1]}\"")
+            os.system(f"move \"{s}\\*{it}*\" \"{t}\"")

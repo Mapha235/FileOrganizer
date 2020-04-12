@@ -50,8 +50,11 @@ def shorten_path(path_name, length):
     folders = path_name.split('/')
     # folder_num limits the number of folders that are displayed
     folder_num = int(length / 10)
+    start = len(folders) - folder_num
+    if folder_num > start:
+        start = 0
 
-    folders = folders[(len(folders) - folder_num):len(folders)]
+    folders = folders[start:len(folders)]
 
     for f in folders:
         slash = '/'
@@ -68,7 +71,7 @@ def shorten_path(path_name, length):
 
 
 def read_file():
-    file = open("C:/Dev/python/FileOrganizer/data/save.txt", "r")
+    file = open("./data/save.txt", "r")
     values = []
     for i in file:
         temp = i.split(',')
