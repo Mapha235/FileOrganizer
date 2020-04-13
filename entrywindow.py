@@ -15,7 +15,7 @@ class EntryWindow(QWidget):
         self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
 
         # set Background Image
-        os.chdir("C:/Users/willi/Desktop/pythonProjects/FileOrganizer")
+        os.chdir("C:/Dev/python/FileOrganizer")
         self.bg = QImage("./data/bg4.jpg")
 
         self.source_button = QtWidgets.QPushButton("Browse Source Folder", self)

@@ -77,7 +77,6 @@ class TheWindow(QWidget):
                        f"{it[1].script.get_keywords()},"
                        f"{it[1].get_check_box()},\n")
 
-
     def analyze_values(self, values: list):
         for it in values:
             self.entries.append((int(it[0]), Entry(it[1], it[2], it[3], it[4] == "True")))
@@ -165,7 +164,6 @@ class TheWindow(QWidget):
                 continue
         return False
 
-
     def parse(self, data: list):
         if len(data) < 3:
             print("Error!")
@@ -205,7 +203,6 @@ class TheWindow(QWidget):
 
         for i in range(0, len(target_data)):
             self.target_table.setItem(i, 0, QTableWidgetItem(target_data[i]))
-
 
     def adjust_buttons(self, index):
         entry = self.entries[index][1]
@@ -263,10 +260,14 @@ class TheWindow(QWidget):
             if obj == self.create_entry_button:
                 self.openEntry()
             elif obj == self.settings_button:
-                self.doAnimation()
+                self.open_settings()
         elif event.type() == QtCore.QEvent.HoverLeave:
             obj.setStyleSheet(light + font_size)
         return super(TheWindow, self).eventFilter(obj, event)
+
+    def open_settings(self):
+        self.settings = Settings(400, 600)
+        self.settings.show()
 
     def resizeUI(self):
         self.my_width = self.width()
@@ -282,7 +283,6 @@ class TheWindow(QWidget):
 
     def resizeEvent(self, event):
         self.resizeUI()
-
 
     def closeEvent(self, a0: QtGui.QCloseEvent):
         self.save_state()
