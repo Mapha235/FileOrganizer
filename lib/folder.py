@@ -1,5 +1,4 @@
-import os
-
+import os, glob, shutil
 
 class Folder:
     source_dir = ""
@@ -84,5 +83,12 @@ class Folder:
             #else:
                 #i += 1
 
+        #for it in keyword_list:
+        #    os.system(f"move \"{s}\\*{it}*\" \"{t}\"")
         for it in keyword_list:
-            os.system(f"move \"{s}\\*{it}*\" \"{t}\"")
+            for data in glob.glob(os.path.join(self.source_dir, f"*{it}*")):
+                try:
+                    shutil.move(data, self.target_dir)
+                except shutil.Error:
+                    print(f"Error {data} already exists.")
+
