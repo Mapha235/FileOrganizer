@@ -15,21 +15,21 @@ class EntryWindow(QWidget):
         self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
 
         # set Background Image
-        os.chdir("C:/Dev/python/FileOrganizer")
+        os.chdir("C:/Users/willi/Desktop/pythonProjects/FileOrganizer")
         self.bg = QImage("./data/bg4.jpg")
 
-        self.source_button = QtWidgets.QPushButton("Browse Source Folder", self)
-        self.source_button.setObjectName("0")
-        self.target_button = QtWidgets.QPushButton("Browse Target Folder", self)
-        self.target_button.setObjectName("1")
+        self.src_button = QtWidgets.QPushButton("Browse Source Folder", self)
+        self.src_button.setObjectName("0")
+        self.dst_button = QtWidgets.QPushButton("Browse Destination Folder", self)
+        self.dst_button.setObjectName("1")
 
         self.add_button = QtWidgets.QPushButton("Add", self)
         self.add_button.clicked.connect(self.send_data)
         self.cancel_button = QtWidgets.QPushButton("Cancel", self)
 
         self.buttons = []
-        self.buttons.append(self.target_button)
-        self.buttons.append(self.source_button)
+        self.buttons.append(self.dst_button)
+        self.buttons.append(self.src_button)
         self.buttons.append(self.add_button)
         self.buttons.append(self.cancel_button)
 
@@ -49,7 +49,7 @@ class EntryWindow(QWidget):
             button.installEventFilter(self)
             button.setFixedHeight(18)
         self.buttons.clear()
-        self.source_button.setFixedSize(int(self.width() / 2) - 6, 18)
+        self.src_button.setFixedSize(int(self.width() / 2) - 6, 18)
 
         self.setStyleSheet(entry_layout + "color: white;")
         self.label.setStyleSheet(examples)
@@ -62,8 +62,8 @@ class EntryWindow(QWidget):
         self.setLayout(layout_grid)
         layout_grid.setSpacing(3)
 
-        layout_grid.addWidget(self.source_button, 0, 0, 1, 4)
-        layout_grid.addWidget(self.target_button, 0, 4, 1, 4)
+        layout_grid.addWidget(self.src_button, 0, 0, 1, 4)
+        layout_grid.addWidget(self.dst_button, 0, 4, 1, 4)
         layout_grid.addWidget(self.keyword_text_field, 1, 0, 1, 8)
 
         layout_grid.addWidget(self.label, 2, 0, 1, 4)
@@ -74,7 +74,7 @@ class EntryWindow(QWidget):
         if event.type() == QtCore.QEvent.HoverEnter:
             obj.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         elif event.type() == QtCore.QEvent.MouseButtonRelease and event.button() == QtCore.Qt.LeftButton:
-            if obj is self.source_button or obj is self.target_button:
+            if obj is self.src_button or obj is self.dst_button:
                 self.open_dialog_box(obj)
             elif obj is self.cancel_button:
                 self.close()
@@ -84,7 +84,7 @@ class EntryWindow(QWidget):
 
     def correct_canceled(self, btn: QtWidgets.QPushButton):
         index = int(btn.objectName())
-        name = "Target"
+        name = "Destination"
         if index == 0:
             name = "Source"
         if self.data[index] is "":
@@ -118,9 +118,9 @@ class EntryWindow(QWidget):
             self.send_signal.emit(self.data)
             self.close()
 
-    # checks whether source and target folder are the same
+    # checks whether src and dst folder are the same
     def is_equal(self):
-        if self.source_button.text() == self.target_button.text():
+        if self.src_button.text() == self.dst_button.text():
             return True
         return False
 
@@ -131,7 +131,7 @@ class EntryWindow(QWidget):
             if self.is_equal():
                 msg.setWindowTitle("Error")
                 msg.setIcon(QMessageBox.Critical)
-                msg.setText("Error: Source and Target Folder cannot be the same.")
+                msg.setText("Error: src and dst Folder cannot be the same.")
                 msg.exec()
                 return False
             elif self.data[2] == "":
@@ -145,12 +145,12 @@ class EntryWindow(QWidget):
             msg.setWindowTitle("Error")
             msg.setIcon(QMessageBox.Critical)
             if self.data[0] is None and self.data[1] is None:
-                msg.setText("Error: Source-Folder not selected.\n"
-                            + "Error: Target-Folder not selected.\n")
+                msg.setText("Error: src-Folder not selected.\n"
+                            + "Error: dst-Folder not selected.\n")
             elif self.data[0] is None:
-                msg.setText("Error: Source-Folder not selected.")
+                msg.setText("Error: src-Folder not selected.")
             elif self.data[1] is None:
-                msg.setText("Error: Target-Folder not selected.")
+                msg.setText("Error: dst-Folder not selected.")
 
             msg.exec()
 

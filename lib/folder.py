@@ -2,41 +2,41 @@ import os, glob, shutil
 
 
 class Folder:
-    source_dir = ""
-    target_dir = ""
+    src_dir = ""
+    dst_dir = ""
 
     keywords = ""
 
     def __init__(self, s, t, k):
-        is_source_dir = False
+        is_src_dir = False
         self.keywords = k
         try:
-            self.source_dir = s
-            is_source_dir = True
-            os.chdir(self.source_dir)
+            self.src_dir = s
+            is_src_dir = True
+            os.chdir(self.src_dir)
 
-            self.target_dir = t
-            is_source_dir = False
-            os.chdir(self.target_dir)
+            self.dst_dir = t
+            is_src_dir = False
+            os.chdir(self.dst_dir)
 
         except OSError:
-            if is_source_dir:
+            if is_src_dir:
                 print("Source-Directory not found.")
                 return
             else:
                 self.create_directory()
 
-    def get_source_dir(self):
-        return self.source_dir
+    def get_src_dir(self):
+        return self.src_dir
 
-    def get_target_dir(self):
-        return self.target_dir
+    def get_dst_dir(self):
+        return self.dst_dir
 
-    def get_source_content(self):
-        return os.listdir(self.source_dir)
+    def get_src_content(self):
+        return os.listdir(self.src_dir)
 
-    def get_target_content(self):
-        return os.listdir(self.target_dir)
+    def get_dst_content(self):
+        return os.listdir(self.dst_dir)
 
     def set_keywords(self, k):
         self.keywords = k
@@ -46,13 +46,13 @@ class Folder:
 
     def create_directory(self):
         while 1:
-            inp = input("Target-Directory not found. Create missing Directory? [y/n]")
+            inp = input("Destination-Directory not found. Create missing Directory? [y/n]")
             if inp == 'y':
-                os.system("mkdir " + "\"" + self.target_dir + "\"")
-                print("Successfully created Target-Directory.")
+                os.system("mkdir " + "\"" + self.dst_dir + "\"")
+                print("Successfully created Destination-Directory.")
                 break
             elif inp == 'n':
-                print("Error: Target-Directory does not exist.")
+                print("Error: Destination-Directory does not exist.")
                 return
             else:
                 continue
@@ -61,7 +61,7 @@ class Folder:
         keywords = self.keywords.split("//")
         return keywords
 
-    # replaces the forwardslashes in source_dir and target_dir to backslashes
+    # replaces the forwardslashes in src_dir and dst_dir to backslashes
 
     def backslashes(self, path: str):
         return path.replace("/", "\\")
@@ -70,8 +70,8 @@ class Folder:
         keyword_list = self.split_keywords()
 
         for it in keyword_list:
-            for data in glob.glob(os.path.join(self.source_dir, f"*{it}*")):
+            for data in glob.glob(os.path.join(self.src_dir, f"*{it}*")):
                 try:
-                    shutil.move(data, self.target_dir)
+                    shutil.move(data, self.dst_dir)
                 except shutil.Error:
                     print(f"Error {data} already exists.")

@@ -17,15 +17,15 @@ class Entry(QGroupBox):
         self.script = Folder(s, t, k)
         self.setFixedHeight(27)
 
-        self.source = QLabel()
-        self.target = QLabel()
+        self.src = QLabel()
+        self.dst = QLabel()
         self.keywords = QLineEdit()
 
-        short_source_path = shorten_path(s, 29)
-        short_target_path = shorten_path(t, 29)
+        short_src_path = shorten_path(s, 29)
+        short_dst_path = shorten_path(t, 29)
 
-        self.source.setText(short_source_path)
-        self.target.setText(short_target_path)
+        self.src.setText(short_src_path)
+        self.dst.setText(short_dst_path)
         self.keywords.insert(k)
 
         self.edit_button = QtWidgets.QPushButton("Edit")
@@ -38,8 +38,8 @@ class Entry(QGroupBox):
         self.entry_list = []
 
         self.entry_list.append(self.check_box)
-        self.entry_list.append(self.source)
-        self.entry_list.append(self.target)
+        self.entry_list.append(self.src)
+        self.entry_list.append(self.dst)
         self.entry_list.append(self.keywords)
         self.entry_list.append(self.edit_button)
         self.entry_list.append(self.delete_button)
@@ -70,7 +70,7 @@ class Entry(QGroupBox):
 
         self.setFixedHeight(35)
 
-        os.chdir("C:/Dev/python/FileOrganizer")
+        os.chdir("C:/Users/willi/Desktop/pythonProjects/FileOrganizer")
         self.delete_button.setIcon(QtGui.QIcon("./data/error.png"))
         self.delete_button.clicked.connect(self.__del__)
 
@@ -102,8 +102,8 @@ class Entry(QGroupBox):
         self.mousePressEvent(self.clicked)
 
     def mousePressEvent(self, a0: QtGui.QMouseEvent):
-        self.clicked_signal.emit(self.script.get_source_content(),
-                                 self.script.get_target_content(),
+        self.clicked_signal.emit(self.script.get_src_content(),
+                                 self.script.get_dst_content(),
                                  self.script.keywords)
 
         self.send_id2.emit(self.my_id)

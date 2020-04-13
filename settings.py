@@ -1,6 +1,4 @@
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import QPropertyAnimation, QRect
-from PyQt5.QtWidgets import QWidget, QTextBrowser, QVBoxLayout
+from stylesheets import *
 
 
 class Settings(QWidget):
@@ -8,19 +6,34 @@ class Settings(QWidget):
         super(Settings, self).__init__()
         self.x = x
         self.y = y
-        self.my_width = 400
-        self.my_height = 430
+        self.my_width = 250
+
+        self.my_height = 370
+        self.setFixedSize(250, 370)
+        self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
+
 
         self.container = QtWidgets.QGroupBox()
+        self.radio_button = QtWidgets.QRadioButton("")
+        self.button = QtWidgets.QPushButton("Browse")
         self.initUI()
 
     def initUI(self):
+        self.setWindowTitle("Settings")
+        self.setWindowIcon(QtGui.QIcon("./data/Settings.png"))
+        #self.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
         self.setGeometry(self.x, self.y, self.my_width, self.my_height)
-        self.createGridLayout()
+        self.createBoxLayout()
 
-    def createGridLayout(self):
-        layout = QVBoxLayout(self.container)
-        layout.setSpacing(10)
+    def createBoxLayout(self):
+        layout = QVBoxLayout()
+        layout.addWidget(self.container)
+
+        vbox = QVBoxLayout()
+        vbox.addWidget(self.radio_button)
+        vbox.addWidget(self.button)
+
+        self.container.setLayout(vbox)
         self.setLayout(layout)
 
 

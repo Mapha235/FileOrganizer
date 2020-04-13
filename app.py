@@ -15,8 +15,8 @@ class TheWindow(QWidget):
         self.y = 200
         self.my_width = 800
         self.my_height = 500
-        self.source_path = ""
-        self.target_path = ""
+        self.src_path = ""
+        self.dst_path = ""
 
         self.entry_window = None
         self.settings_page = None
@@ -25,13 +25,13 @@ class TheWindow(QWidget):
         self.analyze_values(values)
 
         # set Background Image
-        self.bg = QImage("./data/bg4.jpg")
+        self.bg = QImage("./data/bg.jpg")
 
         self.settings_button = QtWidgets.QPushButton(self)
         self.create_entry_button = QtWidgets.QPushButton("Create New Entry", self)
         self.run_script_button = QtWidgets.QPushButton(self)
-        self.target_button = QtWidgets.QPushButton("Target Content")
-        self.source_button = QtWidgets.QPushButton("Source Content")
+        self.dst_button = QtWidgets.QPushButton("Destination Content")
+        self.src_button = QtWidgets.QPushButton("Source Content")
 
         # list of all buttons
         self.buttons = []
@@ -39,24 +39,24 @@ class TheWindow(QWidget):
         self.buttons.append(self.settings_button)
         self.buttons.append(self.create_entry_button)
         self.buttons.append(self.run_script_button)
-        self.buttons.append(self.source_button)
-        self.buttons.append(self.target_button)
+        self.buttons.append(self.src_button)
+        self.buttons.append(self.dst_button)
 
-        self.source_table = QTableWidget()
-        self.source_table.setStyleSheet(entry_layout + "color: black;")
-        self.source_table.setColumnCount(1)
+        self.src_table = QTableWidget()
+        self.src_table.setStyleSheet(entry_layout + "color: black;")
+        self.src_table.setColumnCount(1)
 
         self.shortcut = QShortcut(QKeySequence("Ctrl+M"), self)
 
-        header = self.source_table.horizontalHeader()
+        header = self.src_table.horizontalHeader()
         header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
         header.hide()
 
-        self.target_table = QTableWidget(self)
-        self.target_table.setStyleSheet(entry_layout + "color: black;")
-        self.target_table.setColumnCount(1)
+        self.dst_table = QTableWidget(self)
+        self.dst_table.setStyleSheet(entry_layout + "color: black;")
+        self.dst_table.setColumnCount(1)
 
-        header2 = self.target_table.horizontalHeader()
+        header2 = self.dst_table.horizontalHeader()
         header2.hide()
         header2.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
 
@@ -72,8 +72,8 @@ class TheWindow(QWidget):
         file = open("./data/save.txt", "w")
         for it in self.entries:
             file.write(f"{it[0]},"
-                       f"{it[1].script.get_source_dir()},"
-                       f"{it[1].script.get_target_dir()},"
+                       f"{it[1].script.get_src_dir()},"
+                       f"{it[1].script.get_dst_dir()},"
                        f"{it[1].script.get_keywords()},"
                        f"{it[1].get_check_box()},\n")
 
@@ -106,12 +106,12 @@ class TheWindow(QWidget):
 
         self.create_entry_button.setFixedHeight(70)
 
-        self.source_button.setFixedWidth(345)
-        self.target_button.setFixedWidth(345)
-        self.source_button.setStyleSheet("font-size: 10pt")
-        self.target_button.setStyleSheet("font-size: 10pt")
-        self.source_button.clicked.connect(lambda: os.system(f"explorer {self.source_path}"))
-        self.target_button.clicked.connect(lambda: os.system(f"explorer {self.target_path}"))
+        self.src_button.setFixedWidth(345)
+        self.dst_button.setFixedWidth(345)
+        self.src_button.setStyleSheet("font-size: 10pt")
+        self.dst_button.setStyleSheet("font-size: 10pt")
+        self.src_button.clicked.connect(lambda: os.system(f"explorer {self.src_path}"))
+        self.dst_button.clicked.connect(lambda: os.system(f"explorer {self.dst_path}"))
 
         for button in self.buttons:
             # used for mouse hover event
@@ -121,7 +121,7 @@ class TheWindow(QWidget):
 
         # assign design layout to all widgets
         self.scroll = makeScrollable(self.entry_box)
-        self.setStyleSheet(light)
+        self.setStyleSheet(dark)
         self.createGridLayout()
         self.createBoxLayout()
 
@@ -143,7 +143,7 @@ class TheWindow(QWidget):
     def has_duplicate(self, s: str, t: str, k: str):
         msg = QMessageBox()
         for it in self.entries:
-            if it[1].script.get_source_dir() == s and it[1].script.get_target_dir() == t:
+            if it[1].script.get_src_dir() == s and it[1].script.get_dst_dir() == t:
                 msg.setWindowTitle("Error")
                 msg.setText("Error: An identical entry already exists.\nMerge with existing entry?")
                 msg.setIcon(QMessageBox.Question)
@@ -176,6 +176,7 @@ class TheWindow(QWidget):
             entry.send_id.connect(self.organize_entries)
             entry.send_id2.connect(self.adjust_buttons)
 
+
     def run_task(self):
         for i in self.entries:
             if i[1].get_check_box():
@@ -188,30 +189,30 @@ class TheWindow(QWidget):
             self.entries[i] = (self.entries[i][1].my_id,) + self.entries[i][1:]
         self.entries.pop(index)
 
-    def show_content(self, source_data: list, target_data: list, keyword: str):
-        self.source_table.setRowCount(len(source_data))
-        self.target_table.setRowCount(len(target_data))
+    def show_content(self, src_data: list, dst_data: list, keyword: str):
+        self.src_table.setRowCount(len(src_data))
+        self.dst_table.setRowCount(len(dst_data))
         keyword_list = keyword.split("//")
 
-        for i in range(0, len(source_data)):
-            temp = QTableWidgetItem(source_data[i])
-            self.source_table.setItem(i, 0, temp)
-            self.source_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        for i in range(0, len(src_data)):
+            temp = QTableWidgetItem(src_data[i])
+            self.src_table.setItem(i, 0, temp)
+            self.src_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
-            if any(key in source_data[i] for key in keyword_list):
+            if any(key in src_data[i] for key in keyword_list):
                 temp.setForeground(QBrush(QColor(255, 0, 0)))
 
-        for i in range(0, len(target_data)):
-            self.target_table.setItem(i, 0, QTableWidgetItem(target_data[i]))
+        for i in range(0, len(dst_data)):
+            self.dst_table.setItem(i, 0, QTableWidgetItem(dst_data[i]))
 
     def adjust_buttons(self, index):
         entry = self.entries[index][1]
-        s = entry.script.get_source_dir()
-        t = entry.script.get_target_dir()
-        self.source_button.setText(entry.source.text())
-        self.target_button.setText(entry.target.text())
-        self.source_path = entry.script.backslashes(s)
-        self.target_path = entry.script.backslashes(t)
+        s = entry.script.get_src_dir()
+        t = entry.script.get_dst_dir()
+        self.src_button.setText(entry.src.text())
+        self.dst_button.setText(entry.dst.text())
+        self.src_path = entry.script.backslashes(s)
+        self.dst_path = entry.script.backslashes(t)
 
     def openEntry(self):
         self.entry_window = EntryWindow(self.pos().x() + (self.width() / 4), self.pos().y() + 50)
@@ -228,12 +229,12 @@ class TheWindow(QWidget):
 
         layout_grid.addWidget(self.scroll, 1, 0, 1, 9)
 
-        layout_grid.addWidget(self.source_button, 2, 0, 1, 4)
-        layout_grid.addWidget(self.target_button, 2, 5, 1, 4)
+        layout_grid.addWidget(self.src_button, 2, 0, 1, 4)
+        layout_grid.addWidget(self.dst_button, 2, 5, 1, 4)
 
-        layout_grid.addWidget(self.source_table, 3, 0, 1, 4)
+        layout_grid.addWidget(self.src_table, 3, 0, 1, 4)
         layout_grid.addWidget(self.run_script_button, 3, 4, 1, 1)
-        layout_grid.addWidget(self.target_table, 3, 5, 1, 4)
+        layout_grid.addWidget(self.dst_table, 3, 5, 1, 4)
         self.setLayout(layout_grid)
 
     def doAnimation(self):
@@ -245,7 +246,7 @@ class TheWindow(QWidget):
         self.anim.start()
 
     def eventFilter(self, obj, event):
-        if obj == self.source_button or obj == self.target_button:
+        if obj == self.src_button or obj == self.dst_button:
             font_size = "font-size:10pt;"
         else:
             font_size = ""
@@ -262,11 +263,11 @@ class TheWindow(QWidget):
             elif obj == self.settings_button:
                 self.open_settings()
         elif event.type() == QtCore.QEvent.HoverLeave:
-            obj.setStyleSheet(light + font_size)
+            obj.setStyleSheet(dark + font_size)
         return super(TheWindow, self).eventFilter(obj, event)
 
     def open_settings(self):
-        self.settings = Settings(400, 600)
+        self.settings = Settings(self.pos().x() + 20, self.pos().y() + 150)
         self.settings.show()
 
     def resizeUI(self):
