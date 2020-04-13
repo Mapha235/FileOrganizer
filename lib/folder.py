@@ -1,5 +1,6 @@
 import os, glob, shutil
 
+
 class Folder:
     source_dir = ""
     target_dir = ""
@@ -62,33 +63,15 @@ class Folder:
 
     # replaces the forwardslashes in source_dir and target_dir to backslashes
 
-
     def backslashes(self, path: str):
         return path.replace("/", "\\")
 
     def move(self):
-        source_content = self.get_source_content()
-        target_content = self.get_target_content()
-        s = self.backslashes(self.source_dir)
-        t = self.backslashes(self.target_dir)
-
-        i = 0
         keyword_list = self.split_keywords()
 
-        #while not (len(source_content) == 0 or i == len(source_content)):
-            #if any(key in source_content[i] for key in keyword_list) or self.keywords == "":
-                #print(f"move \"{s[0]}\\{source_content[i]}\" \"{s[1]}\"")
-                #os.system(f"move \"{s[0]}\\{source_content[i]}\" \"{s[1]}\"")
-                #target_content.append(source_content.pop(i))
-            #else:
-                #i += 1
-
-        #for it in keyword_list:
-        #    os.system(f"move \"{s}\\*{it}*\" \"{t}\"")
         for it in keyword_list:
             for data in glob.glob(os.path.join(self.source_dir, f"*{it}*")):
                 try:
                     shutil.move(data, self.target_dir)
                 except shutil.Error:
                     print(f"Error {data} already exists.")
-
