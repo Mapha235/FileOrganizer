@@ -273,7 +273,11 @@ class TheWindow(QWidget):
     def open_settings(self):
         self.settings = Settings(self.pos().x() + 10, self.pos().y() + 120)
         self.settings.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
-        self.settings.show()
+        if self.settings.toggle == 1:
+            self.settings.show()
+        else:
+            self.settings.closeEvent(self.settings.close)
+        print(self.settings.toggle)
 
     def resizeUI(self):
         self.my_width = self.width()

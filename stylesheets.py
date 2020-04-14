@@ -28,6 +28,7 @@ entry_layout = """
             font-size: 10pt;
             font-weight: normal;
             background-color: rgba(255,255,255,0.3);
+            
             """
 
 mouse_hover = """
