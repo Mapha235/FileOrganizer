@@ -7,15 +7,12 @@ class Settings(QWidget):
         self.x = x
         self.y = y
         self.my_width = 250
-
         self.my_height = 370
         self.setFixedSize(250, 370)
-        self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
-
 
         self.container = QtWidgets.QGroupBox()
-        self.radio_button = QtWidgets.QRadioButton("")
-        self.button = QtWidgets.QPushButton("Browse")
+        self.radio_btn = QtWidgets.QRadioButton("")
+        self.btn = QtWidgets.QPushButton("Browse")
         self.initUI()
 
     def initUI(self):
@@ -30,10 +27,8 @@ class Settings(QWidget):
         layout.addWidget(self.container)
 
         vbox = QVBoxLayout()
-        vbox.addWidget(self.radio_button)
-        vbox.addWidget(self.button)
+        vbox.addWidget(self.radio_btn)
+        vbox.addWidget(self.btn)
 
         self.container.setLayout(vbox)
         self.setLayout(layout)
-
-

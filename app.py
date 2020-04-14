@@ -1,5 +1,4 @@
 from main import makeScrollable
-from main import shorten_path
 from stylesheets import *
 from entrywindow import EntryWindow
 from entry import Entry
@@ -18,6 +17,8 @@ class TheWindow(QWidget):
         self.src_path = ""
         self.dst_path = ""
 
+        self.theme = light
+
         self.entry_window = None
         self.settings_page = None
 
@@ -25,25 +26,25 @@ class TheWindow(QWidget):
         self.analyze_values(values)
 
         # set Background Image
-        self.bg = QImage("./data/bg.jpg")
+        self.bg = QImage("./data/bg4.jpg")
 
-        self.settings_button = QtWidgets.QPushButton(self)
-        self.create_entry_button = QtWidgets.QPushButton("Create New Entry", self)
-        self.run_script_button = QtWidgets.QPushButton(self)
-        self.dst_button = QtWidgets.QPushButton("Destination Content")
-        self.src_button = QtWidgets.QPushButton("Source Content")
+        self.settings_btn = QtWidgets.QPushButton(self)
+        self.create_entry_btn = QtWidgets.QPushButton("Create New Entry", self)
+        self.run_script_btn = QtWidgets.QPushButton(self)
+        self.dst_btn = QtWidgets.QPushButton("Destination Content")
+        self.src_btn = QtWidgets.QPushButton("Source Content")
 
-        # list of all buttons
-        self.buttons = []
+        # list of all btns
+        self.btns = []
 
-        self.buttons.append(self.settings_button)
-        self.buttons.append(self.create_entry_button)
-        self.buttons.append(self.run_script_button)
-        self.buttons.append(self.src_button)
-        self.buttons.append(self.dst_button)
+        self.btns.append(self.settings_btn)
+        self.btns.append(self.create_entry_btn)
+        self.btns.append(self.run_script_btn)
+        self.btns.append(self.src_btn)
+        self.btns.append(self.dst_btn)
 
         self.src_table = QTableWidget()
-        self.src_table.setStyleSheet(entry_layout + "color: black;")
+        self.src_table.setStyleSheet(self.theme + "font-size: 10pt;" + "color: black;")
         self.src_table.setColumnCount(1)
 
         self.shortcut = QShortcut(QKeySequence("Ctrl+M"), self)
@@ -53,7 +54,7 @@ class TheWindow(QWidget):
         header.hide()
 
         self.dst_table = QTableWidget(self)
-        self.dst_table.setStyleSheet(entry_layout + "color: black;")
+        self.dst_table.setStyleSheet(self.theme + "font-size: 10pt;" + "color: black;")
         self.dst_table.setColumnCount(1)
 
         header2 = self.dst_table.horizontalHeader()
@@ -71,68 +72,70 @@ class TheWindow(QWidget):
     def save_state(self):
         file = open("./data/save.txt", "w")
         for it in self.entries:
-            file.write(f"{it[0]},"
-                       f"{it[1].script.get_src_dir()},"
-                       f"{it[1].script.get_dst_dir()},"
-                       f"{it[1].script.get_keywords()},"
-                       f"{it[1].get_check_box()},\n")
+            file.write(f"{it.my_id},"
+                       f"{it.script.get_src_dir()},"
+                       f"{it.script.get_dst_dir()},"
+                       f"{it.script.get_keywords()},"
+                       f"{it.get_check_box()},\n")
 
     def analyze_values(self, values: list):
         for it in values:
-            self.entries.append((int(it[0]), Entry(it[1], it[2], it[3], it[4] == "True")))
+            self.entries.append(Entry(it[1], it[2], it[3], it[4] == "True"))
 
     def initFuncs(self):
         for it in self.entries:
-            it[1].clicked_signal.connect(self.show_content)
-            it[1].send_id.connect(self.organize_entries)
-            it[1].send_id2.connect(self.adjust_buttons)
+            it.clicked_signal.connect(self.show_content)
+            it.send_id.connect(self.organize_entries)
+            it.send_id2.connect(self.adjust_buttons)
 
     def initUI(self):
         self.setWindowTitle("File Organizer")
         self.setGeometry(self.x, self.y, self.my_width, self.my_height)
         self.setFixedSize(800, 500)
 
-        # Design of the settings button
-        self.settings_button.setFixedSize(70, 70)
-        self.settings_button.setIcon(
-            QtGui.QIcon("./data/Settings.png"))
+        # Design of the settings btn
+        self.settings_btn.setFixedSize(70, 70)
+        icon = QtGui.QIcon("./data/einstellungen.png")
+        self.settings_btn.setIcon(icon)
 
-        self.settings_button.setIconSize(QtCore.QSize(60, 60))
+        self.settings_btn.setIconSize(QtCore.QSize(60, 60))
 
-        self.run_script_button.setFixedWidth(70)
-        self.run_script_button.setIcon(
-            QtGui.QIcon("./data/arrow.png"))
-        self.run_script_button.setIconSize(QtCore.QSize(60, 60))
+        self.run_script_btn.setFixedWidth(70)
+        self.run_script_btn.setIcon(
+            QtGui.QIcon("./data/arrow2.png"))
+        self.run_script_btn.setIconSize(QtCore.QSize(60, 60))
 
-        self.create_entry_button.setFixedHeight(70)
+        self.create_entry_btn.setFixedHeight(70)
 
-        self.src_button.setFixedWidth(345)
-        self.dst_button.setFixedWidth(345)
-        self.src_button.setStyleSheet("font-size: 10pt")
-        self.dst_button.setStyleSheet("font-size: 10pt")
-        self.src_button.clicked.connect(lambda: os.system(f"explorer {self.src_path}"))
-        self.dst_button.clicked.connect(lambda: os.system(f"explorer {self.dst_path}"))
+        self.src_btn.setFixedWidth(345)
+        self.dst_btn.setFixedWidth(345)
+        self.src_btn.setStyleSheet("font-size: 10pt")
+        self.dst_btn.setStyleSheet("font-size: 10pt")
 
-        for button in self.buttons:
+        for btn in self.btns:
             # used for mouse hover event
-            button.installEventFilter(self)
+            btn.installEventFilter(self)
 
-        self.buttons.clear()
+        self.btns.clear()
 
         # assign design layout to all widgets
         self.scroll = makeScrollable(self.entry_box)
-        self.setStyleSheet(dark)
+        self.setStyleSheet(self.theme)
         self.createGridLayout()
         self.createBoxLayout()
 
         for it in self.entries:
-            self.entry_box_layout.addWidget(it[1])
+            self.entry_box_layout.addWidget(it)
 
         self.show()
 
     def button_handler(self):
-        self.run_script_button.clicked.connect(self.run_task)
+        self.run_script_btn.clicked.connect(self.run_task)
         self.shortcut.activated.connect(self.run_task)
+        self.create_entry_btn.clicked.connect(self.openEntry)
+        self.settings_btn.clicked.connect(self.open_settings)
+        self.src_btn.clicked.connect(lambda: os.system(f"explorer {self.src_path}"))
+        self.dst_btn.clicked.connect(lambda: os.system(f"explorer {self.dst_path}"))
 
     def createBoxLayout(self):
         self.entry_box_layout.setAlignment(Qt.AlignTop)
@@ -143,7 +146,7 @@ class TheWindow(QWidget):
     def has_duplicate(self, s: str, t: str, k: str):
         msg = QMessageBox()
         for it in self.entries:
-            if it[1].script.get_src_dir() == s and it[1].script.get_dst_dir() == t:
+            if it.script.get_src_dir() == s and it.script.get_dst_dir() == t:
                 msg.setWindowTitle("Error")
                 msg.setText("Error: An identical entry already exists.\nMerge with existing entry?")
                 msg.setIcon(QMessageBox.Question)
@@ -151,12 +154,12 @@ class TheWindow(QWidget):
                 msg.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
                 ret = msg.exec()
                 if ret == QMessageBox.Yes:
-                    if not it[1].keywords.text():
+                    if not it.keywords.text():
                         temp = k
                     else:
                         temp = f"//{k}"
-                    it[1].script.set_keywords(it[1].script.get_keywords() + temp)
-                    it[1].keywords.insert(temp)
+                    it.script.set_keywords(it.script.get_keywords() + temp)
+                    it.keywords.insert(temp)
                 elif ret == QMessageBox.No:
                     pass
                 return True
@@ -169,24 +172,23 @@ class TheWindow(QWidget):
             print("Error!")
         elif not self.has_duplicate(data[0], data[1], data[2]):
             entry = Entry(data[0], data[1], data[2])
-            self.entries.append((entry.my_id, entry))
+            self.entries.append(entry)
             self.entry_box_layout.addWidget(entry)
 
             entry.clicked_signal.connect(self.show_content)
             entry.send_id.connect(self.organize_entries)
             entry.send_id2.connect(self.adjust_buttons)
-
+            # IDEA: on click: send id of the entry and use it to access self.entries and entry.func()
 
     def run_task(self):
-        for i in self.entries:
-            if i[1].get_check_box():
-                i[1].script.move()
-                i[1].mousePressEvent(i[1].clicked)
+        for it in self.entries:
+            if it.get_check_box():
+                it.script.move()
+                it.mousePressEvent(it.clicked)
 
     def organize_entries(self, index):
         for i in range(index + 1, len(self.entries)):
-            self.entries[i][1].adjustID()
-            self.entries[i] = (self.entries[i][1].my_id,) + self.entries[i][1:]
+            self.entries[i].adjustID()
         self.entries.pop(index)
 
     def show_content(self, src_data: list, dst_data: list, keyword: str):
@@ -200,17 +202,23 @@ class TheWindow(QWidget):
             self.src_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
             if any(key in src_data[i] for key in keyword_list):
-                temp.setForeground(QBrush(QColor(255, 0, 0)))
+                if self.theme is dark:
+                    temp.setForeground(QBrush(QColor(225, 127, 80)))
+                else:
+                    temp.setForeground(QBrush(QColor(225, 100, 80)))
+                font = QtGui.QFont()
+                font.setBold(True)
+                temp.setFont(font)
 
         for i in range(0, len(dst_data)):
             self.dst_table.setItem(i, 0, QTableWidgetItem(dst_data[i]))
 
     def adjust_buttons(self, index):
-        entry = self.entries[index][1]
+        entry = self.entries[index]
         s = entry.script.get_src_dir()
         t = entry.script.get_dst_dir()
-        self.src_button.setText(entry.src.text())
-        self.dst_button.setText(entry.dst.text())
+        self.src_btn.setText(entry.src.text())
+        self.dst_btn.setText(entry.dst.text())
         self.src_path = entry.script.backslashes(s)
         self.dst_path = entry.script.backslashes(t)
 
@@ -224,16 +232,16 @@ class TheWindow(QWidget):
 
         layout_grid.setSpacing(10)
 
-        layout_grid.addWidget(self.settings_button, 0, 0, 1, 1)
-        layout_grid.addWidget(self.create_entry_button, 0, 1, 1, 8)
+        layout_grid.addWidget(self.settings_btn, 0, 0, 1, 1)
+        layout_grid.addWidget(self.create_entry_btn, 0, 1, 1, 8)
 
         layout_grid.addWidget(self.scroll, 1, 0, 1, 9)
 
-        layout_grid.addWidget(self.src_button, 2, 0, 1, 4)
-        layout_grid.addWidget(self.dst_button, 2, 5, 1, 4)
+        layout_grid.addWidget(self.src_btn, 2, 0, 1, 4)
+        layout_grid.addWidget(self.dst_btn, 2, 5, 1, 4)
 
         layout_grid.addWidget(self.src_table, 3, 0, 1, 4)
-        layout_grid.addWidget(self.run_script_button, 3, 4, 1, 1)
+        layout_grid.addWidget(self.run_script_btn, 3, 4, 1, 1)
         layout_grid.addWidget(self.dst_table, 3, 5, 1, 4)
         self.setLayout(layout_grid)
 
@@ -246,7 +254,7 @@ class TheWindow(QWidget):
         self.anim.start()
 
     def eventFilter(self, obj, event):
-        if obj == self.src_button or obj == self.dst_button:
+        if obj == self.src_btn or obj == self.dst_btn:
             font_size = "font-size:10pt;"
         else:
             font_size = ""
@@ -258,16 +266,13 @@ class TheWindow(QWidget):
             obj.setStyleSheet(mouse_hover + mouse_click + font_size)
         elif event.type() == QtCore.QEvent.MouseButtonRelease and event.button() == QtCore.Qt.LeftButton:
             obj.setStyleSheet(mouse_hover + font_size)
-            if obj == self.create_entry_button:
-                self.openEntry()
-            elif obj == self.settings_button:
-                self.open_settings()
         elif event.type() == QtCore.QEvent.HoverLeave:
-            obj.setStyleSheet(dark + font_size)
+            obj.setStyleSheet(self.theme + font_size)
         return super(TheWindow, self).eventFilter(obj, event)
 
     def open_settings(self):
-        self.settings = Settings(self.pos().x() + 20, self.pos().y() + 150)
+        self.settings = Settings(self.pos().x() + 10, self.pos().y() + 120)
+        self.settings.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
         self.settings.show()
 
     def resizeUI(self):

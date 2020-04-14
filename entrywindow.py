@@ -15,23 +15,23 @@ class EntryWindow(QWidget):
         self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
 
         # set Background Image
-        os.chdir("C:/Users/willi/Desktop/pythonProjects/FileOrganizer")
+        os.chdir("C:/Dev/python/FileOrganizer")
         self.bg = QImage("./data/bg4.jpg")
 
-        self.src_button = QtWidgets.QPushButton("Browse Source Folder", self)
-        self.src_button.setObjectName("0")
-        self.dst_button = QtWidgets.QPushButton("Browse Destination Folder", self)
-        self.dst_button.setObjectName("1")
+        self.src_btn = QtWidgets.QPushButton("Browse Source Folder", self)
+        self.src_btn.setObjectName("0")
+        self.dst_btn = QtWidgets.QPushButton("Browse Destination Folder", self)
+        self.dst_btn.setObjectName("1")
 
-        self.add_button = QtWidgets.QPushButton("Add", self)
-        self.add_button.clicked.connect(self.send_data)
-        self.cancel_button = QtWidgets.QPushButton("Cancel", self)
+        self.add_btn = QtWidgets.QPushButton("Add", self)
+        self.add_btn.clicked.connect(self.send_data)
+        self.cancel_btn = QtWidgets.QPushButton("Cancel", self)
 
-        self.buttons = []
-        self.buttons.append(self.dst_button)
-        self.buttons.append(self.src_button)
-        self.buttons.append(self.add_button)
-        self.buttons.append(self.cancel_button)
+        self.btns = []
+        self.btns.append(self.dst_btn)
+        self.btns.append(self.src_btn)
+        self.btns.append(self.add_btn)
+        self.btns.append(self.cancel_btn)
 
         self.label = QtWidgets.QLabel("Example: urlaub//.pdf//5e-43c5")
 
@@ -45,11 +45,11 @@ class EntryWindow(QWidget):
         self.setFixedSize(400, 100)
         self.setGeometry(self.x, self.y, self.width(), self.height())
 
-        for button in self.buttons:
-            button.installEventFilter(self)
-            button.setFixedHeight(18)
-        self.buttons.clear()
-        self.src_button.setFixedSize(int(self.width() / 2) - 6, 18)
+        for btn in self.btns:
+            btn.installEventFilter(self)
+            btn.setFixedHeight(18)
+        self.btns.clear()
+        self.src_btn.setFixedSize(int(self.width() / 2) - 6, 18)
 
         self.setStyleSheet(entry_layout + "color: white;")
         self.label.setStyleSheet(examples)
@@ -62,23 +62,23 @@ class EntryWindow(QWidget):
         self.setLayout(layout_grid)
         layout_grid.setSpacing(3)
 
-        layout_grid.addWidget(self.src_button, 0, 0, 1, 4)
-        layout_grid.addWidget(self.dst_button, 0, 4, 1, 4)
+        layout_grid.addWidget(self.src_btn, 0, 0, 1, 4)
+        layout_grid.addWidget(self.dst_btn, 0, 4, 1, 4)
         layout_grid.addWidget(self.keyword_text_field, 1, 0, 1, 8)
 
         layout_grid.addWidget(self.label, 2, 0, 1, 4)
-        layout_grid.addWidget(self.add_button, 2, 4, 1, 2)
-        layout_grid.addWidget(self.cancel_button, 2, 6, 1, 2)
+        layout_grid.addWidget(self.add_btn, 2, 4, 1, 2)
+        layout_grid.addWidget(self.cancel_btn, 2, 6, 1, 2)
 
     def eventFilter(self, obj, event):
         if event.type() == QtCore.QEvent.HoverEnter:
             obj.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         elif event.type() == QtCore.QEvent.MouseButtonRelease and event.button() == QtCore.Qt.LeftButton:
-            if obj is self.src_button or obj is self.dst_button:
+            if obj is self.src_btn or obj is self.dst_btn:
                 self.open_dialog_box(obj)
-            elif obj is self.cancel_button:
+            elif obj is self.cancel_btn:
                 self.close()
-            elif obj is self.add_button:
+            elif obj is self.add_btn:
                 self.send_data()
         return super(EntryWindow, self).eventFilter(obj, event)
 
@@ -120,7 +120,7 @@ class EntryWindow(QWidget):
 
     # checks whether src and dst folder are the same
     def is_equal(self):
-        if self.src_button.text() == self.dst_button.text():
+        if self.src_btn.text() == self.dst_btn.text():
             return True
         return False
 
