@@ -6,6 +6,7 @@ def makeScrollable(widget):
     scroll = QScrollArea()
     scroll.setWidgetResizable(True)
     scroll.setWidget(widget)
+    scroll.setStyleSheet("")
     return scroll
 
 

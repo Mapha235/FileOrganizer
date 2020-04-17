@@ -60,6 +60,7 @@ class Entry(QGroupBox):
         return self.check_box.isChecked()
 
     def initUI(self):
+
         for x in self.entry_list:
             if type(x) is QLineEdit:
                 x.setReadOnly(True)
@@ -71,14 +72,14 @@ class Entry(QGroupBox):
 
         self.setFixedHeight(35)
 
-        os.chdir("C:/Dev/python/FileOrganizer")
-
-        self.move_btn.setIcon(QtGui.QIcon("./data/arrow2.png"))
+        os.chdir("C:/Users/willi/Desktop/pythonProjects/FileOrganizer")
         self.delete_btn.setIcon(QtGui.QIcon("./data/error.png"))
+        self.move_btn.setIcon(QtGui.QIcon("./data/arrow (1).png"))
+
 
         self.createBoxLayout()
         self.setStyleSheet(entry_layout + "color: black;")
-        
+
     def button_handler(self):
         self.move_btn.clicked.connect(self.run_task)
         self.edit_btn.clicked.connect(self.editKeywords)
@@ -103,7 +104,6 @@ class Entry(QGroupBox):
         self.keywords.setStyleSheet("background-color: rgba(0,0,0,0.0);")
         self.script.set_keywords(self.keywords.text())
         self.edit_btn.clicked.connect(self.applyKeywords)
-        print(self.script.dst_dir)
 
     def applyKeywords(self):
         self.keywords.setReadOnly(True)
@@ -112,7 +112,6 @@ class Entry(QGroupBox):
         self.script.set_keywords(self.keywords.text())
         self.edit_btn.clicked.connect(self.editKeywords)
         self.mousePressEvent(self.clicked)
-        print(self.script.src_dir)
 
     def mousePressEvent(self, a0: QtGui.QMouseEvent):
         self.clicked_signal.emit(self.script.get_src_content(),

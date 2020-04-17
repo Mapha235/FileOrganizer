@@ -4,7 +4,7 @@ import os
 from itertools import count
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import pyqtSignal, QSize, QPropertyAnimation, QRect, Qt
-from PyQt5.QtGui import QImage, QPalette, QBrush, QColor, QKeySequence
+from PyQt5.QtGui import QImage, QPalette, QBrush, QColor, QKeySequence, QPixmap
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QWidget, QGridLayout, QApplication, QSizePolicy, QTextBrowser, \
     QStackedLayout, QGroupBox, QVBoxLayout, QHBoxLayout, QScrollArea, QLineEdit, QCheckBox, QLabel, QTableWidget, QTableWidgetItem, QAbstractItemView, QShortcut
 from lib.folder import Folder
@@ -14,7 +14,7 @@ from settings import Settings
 dark = """
             font-size: 14pt;
             color: white;
-            background-color: rgba(0,0,0,0.3);
+            background-color: rgba(0,0,0,0.2);
             """
 
 light = """

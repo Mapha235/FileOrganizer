@@ -17,7 +17,7 @@ class TheWindow(QWidget):
         self.src_path = ""
         self.dst_path = ""
 
-        self.theme = light
+        self.theme = dark
 
         self.entry_window = None
         self.settings_page = None
@@ -26,7 +26,7 @@ class TheWindow(QWidget):
         self.analyze_values(values)
 
         # set Background Image
-        self.bg = QImage("./data/bg4.jpg")
+        self.bg = QImage("./data/bg.jpg")
 
         self.settings_btn = QtWidgets.QPushButton(self)
         self.create_entry_btn = QtWidgets.QPushButton("Create New Entry", self)
@@ -44,7 +44,7 @@ class TheWindow(QWidget):
         self.btns.append(self.dst_btn)
 
         self.src_table = QTableWidget()
-        self.src_table.setStyleSheet(self.theme + "font-size: 10pt;" + "color: black;")
+        self.src_table.setStyleSheet(self.theme + "font-size: 10pt;")
         self.src_table.setColumnCount(1)
 
         self.shortcut = QShortcut(QKeySequence("Ctrl+M"), self)
@@ -54,7 +54,7 @@ class TheWindow(QWidget):
         header.hide()
 
         self.dst_table = QTableWidget(self)
-        self.dst_table.setStyleSheet(self.theme + "font-size: 10pt;" + "color: black;")
+        self.dst_table.setStyleSheet(self.theme + "font-size: 10pt;")
         self.dst_table.setColumnCount(1)
 
         header2 = self.dst_table.horizontalHeader()
@@ -95,14 +95,29 @@ class TheWindow(QWidget):
 
         # Design of the settings btn
         self.settings_btn.setFixedSize(70, 70)
-        icon = QtGui.QIcon("./data/einstellungen.png")
-        self.settings_btn.setIcon(icon)
 
+        self.settings_icon = QtGui.QIcon("./data/einstellungen.png")
+        self.arrow_icon = QtGui.QIcon("./data/arrow (1).png")
+
+        if self.theme is dark:
+            pix = QtGui.QPixmap("./data/einstellungen.png")
+            pix2 = QtGui.QPixmap("./data/arrow (1).png")
+            painter = QtGui.QPainter(pix)
+            painter.setCompositionMode(QtGui.QPainter.CompositionMode_SourceIn)
+            painter.fillRect(pix.rect(), QtGui.QColor(255, 255, 255))
+            painter.end()
+            painter2 = QtGui.QPainter(pix2)
+            painter2.setCompositionMode(QtGui.QPainter.CompositionMode_SourceIn)
+            painter2.fillRect(pix.rect(), QtGui.QColor(255, 255, 255))
+            painter2.end()
+            self.settings_icon.addPixmap(pix)
+            self.arrow_icon.addPixmap(pix2)
+
+        self.settings_btn.setIcon(QtGui.QIcon(self.settings_icon))
         self.settings_btn.setIconSize(QtCore.QSize(60, 60))
 
         self.run_script_btn.setFixedWidth(70)
-        self.run_script_btn.setIcon(
-            QtGui.QIcon("./data/arrow2.png"))
+        self.run_script_btn.setIcon(QtGui.QIcon(self.arrow_icon))
         self.run_script_btn.setIconSize(QtCore.QSize(60, 60))
 
         self.create_entry_btn.setFixedHeight(70)
@@ -113,8 +128,8 @@ class TheWindow(QWidget):
         self.dst_btn.setStyleSheet("font-size: 10pt")
 
         for btn in self.btns:
-            # used for mouse hover event
-            btn.installEventFilter(self)
+                # used for mouse hover event
+                btn.installEventFilter(self)
 
         self.btns.clear()
 
@@ -178,7 +193,6 @@ class TheWindow(QWidget):
             entry.clicked_signal.connect(self.show_content)
             entry.send_id.connect(self.organize_entries)
             entry.send_id2.connect(self.adjust_buttons)
-            # IDEA: on click: send id of the entry and use it to access self.entries and entry.func()
 
     def run_task(self):
         for it in self.entries:
@@ -246,8 +260,8 @@ class TheWindow(QWidget):
         self.setLayout(layout_grid)
 
     def doAnimation(self):
-        self.settings_page = Settings(self.pos().x() - 400, self.pos().y() + 60)
-        self.anim = QPropertyAnimation(self.settings_page, b"geometry")
+        self.settings_page_page = Settings(self.pos().x() - 400, self.pos().y() + 60)
+        self.anim = QPropertyAnimation(self.settings_page_page, b"geometry")
         self.anim.setDuration(1000)
         self.anim.setStartValue(QRect(-1000, 100, 500, 400))
         self.anim.setEndValue(QRect(0, 100, 500, 400))
@@ -259,25 +273,42 @@ class TheWindow(QWidget):
         else:
             font_size = ""
 
+        if obj == self.settings_btn:
+            icon_path = "./data/einstellungen.png"
+        elif obj == self.run_script_btn:
+            icon_path = "./data/arrow (1).png"
+
         if event.type() == QtCore.QEvent.HoverEnter:
             obj.setStyleSheet(mouse_hover + font_size)
             obj.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+            if obj == self.settings_btn or obj == self.run_script_btn:
+                icon = QtGui.QIcon(icon_path)
+                pix = QtGui.QPixmap(icon_path)
+                painter = QtGui.QPainter(pix)
+                painter.setCompositionMode(QtGui.QPainter.CompositionMode_SourceIn)
+                painter.fillRect(pix.rect(), QtGui.QColor(255, 255, 255))
+                painter.end()
+                icon.addPixmap(pix)
+                obj.setIcon(icon)
         elif event.type() == QtCore.QEvent.MouseButtonPress and event.button() == QtCore.Qt.LeftButton:
             obj.setStyleSheet(mouse_hover + mouse_click + font_size)
         elif event.type() == QtCore.QEvent.MouseButtonRelease and event.button() == QtCore.Qt.LeftButton:
             obj.setStyleSheet(mouse_hover + font_size)
         elif event.type() == QtCore.QEvent.HoverLeave:
             obj.setStyleSheet(self.theme + font_size)
+            if obj == self.settings_btn:
+                obj.setIcon(self.settings_icon)
+            elif obj is self.run_script_btn:
+                obj.setIcon(self.arrow_icon)
         return super(TheWindow, self).eventFilter(obj, event)
 
     def open_settings(self):
-        self.settings = Settings(self.pos().x() + 10, self.pos().y() + 120)
-        self.settings.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
-        if self.settings.toggle == 1:
-            self.settings.show()
+        self.settings_page = Settings(self.pos().x() + 10, self.pos().y() + 120)
+        self.settings_page.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
+        if self.settings_page.toggle == 1:
+            self.settings_page.show()
         else:
-            self.settings.closeEvent(self.settings.close)
-        print(self.settings.toggle)
+            self.settings_page.closeEvent(self.settings_page.close)
 
     def resizeUI(self):
         self.my_width = self.width()
@@ -296,3 +327,5 @@ class TheWindow(QWidget):
 
     def closeEvent(self, a0: QtGui.QCloseEvent):
         self.save_state()
+        if self.settings_page is not None:
+            self.settings_page.close()

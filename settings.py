@@ -15,18 +15,22 @@ class Settings(QWidget):
         self.my_height = 370
         self.setFixedSize(250, 370)
 
+        self.bg = QImage("./data/bg4.jpg")
+        scaled_bg = self.bg.scaled(QSize(self.my_width, self.my_height))
+        palette = QPalette()
+        palette.setBrush(QPalette.Background, QBrush(scaled_bg))
+        self.setPalette(palette)
+
+
         self.languages = QtWidgets.QGroupBox()
         self.radio_btn1 = QtWidgets.QRadioButton("Deutsch")
-        self.radio_btn2 = QtWidgets.QRadioButton("English")
-        self.flag = QLabel()
+        self.radio_btn2 = QtWidgets.QRadioButton("Englisch")
+        self.apply_btn = QtWidgets.QPushButton("Apply")
+        self.cancel_btn = QtWidgets.QPushButton("Cancel")
 
         self.customization = QtWidgets.QGroupBox()
         self.btn = QtWidgets.QPushButton("Browse")
 
-        self.miscellaneous = QtWidgets.QGroupBox()
-
-        self.apply_btn = QtWidgets.QPushButton("Apply")
-        self.cancel_btn = QtWidgets.QPushButton("Cancel")
 
         self.initUI()
         self.button_handler()
@@ -36,13 +40,6 @@ class Settings(QWidget):
         self.setWindowIcon(QtGui.QIcon("./data/Settings.png"))
         self.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
         self.setGeometry(self.x, self.y, self.my_width, self.my_height)
-
-        self.flag.setStyleSheet("border-radius: 25px")
-        #self.flag.setFixedSize(80, 40)
-        pix = QtGui.QPixmap("./data/Deutschland_flag.png")
-        self.flag.setPixmap(pix)
-        self.flag.setScaledContents(True)
-
         self.createLayout()
 
     def button_handler(self):
@@ -52,14 +49,15 @@ class Settings(QWidget):
         main_layout = QGridLayout()
         main_layout.addWidget(self.languages, 0, 0, 1, 2)
         main_layout.addWidget(self.customization, 1, 0, 1, 2)
-        main_layout.addWidget(self.miscellaneous, 2, 0, 1, 2)
         main_layout.addWidget(self.apply_btn, 3, 0, 1, 1)
         main_layout.addWidget(self.cancel_btn, 3, 1, 1, 1)
 
-        languages_layout = QGridLayout()
-        languages_layout.addWidget(self.flag, 0,0)
-        languages_layout.addWidget(self.radio_btn1, 1, 0)
-        languages_layout.addWidget(self.radio_btn2, 1, 1)
+
+
+        languages_layout = QHBoxLayout()
+        languages_layout.addWidget(self.radio_btn1)
+        languages_layout.addWidget(self.radio_btn2)
+
 
         customization_layout = QHBoxLayout()
         customization_layout.addWidget(self.btn)
