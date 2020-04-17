@@ -26,7 +26,7 @@ class TheWindow(QWidget):
         self.analyze_values(values)
 
         # set Background Image
-        self.bg = QImage("./data/bg.jpg")
+        self.bg = QImage("./data/bg4.jpg")
 
         self.settings_btn = QtWidgets.QPushButton(self)
         self.create_entry_btn = QtWidgets.QPushButton("Create New Entry", self)
@@ -44,7 +44,7 @@ class TheWindow(QWidget):
         self.btns.append(self.dst_btn)
 
         self.src_table = QTableWidget()
-        self.src_table.setStyleSheet(self.theme + "font-size: 10pt;")
+        self.src_table.setStyleSheet(self.theme + "font-size: 10pt;" + "color: black;")
         self.src_table.setColumnCount(1)
 
         self.shortcut = QShortcut(QKeySequence("Ctrl+M"), self)
@@ -54,7 +54,7 @@ class TheWindow(QWidget):
         header.hide()
 
         self.dst_table = QTableWidget(self)
-        self.dst_table.setStyleSheet(self.theme + "font-size: 10pt;")
+        self.dst_table.setStyleSheet(self.theme + "font-size: 10pt;" + "color: black;")
         self.dst_table.setColumnCount(1)
 
         header2 = self.dst_table.horizontalHeader()
@@ -69,25 +69,6 @@ class TheWindow(QWidget):
         self.initUI()
         self.button_handler()
 
-    def save_state(self):
-        file = open("./data/save.txt", "w")
-        for it in self.entries:
-            file.write(f"{it.my_id},"
-                       f"{it.script.get_src_dir()},"
-                       f"{it.script.get_dst_dir()},"
-                       f"{it.script.get_keywords()},"
-                       f"{it.get_check_box()},\n")
-
-    def analyze_values(self, values: list):
-        for it in values:
-            self.entries.append(Entry(it[1], it[2], it[3], it[4] == "True"))
-
-    def initFuncs(self):
-        for it in self.entries:
-            it.clicked_signal.connect(self.show_content)
-            it.send_id.connect(self.organize_entries)
-            it.send_id2.connect(self.adjust_buttons)
-
     def initUI(self):
         self.setWindowTitle("File Organizer")
         self.setGeometry(self.x, self.y, self.my_width, self.my_height)
@@ -97,11 +78,11 @@ class TheWindow(QWidget):
         self.settings_btn.setFixedSize(70, 70)
 
         self.settings_icon = QtGui.QIcon("./data/einstellungen.png")
-        self.arrow_icon = QtGui.QIcon("./data/arrow (1).png")
+        self.arrow_icon = QtGui.QIcon("./data/arrow2.png")
 
         if self.theme is dark:
             pix = QtGui.QPixmap("./data/einstellungen.png")
-            pix2 = QtGui.QPixmap("./data/arrow (1).png")
+            pix2 = QtGui.QPixmap("./data/arrow2.png")
             painter = QtGui.QPainter(pix)
             painter.setCompositionMode(QtGui.QPainter.CompositionMode_SourceIn)
             painter.fillRect(pix.rect(), QtGui.QColor(255, 255, 255))
@@ -128,8 +109,8 @@ class TheWindow(QWidget):
         self.dst_btn.setStyleSheet("font-size: 10pt")
 
         for btn in self.btns:
-                # used for mouse hover event
-                btn.installEventFilter(self)
+            # used for mouse hover event
+            btn.installEventFilter(self)
 
         self.btns.clear()
 
@@ -143,6 +124,26 @@ class TheWindow(QWidget):
             self.entry_box_layout.addWidget(it)
 
         self.show()
+
+    def save_state(self):
+        file = open("./data/save.txt", "w")
+        for it in self.entries:
+            file.write(f"{it.my_id},"
+                       f"{it.script.get_src_dir()},"
+                       f"{it.script.get_dst_dir()},"
+                       f"{it.script.get_keywords()},"
+                       f"{it.get_check_box()},\n")
+
+    def analyze_values(self, values: list):
+        for it in values:
+            self.entries.append(Entry(it[1], it[2], it[3], it[4] == "True"))
+
+    def initFuncs(self):
+        for it in self.entries:
+            it.clicked_signal.connect(self.show_content)
+            it.send_id.connect(self.organize_entries)
+            it.send_id2.connect(self.adjust_buttons)
+
 
     def button_handler(self):
         self.run_script_btn.clicked.connect(self.run_task)
@@ -193,6 +194,7 @@ class TheWindow(QWidget):
             entry.clicked_signal.connect(self.show_content)
             entry.send_id.connect(self.organize_entries)
             entry.send_id2.connect(self.adjust_buttons)
+            # IDEA: on click: send id of the entry and use it to access self.entries and entry.func()
 
     def run_task(self):
         for it in self.entries:
@@ -260,8 +262,8 @@ class TheWindow(QWidget):
         self.setLayout(layout_grid)
 
     def doAnimation(self):
-        self.settings_page_page = Settings(self.pos().x() - 400, self.pos().y() + 60)
-        self.anim = QPropertyAnimation(self.settings_page_page, b"geometry")
+        self.settings_page = Settings(self.pos().x() - 400, self.pos().y() + 60)
+        self.anim = QPropertyAnimation(self.settings_page, b"geometry")
         self.anim.setDuration(1000)
         self.anim.setStartValue(QRect(-1000, 100, 500, 400))
         self.anim.setEndValue(QRect(0, 100, 500, 400))
@@ -273,15 +275,14 @@ class TheWindow(QWidget):
         else:
             font_size = ""
 
-        if obj == self.settings_btn:
+        if obj is self.settings_btn:
             icon_path = "./data/einstellungen.png"
-        elif obj == self.run_script_btn:
-            icon_path = "./data/arrow (1).png"
+        elif obj is self.run_script_btn:
+            icon_path = "./data/arrow2.png"
 
         if event.type() == QtCore.QEvent.HoverEnter:
             obj.setStyleSheet(mouse_hover + font_size)
-            obj.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-            if obj == self.settings_btn or obj == self.run_script_btn:
+            if (obj is self.settings_btn or obj is self.run_script_btn) and self.theme is light:
                 icon = QtGui.QIcon(icon_path)
                 pix = QtGui.QPixmap(icon_path)
                 painter = QtGui.QPainter(pix)
@@ -290,16 +291,19 @@ class TheWindow(QWidget):
                 painter.end()
                 icon.addPixmap(pix)
                 obj.setIcon(icon)
+            obj.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         elif event.type() == QtCore.QEvent.MouseButtonPress and event.button() == QtCore.Qt.LeftButton:
             obj.setStyleSheet(mouse_hover + mouse_click + font_size)
         elif event.type() == QtCore.QEvent.MouseButtonRelease and event.button() == QtCore.Qt.LeftButton:
             obj.setStyleSheet(mouse_hover + font_size)
         elif event.type() == QtCore.QEvent.HoverLeave:
             obj.setStyleSheet(self.theme + font_size)
-            if obj == self.settings_btn:
-                obj.setIcon(self.settings_icon)
-            elif obj is self.run_script_btn:
-                obj.setIcon(self.arrow_icon)
+            if self.theme is light:
+                if obj is self.settings_btn:
+                    obj.setIcon(self.settings_icon)
+                elif obj is self.run_script_btn:
+                    obj.setIcon(self.arrow_icon)
+
         return super(TheWindow, self).eventFilter(obj, event)
 
     def open_settings(self):
@@ -309,6 +313,7 @@ class TheWindow(QWidget):
             self.settings_page.show()
         else:
             self.settings_page.closeEvent(self.settings_page.close)
+        print(self.settings_page.toggle)
 
     def resizeUI(self):
         self.my_width = self.width()
