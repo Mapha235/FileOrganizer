@@ -26,7 +26,8 @@ class TheWindow(QWidget):
         self.analyze_values(values)
 
         # set Background Image
-        self.bg = QImage("./data/bg4.jpg")
+        self.bg = QImage("./data/bg.jpg")
+        self.setWindowIcon(QtGui.QIcon("./data/icon.png"))
 
         self.settings_btn = QtWidgets.QPushButton(self)
         self.create_entry_btn = QtWidgets.QPushButton("Create New Entry", self)
@@ -44,7 +45,6 @@ class TheWindow(QWidget):
         self.btns.append(self.dst_btn)
 
         self.src_table = QTableWidget()
-        self.src_table.setStyleSheet(self.theme + "font-size: 10pt;" + "color: black;")
         self.src_table.setColumnCount(1)
 
         self.shortcut = QShortcut(QKeySequence("Ctrl+M"), self)
@@ -54,7 +54,6 @@ class TheWindow(QWidget):
         header.hide()
 
         self.dst_table = QTableWidget(self)
-        self.dst_table.setStyleSheet(self.theme + "font-size: 10pt;" + "color: black;")
         self.dst_table.setColumnCount(1)
 
         header2 = self.dst_table.horizontalHeader()
@@ -62,8 +61,6 @@ class TheWindow(QWidget):
         header2.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
 
         self.entry_box = QGroupBox(self)
-        self.entry_box.setStyleSheet(
-            "font-size: 14pt; color: rgb(225,225,225); background-color: rgba(255,255,255,0.0); ")
 
         self.initFuncs()
         self.initUI()
@@ -76,6 +73,51 @@ class TheWindow(QWidget):
 
         # Design of the settings btn
         self.settings_btn.setFixedSize(70, 70)
+
+        self.create_entry_btn.setFixedHeight(70)
+
+        self.src_btn.setFixedWidth(345)
+        self.dst_btn.setFixedWidth(345)
+
+        for btn in self.btns:
+            # used for mouse hover event
+            btn.installEventFilter(self)
+
+        self.btns.clear()
+
+        # assign design layout to all widgets
+        self.scroll = makeScrollable(self.entry_box)
+        self.createGridLayout()
+        self.createBoxLayout()
+
+        for it in self.entries:
+            self.entry_box_layout.addWidget(it)
+
+        self.update_theme()
+
+        self.show()
+
+    def save_state(self):
+        file = open("./data/save.txt", "w")
+        for it in self.entries:
+            file.write(f"{it.my_id},"
+                       f"{it.script.get_src_dir()},"
+                       f"{it.script.get_dst_dir()},"
+                       f"{it.script.get_keywords()},"
+                       f"{it.get_check_box()},\n")
+
+    def update_theme(self):
+        self.settings_btn.setStyleSheet(self.theme)
+        self.create_entry_btn.setStyleSheet(self.theme)
+
+        self.src_btn.setStyleSheet("font-size: 10pt")
+        self.dst_btn.setStyleSheet("font-size: 10pt")
+
+        self.src_table.setStyleSheet(self.theme + "font-size: 10pt;" + "color: black;")
+        self.dst_table.setStyleSheet(self.theme + "font-size: 10pt;" + "color: black;")
+        self.entry_box.setStyleSheet(
+            "font-size: 14pt; color: rgb(225,225,225); background-color: rgba(255,255,255,0.0); ")
+        self.setStyleSheet(self.theme)
 
         self.settings_icon = QtGui.QIcon("./data/einstellungen.png")
         self.arrow_icon = QtGui.QIcon("./data/arrow2.png")
@@ -100,39 +142,6 @@ class TheWindow(QWidget):
         self.run_script_btn.setFixedWidth(70)
         self.run_script_btn.setIcon(QtGui.QIcon(self.arrow_icon))
         self.run_script_btn.setIconSize(QtCore.QSize(60, 60))
-
-        self.create_entry_btn.setFixedHeight(70)
-
-        self.src_btn.setFixedWidth(345)
-        self.dst_btn.setFixedWidth(345)
-        self.src_btn.setStyleSheet("font-size: 10pt")
-        self.dst_btn.setStyleSheet("font-size: 10pt")
-
-        for btn in self.btns:
-            # used for mouse hover event
-            btn.installEventFilter(self)
-
-        self.btns.clear()
-
-        # assign design layout to all widgets
-        self.scroll = makeScrollable(self.entry_box)
-        self.setStyleSheet(self.theme)
-        self.createGridLayout()
-        self.createBoxLayout()
-
-        for it in self.entries:
-            self.entry_box_layout.addWidget(it)
-
-        self.show()
-
-    def save_state(self):
-        file = open("./data/save.txt", "w")
-        for it in self.entries:
-            file.write(f"{it.my_id},"
-                       f"{it.script.get_src_dir()},"
-                       f"{it.script.get_dst_dir()},"
-                       f"{it.script.get_keywords()},"
-                       f"{it.get_check_box()},\n")
 
     def analyze_values(self, values: list):
         for it in values:
@@ -202,6 +211,11 @@ class TheWindow(QWidget):
                 it.script.move()
                 it.mousePressEvent(it.clicked)
 
+        for it in self.entries:
+            if it.get_check_box():
+                it.script.remove()
+                it.mousePressEvent(it.clicked)
+
     def organize_entries(self, index):
         for i in range(index + 1, len(self.entries)):
             self.entries[i].adjustID()
@@ -209,25 +223,36 @@ class TheWindow(QWidget):
 
     def show_content(self, src_data: list, dst_data: list, keyword: str):
         self.src_table.setRowCount(len(src_data))
+
         self.dst_table.setRowCount(len(dst_data))
+
         keyword_list = keyword.split("//")
 
         for i in range(0, len(src_data)):
             temp = QTableWidgetItem(src_data[i])
             self.src_table.setItem(i, 0, temp)
+
+            if self.theme == dark:
+                temp.setForeground(QBrush(QColor(255, 255, 255)))
+
             self.src_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
             if any(key in src_data[i] for key in keyword_list):
                 if self.theme is dark:
                     temp.setForeground(QBrush(QColor(225, 127, 80)))
                 else:
-                    temp.setForeground(QBrush(QColor(225, 100, 80)))
+                    temp.setForeground(QBrush(QColor(153, 0, 153)))
                 font = QtGui.QFont()
                 font.setBold(True)
                 temp.setFont(font)
 
         for i in range(0, len(dst_data)):
-            self.dst_table.setItem(i, 0, QTableWidgetItem(dst_data[i]))
+            temp = QTableWidgetItem(dst_data[i])
+
+            if self.theme == dark:
+                temp.setForeground(QBrush(QColor(255, 255,255)))
+
+            self.dst_table.setItem(i, 0, temp)
 
     def adjust_buttons(self, index):
         entry = self.entries[index]
@@ -313,7 +338,15 @@ class TheWindow(QWidget):
             self.settings_page.show()
         else:
             self.settings_page.closeEvent(self.settings_page.close)
-        print(self.settings_page.toggle)
+        self.settings_page.signal.connect(self.set_theme)
+
+    def set_theme(self, b: bool):
+        if b:
+            self.theme = dark
+        else:
+            self.theme = light
+        self.update_theme()
+        self.resizeUI()
 
     def resizeUI(self):
         self.my_width = self.width()

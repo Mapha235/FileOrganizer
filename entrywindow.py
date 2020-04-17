@@ -15,8 +15,8 @@ class EntryWindow(QWidget):
         self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
 
         # set Background Image
-        os.chdir("C:/Dev/python/FileOrganizer")
-        self.bg = QImage("./data/bg4.jpg")
+        os.chdir("C:/Users/willi/Desktop/pythonProjects/FileOrganizer")
+        self.bg = QImage("./data/bg.jpg")
 
         self.src_btn = QtWidgets.QPushButton("Browse Source Folder", self)
         self.src_btn.setObjectName("0")
@@ -131,7 +131,7 @@ class EntryWindow(QWidget):
             if self.is_equal():
                 msg.setWindowTitle("Error")
                 msg.setIcon(QMessageBox.Critical)
-                msg.setText("Error: src and dst Folder cannot be the same.")
+                msg.setText("Error: Source and Destination Folder cannot be the same.")
                 msg.exec()
                 return False
             elif self.data[2] == "":
@@ -145,12 +145,12 @@ class EntryWindow(QWidget):
             msg.setWindowTitle("Error")
             msg.setIcon(QMessageBox.Critical)
             if self.data[0] is None and self.data[1] is None:
-                msg.setText("Error: src-Folder not selected.\n"
-                            + "Error: dst-Folder not selected.\n")
+                msg.setText("Error: Source-Folder not selected.\n"
+                            + "Error: Destination-Folder not selected.\n")
             elif self.data[0] is None:
-                msg.setText("Error: src-Folder not selected.")
+                msg.setText("Error: Source-Folder not selected.")
             elif self.data[1] is None:
-                msg.setText("Error: dst-Folder not selected.")
+                msg.setText("Error: Destination-Folder not selected.")
 
             msg.exec()
 

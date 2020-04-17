@@ -74,7 +74,7 @@ class Entry(QGroupBox):
 
         os.chdir("C:/Users/willi/Desktop/pythonProjects/FileOrganizer")
         self.delete_btn.setIcon(QtGui.QIcon("./data/error.png"))
-        self.move_btn.setIcon(QtGui.QIcon("./data/arrow (1).png"))
+        self.move_btn.setIcon(QtGui.QIcon("./data/arrow2.png"))
 
 
         self.createBoxLayout()
@@ -87,6 +87,7 @@ class Entry(QGroupBox):
 
     def run_task(self):
         self.script.move()
+        self.script.remove()
         self.mousePressEvent(self.clicked)
 
     def createBoxLayout(self):
