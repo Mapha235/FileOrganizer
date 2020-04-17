@@ -17,7 +17,7 @@ class TheWindow(QWidget):
         self.src_path = ""
         self.dst_path = ""
 
-        self.theme = light
+        self.theme = dark
 
         self.entry_window = None
         self.settings_page = None
@@ -69,25 +69,6 @@ class TheWindow(QWidget):
         self.initUI()
         self.button_handler()
 
-    def save_state(self):
-        file = open("./data/save.txt", "w")
-        for it in self.entries:
-            file.write(f"{it.my_id},"
-                       f"{it.script.get_src_dir()},"
-                       f"{it.script.get_dst_dir()},"
-                       f"{it.script.get_keywords()},"
-                       f"{it.get_check_box()},\n")
-
-    def analyze_values(self, values: list):
-        for it in values:
-            self.entries.append(Entry(it[1], it[2], it[3], it[4] == "True"))
-
-    def initFuncs(self):
-        for it in self.entries:
-            it.clicked_signal.connect(self.show_content)
-            it.send_id.connect(self.organize_entries)
-            it.send_id2.connect(self.adjust_buttons)
-
     def initUI(self):
         self.setWindowTitle("File Organizer")
         self.setGeometry(self.x, self.y, self.my_width, self.my_height)
@@ -95,14 +76,29 @@ class TheWindow(QWidget):
 
         # Design of the settings btn
         self.settings_btn.setFixedSize(70, 70)
-        icon = QtGui.QIcon("./data/einstellungen.png")
-        self.settings_btn.setIcon(icon)
 
+        self.settings_icon = QtGui.QIcon("./data/einstellungen.png")
+        self.arrow_icon = QtGui.QIcon("./data/arrow2.png")
+
+        if self.theme is dark:
+            pix = QtGui.QPixmap("./data/einstellungen.png")
+            pix2 = QtGui.QPixmap("./data/arrow2.png")
+            painter = QtGui.QPainter(pix)
+            painter.setCompositionMode(QtGui.QPainter.CompositionMode_SourceIn)
+            painter.fillRect(pix.rect(), QtGui.QColor(255, 255, 255))
+            painter.end()
+            painter2 = QtGui.QPainter(pix2)
+            painter2.setCompositionMode(QtGui.QPainter.CompositionMode_SourceIn)
+            painter2.fillRect(pix.rect(), QtGui.QColor(255, 255, 255))
+            painter2.end()
+            self.settings_icon.addPixmap(pix)
+            self.arrow_icon.addPixmap(pix2)
+
+        self.settings_btn.setIcon(QtGui.QIcon(self.settings_icon))
         self.settings_btn.setIconSize(QtCore.QSize(60, 60))
 
         self.run_script_btn.setFixedWidth(70)
-        self.run_script_btn.setIcon(
-            QtGui.QIcon("./data/arrow2.png"))
+        self.run_script_btn.setIcon(QtGui.QIcon(self.arrow_icon))
         self.run_script_btn.setIconSize(QtCore.QSize(60, 60))
 
         self.create_entry_btn.setFixedHeight(70)
@@ -128,6 +124,26 @@ class TheWindow(QWidget):
             self.entry_box_layout.addWidget(it)
 
         self.show()
+
+    def save_state(self):
+        file = open("./data/save.txt", "w")
+        for it in self.entries:
+            file.write(f"{it.my_id},"
+                       f"{it.script.get_src_dir()},"
+                       f"{it.script.get_dst_dir()},"
+                       f"{it.script.get_keywords()},"
+                       f"{it.get_check_box()},\n")
+
+    def analyze_values(self, values: list):
+        for it in values:
+            self.entries.append(Entry(it[1], it[2], it[3], it[4] == "True"))
+
+    def initFuncs(self):
+        for it in self.entries:
+            it.clicked_signal.connect(self.show_content)
+            it.send_id.connect(self.organize_entries)
+            it.send_id2.connect(self.adjust_buttons)
+
 
     def button_handler(self):
         self.run_script_btn.clicked.connect(self.run_task)
@@ -259,8 +275,22 @@ class TheWindow(QWidget):
         else:
             font_size = ""
 
+        if obj is self.settings_btn:
+            icon_path = "./data/einstellungen.png"
+        elif obj is self.run_script_btn:
+            icon_path = "./data/arrow2.png"
+
         if event.type() == QtCore.QEvent.HoverEnter:
             obj.setStyleSheet(mouse_hover + font_size)
+            if (obj is self.settings_btn or obj is self.run_script_btn) and self.theme is light:
+                icon = QtGui.QIcon(icon_path)
+                pix = QtGui.QPixmap(icon_path)
+                painter = QtGui.QPainter(pix)
+                painter.setCompositionMode(QtGui.QPainter.CompositionMode_SourceIn)
+                painter.fillRect(pix.rect(), QtGui.QColor(255, 255, 255))
+                painter.end()
+                icon.addPixmap(pix)
+                obj.setIcon(icon)
             obj.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         elif event.type() == QtCore.QEvent.MouseButtonPress and event.button() == QtCore.Qt.LeftButton:
             obj.setStyleSheet(mouse_hover + mouse_click + font_size)
@@ -268,16 +298,22 @@ class TheWindow(QWidget):
             obj.setStyleSheet(mouse_hover + font_size)
         elif event.type() == QtCore.QEvent.HoverLeave:
             obj.setStyleSheet(self.theme + font_size)
+            if self.theme is light:
+                if obj is self.settings_btn:
+                    obj.setIcon(self.settings_icon)
+                elif obj is self.run_script_btn:
+                    obj.setIcon(self.arrow_icon)
+
         return super(TheWindow, self).eventFilter(obj, event)
 
     def open_settings(self):
-        self.settings = Settings(self.pos().x() + 10, self.pos().y() + 120)
-        self.settings.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
-        if self.settings.toggle == 1:
-            self.settings.show()
+        self.settings_page = Settings(self.pos().x() + 10, self.pos().y() + 120)
+        self.settings_page.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
+        if self.settings_page.toggle == 1:
+            self.settings_page.show()
         else:
-            self.settings.closeEvent(self.settings.close)
-        print(self.settings.toggle)
+            self.settings_page.closeEvent(self.settings_page.close)
+        print(self.settings_page.toggle)
 
     def resizeUI(self):
         self.my_width = self.width()
@@ -296,3 +332,5 @@ class TheWindow(QWidget):
 
     def closeEvent(self, a0: QtGui.QCloseEvent):
         self.save_state()
+        if self.settings_page is not None:
+            self.settings_page.close()
