@@ -341,11 +341,13 @@ class TheWindow(QWidget):
         return super(TheWindow, self).eventFilter(obj, event)
 
     def open_settings(self):
-        self.settings_page = Settings(self.pos().x() + 10, self.pos().y() + 120, self.theme is dark, self.language is "ENG")
+        self.settings_page = Settings(self.pos().x() + 10, self.pos().y() + 120, self.theme is dark,
+                                      self.language is "ENG")
         self.settings_page.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
         if self.settings_page.toggle == 1:
             self.settings_page.show()
         else:
+            self.settings_page.closed_signal.connect(lambda: self.setGraphicsEffect(None))
             self.settings_page.closeEvent(self.settings_page.close)
         self.settings_page.signal.connect(self.set_theme)
 
@@ -355,7 +357,7 @@ class TheWindow(QWidget):
         else:
             self.theme = light
         self.update_theme()
-        #self.resizeUI()
+        self.resizeUI()
 
     def resizeUI(self):
         self.my_width = self.width()
@@ -376,3 +378,7 @@ class TheWindow(QWidget):
         self.save_state()
         if self.settings_page is not None:
             self.settings_page.close()
+
+    def moveEvent(self, a0: QtGui.QMoveEvent):
+        if self.settings_page is not None:
+            self.settings_page.updatePos(self.pos().x() + 20, self.pos().y() + 125)

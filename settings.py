@@ -4,6 +4,7 @@ from stylesheets import *
 class Settings(QWidget):
     toggle = 0
     signal = pyqtSignal(bool)
+    closed_signal = pyqtSignal()
 
     def __init__(self, x, y, language_mode: int, color_mode: int):
         super(Settings, self).__init__()
@@ -80,6 +81,11 @@ class Settings(QWidget):
 
         self.createLayout()
 
+    def updatePos(self, x, y):
+        self.x = x
+        self.y = y
+        self.setGeometry(x, y, self.my_width, self.my_height)
+
     def button_handler(self):
         self.cancel_btn.clicked.connect(self.close)
         self.apply_btn.clicked.connect(self.apply)
@@ -111,7 +117,7 @@ class Settings(QWidget):
         bgs_layout.addWidget(self.bg_light, 0, 3, 1, 3)
         bgs_layout.addWidget(self.radio_dark, 1, 1, 1, 1)
         bgs_layout.addWidget(self.radio_light, 1, 4, 1, 1)
-        bgs_layout.setAlignment((Qt.AlignCenter))
+        bgs_layout.setAlignment(Qt.AlignCenter)
 
         options_layout = QGridLayout()
         options_layout.addWidget(self.run_in_background, 0, 0)
@@ -130,4 +136,6 @@ class Settings(QWidget):
 
     def closeEvent(self, a0: QtGui.QCloseEvent):
         self.__class__.toggle += 1
+        self.closed_signal.emit()
         self.close()
+
