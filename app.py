@@ -18,6 +18,7 @@ class TheWindow(QWidget):
         self.dst_path = ""
 
         self.theme = dark
+        self.language = "ENG"
 
         self.entry_window = None
         self.settings_page = None
@@ -27,6 +28,7 @@ class TheWindow(QWidget):
 
         # set Background Image
         self.bg = QImage("./data/bg.jpg")
+
         self.setWindowIcon(QtGui.QIcon("./data/icon.png"))
 
         self.settings_btn = QtWidgets.QPushButton(self)
@@ -109,6 +111,7 @@ class TheWindow(QWidget):
     def update_theme(self):
         self.settings_btn.setStyleSheet(self.theme)
         self.create_entry_btn.setStyleSheet(self.theme)
+        self.run_script_btn.setStyleSheet(self.theme)
 
         self.src_btn.setStyleSheet("font-size: 10pt")
         self.dst_btn.setStyleSheet("font-size: 10pt")
@@ -142,6 +145,12 @@ class TheWindow(QWidget):
         self.run_script_btn.setFixedWidth(70)
         self.run_script_btn.setIcon(QtGui.QIcon(self.arrow_icon))
         self.run_script_btn.setIconSize(QtCore.QSize(60, 60))
+
+        # set background image
+        scaled_bg = self.bg.scaled(QSize(self.my_width, self.my_height))
+        palette = QPalette()
+        palette.setBrush(QPalette.Background, QBrush(scaled_bg))
+        self.setPalette(palette)
 
     def analyze_values(self, values: list):
         for it in values:
@@ -332,7 +341,7 @@ class TheWindow(QWidget):
         return super(TheWindow, self).eventFilter(obj, event)
 
     def open_settings(self):
-        self.settings_page = Settings(self.pos().x() + 10, self.pos().y() + 120)
+        self.settings_page = Settings(self.pos().x() + 10, self.pos().y() + 120, self.theme is dark, self.language is "ENG")
         self.settings_page.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
         if self.settings_page.toggle == 1:
             self.settings_page.show()
@@ -346,7 +355,7 @@ class TheWindow(QWidget):
         else:
             self.theme = light
         self.update_theme()
-        self.resizeUI()
+        #self.resizeUI()
 
     def resizeUI(self):
         self.my_width = self.width()

@@ -49,9 +49,9 @@ class Entry(QGroupBox):
         self.button_handler()
 
     def __del__(self):
-        self.close()
-        self.__class__.id -= 1
         self.send_id.emit(self.my_id)
+        self.__class__.id -= 1
+        self.close()
 
     def adjustID(self):
         self.my_id -= 1
@@ -72,7 +72,7 @@ class Entry(QGroupBox):
 
         self.setFixedHeight(35)
 
-        os.chdir("C:/Users/willi/Desktop/pythonProjects/FileOrganizer")
+        os.chdir("C:/Dev/python/FileOrganizer")
         self.delete_btn.setIcon(QtGui.QIcon("./data/error.png"))
         self.move_btn.setIcon(QtGui.QIcon("./data/arrow2.png"))
 

@@ -72,6 +72,16 @@ class Folder:
         for it in keyword_list:
             for data in glob.glob(os.path.join(self.src_dir, f"*{it}*")):
                 try:
-                    shutil.move(data, self.dst_dir)
+                    shutil.copy(data, self.dst_dir)
                 except shutil.Error:
                     print(f"Error {data} already exists.")
+
+    def remove(self):
+        keyword_list = self.split_keywords()
+
+        for it in keyword_list:
+            for data in glob.glob(os.path.join(self.src_dir, f"*{it}*")):
+                try:
+                    os.unlink(data)
+                except shutil.Error as e:
+                    print(f"Fail: {e}")
