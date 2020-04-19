@@ -51,7 +51,7 @@ class EntryWindow(QWidget):
         self.btns.clear()
         self.src_btn.setFixedSize(int(self.width() / 2) - 6, 18)
 
-        self.setStyleSheet(entry_layout + "color: white;")
+        self.setStyleSheet(light + "font-size: 10pt;")
         self.label.setStyleSheet(examples)
 
         self.createGridLayout()
@@ -126,7 +126,7 @@ class EntryWindow(QWidget):
 
     def check_integrity(self):
         msg = QMessageBox()
-        msg.setWindowFlag(QtCore.Qt.WindowStaysOnBottomHint)
+        msg.setWindowFlags(QtCore.Qt.WindowStaysOnBottomHint)
         if not any(x is None for x in self.data):
             if self.is_equal():
                 msg.setWindowTitle("Error")

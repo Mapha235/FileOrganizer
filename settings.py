@@ -36,6 +36,8 @@ class Settings(QWidget):
         self.radio_dark = QtWidgets.QRadioButton()
         self.radio_light = QtWidgets.QRadioButton()
 
+
+
         self.options = QtWidgets.QGroupBox("Options")
         self.run_in_background = QCheckBox("Run in Background.")
         self.enable_shortcut = QCheckBox("Enable Shortcut. (Ctrl+M)")
@@ -49,9 +51,9 @@ class Settings(QWidget):
             self.light.setChecked(True)
 
         if language_mode == 0:
-            self.eng.setChecked(True)
-        else:
             self.de.setChecked(True)
+        else:
+            self.eng.setChecked(True)
 
         if is_bg4:
             self.radio_light.setChecked(True)
@@ -70,6 +72,8 @@ class Settings(QWidget):
         pix_dark = QtGui.QPixmap("./data/tile2.png")
         pix_light = QtGui.QPixmap("./data/tile.png")
 
+        self.languages.setEnabled(False)
+
         self.bg_dark.setPixmap(pix_dark)
         self.bg_dark.setFixedSize(100, 60)
         self.bg_dark.setScaledContents(True)
@@ -80,7 +84,17 @@ class Settings(QWidget):
         self.bg_light.setScaledContents(True)
         #self.bg_light.installEventFilter(self)
 
+        if self.default.isChecked():
+            self.bgs.setEnabled(False)
+        self.default.toggled.connect(self.toggle_bg_box)
+
         self.createLayout()
+
+    def toggle_bg_box(self):
+        if self.default.isChecked():
+            self.bgs.setEnabled(False)
+        else:
+            self.bgs.setEnabled(True)
 
     def updatePos(self, x, y):
         self.x = x
@@ -88,6 +102,9 @@ class Settings(QWidget):
         self.setGeometry(x, y, self.my_width, self.my_height)
 
     def button_handler(self):
+        if self.default.isChecked():
+            self.bgs.setEnabled(False)
+
         self.cancel_btn.clicked.connect(self.close)
         self.apply_btn.clicked.connect(self.apply)
 
@@ -133,13 +150,17 @@ class Settings(QWidget):
 
     def apply(self):
         if self.radio_dark.isChecked():
-            self.bg_path = "C:/Dev/python/FileOrganizer/data/bg.jpg"
+            self.bg_path = "C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/bg.jpg"
         elif self.radio_light.isChecked():
-            self.bg_path = "C:/Dev/python/FileOrganizer/data/bg4.jpg"
+            self.bg_path = "C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/bg4.jpg"
 
         if self.default.isChecked():
             color_mode = 0
-        self.design_signal.emit(self.dark.isChecked(), self.bg_path)
+        elif self.dark.isChecked():
+            color_mode = 1
+        elif self.light.isChecked():
+            color_mode = 2
+        self.design_signal.emit(color_mode, self.bg_path)
         self.close()
 
     def eventFilter(self, obj, event):

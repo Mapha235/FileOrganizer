@@ -13,13 +13,11 @@ from settings import Settings
 default = """ """
 
 dark = """
-            font-size: 14pt;
             color: white;
             background-color: rgba(0,0,0,0.2);
             """
 
 light = """
-            font-size: 14pt;
             color: rgb(70,70,70);
             background-color: rgba(255,255,255,0.4);
             """
@@ -55,4 +53,5 @@ examples = """
         background-color: rgba(255, 255, 255, 0.0);
         margin: 10px;
         """
+
 
