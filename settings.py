@@ -3,10 +3,11 @@ from stylesheets import *
 
 class Settings(QWidget):
     toggle = 0
-    signal = pyqtSignal(bool)
-    closed_signal = pyqtSignal()
+    design_signal = pyqtSignal(int, str)
+    bg_dark_clicked = pyqtSignal()
+    bg_light_clicked = pyqtSignal()
 
-    def __init__(self, x, y, language_mode: int, color_mode: int):
+    def __init__(self, x, y, language_mode: int, color_mode: int, is_bg4: bool):
         super(Settings, self).__init__()
         self.__class__.toggle %= 2
         self.__class__.toggle += 1
@@ -16,12 +17,7 @@ class Settings(QWidget):
         self.my_width = 270
         self.my_height = 400
         self.setFixedSize(self.my_width, self.my_height)
-
-        # self.bg = QImage("./data/bg4.jpg")
-        # scaled_bg = self.bg.scaled(QSize(self.my_width, self.my_height))
-        # palette = QPalette()
-        # palette.setBrush(QPalette.Background, QBrush(scaled_bg))
-        # self.setPalette(palette)
+        self.bg_path = ""
 
         self.languages = QtWidgets.QGroupBox("Language")
         self.de = QtWidgets.QRadioButton("Deutsch")
@@ -45,15 +41,22 @@ class Settings(QWidget):
         self.enable_shortcut = QCheckBox("Enable Shortcut. (Ctrl+M)")
         self.auto_replace = QCheckBox("Enable replace existing file in destination\ndirectory.")
 
-        if color_mode == 1:
+        if color_mode == 0:
+            self.default.setChecked(True)
+        elif color_mode == 1:
             self.dark.setChecked(True)
         elif color_mode == 2:
             self.light.setChecked(True)
 
-        if language_mode == 1:
+        if language_mode == 0:
             self.eng.setChecked(True)
         else:
             self.de.setChecked(True)
+
+        if is_bg4:
+            self.radio_light.setChecked(True)
+        else:
+            self.radio_dark.setChecked(True)
 
         self.initUI()
         self.button_handler()
@@ -64,20 +67,18 @@ class Settings(QWidget):
         self.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
         self.setGeometry(self.x, self.y, self.my_width, self.my_height)
 
-        # self.languages.setFixedHeight(40)
-        # self.customization.setFixedHeight(40)
-        # self.bgs.setFixedHeight(120)
-
         pix_dark = QtGui.QPixmap("./data/tile2.png")
         pix_light = QtGui.QPixmap("./data/tile.png")
 
         self.bg_dark.setPixmap(pix_dark)
         self.bg_dark.setFixedSize(100, 60)
         self.bg_dark.setScaledContents(True)
+        #self.bg_dark.installEventFilter(self)
 
         self.bg_light.setPixmap(pix_light)
         self.bg_light.setFixedSize(100, 60)
         self.bg_light.setScaledContents(True)
+        #self.bg_light.installEventFilter(self)
 
         self.createLayout()
 
@@ -131,11 +132,24 @@ class Settings(QWidget):
         self.setLayout(main_layout)
 
     def apply(self):
-        self.signal.emit(self.dark.isChecked())
+        if self.radio_dark.isChecked():
+            self.bg_path = "C:/Dev/python/FileOrganizer/data/bg.jpg"
+        elif self.radio_light.isChecked():
+            self.bg_path = "C:/Dev/python/FileOrganizer/data/bg4.jpg"
+
+        if self.default.isChecked():
+            color_mode = 0
+        self.design_signal.emit(self.dark.isChecked(), self.bg_path)
         self.close()
+
+    def eventFilter(self, obj, event):
+        if event.type() is QtCore.QEvent.MouseButtonPress:
+            if obj is self.bg_dark:
+                self.radio_dark.setChecked(True)
+            elif obj is self.bg_light:
+                self.radio_light.setChecked(True)
+        return super(Settings, self).eventFilter(obj, event)
 
     def closeEvent(self, a0: QtGui.QCloseEvent):
         self.__class__.toggle += 1
-        self.closed_signal.emit()
         self.close()
-

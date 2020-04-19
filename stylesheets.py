@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QFileDialog, QMessageBox, QWidget, QGridLayout, QApp
 from lib.folder import Folder
 from settings import Settings
 
+default = """ """
 
 dark = """
             font-size: 14pt;

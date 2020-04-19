@@ -17,7 +17,7 @@ class TheWindow(QWidget):
         self.src_path = ""
         self.dst_path = ""
 
-        self.theme = dark
+        self.theme = default
         self.language = "ENG"
 
         self.entry_window = None
@@ -27,7 +27,7 @@ class TheWindow(QWidget):
         self.analyze_values(values)
 
         # set Background Image
-        self.bg = QImage("./data/bg.jpg")
+        self.bg_path = "C:/Dev/python/FileOrganizer/data/bg4.jpg"
 
         self.setWindowIcon(QtGui.QIcon("./data/icon.png"))
 
@@ -109,6 +109,7 @@ class TheWindow(QWidget):
                        f"{it.get_check_box()},\n")
 
     def update_theme(self):
+        bg = QImage(self.bg_path)
         self.settings_btn.setStyleSheet(self.theme)
         self.create_entry_btn.setStyleSheet(self.theme)
         self.run_script_btn.setStyleSheet(self.theme)
@@ -147,7 +148,7 @@ class TheWindow(QWidget):
         self.run_script_btn.setIconSize(QtCore.QSize(60, 60))
 
         # set background image
-        scaled_bg = self.bg.scaled(QSize(self.my_width, self.my_height))
+        scaled_bg = bg.scaled(QSize(self.my_width, self.my_height))
         palette = QPalette()
         palette.setBrush(QPalette.Background, QBrush(scaled_bg))
         self.setPalette(palette)
@@ -161,7 +162,6 @@ class TheWindow(QWidget):
             it.clicked_signal.connect(self.show_content)
             it.send_id.connect(self.organize_entries)
             it.send_id2.connect(self.adjust_buttons)
-
 
     def button_handler(self):
         self.run_script_btn.clicked.connect(self.run_task)
@@ -259,7 +259,7 @@ class TheWindow(QWidget):
             temp = QTableWidgetItem(dst_data[i])
 
             if self.theme == dark:
-                temp.setForeground(QBrush(QColor(255, 255,255)))
+                temp.setForeground(QBrush(QColor(255, 255, 255)))
 
             self.dst_table.setItem(i, 0, temp)
 
@@ -314,65 +314,60 @@ class TheWindow(QWidget):
         elif obj is self.run_script_btn:
             icon_path = "./data/arrow2.png"
 
-        if event.type() == QtCore.QEvent.HoverEnter:
-            obj.setStyleSheet(mouse_hover + font_size)
-            if (obj is self.settings_btn or obj is self.run_script_btn) and self.theme is light:
-                icon = QtGui.QIcon(icon_path)
-                pix = QtGui.QPixmap(icon_path)
-                painter = QtGui.QPainter(pix)
-                painter.setCompositionMode(QtGui.QPainter.CompositionMode_SourceIn)
-                painter.fillRect(pix.rect(), QtGui.QColor(255, 255, 255))
-                painter.end()
-                icon.addPixmap(pix)
-                obj.setIcon(icon)
-            obj.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        elif event.type() == QtCore.QEvent.MouseButtonPress and event.button() == QtCore.Qt.LeftButton:
-            obj.setStyleSheet(mouse_hover + mouse_click + font_size)
-        elif event.type() == QtCore.QEvent.MouseButtonRelease and event.button() == QtCore.Qt.LeftButton:
-            obj.setStyleSheet(mouse_hover + font_size)
-        elif event.type() == QtCore.QEvent.HoverLeave:
-            obj.setStyleSheet(self.theme + font_size)
-            if self.theme is light:
-                if obj is self.settings_btn:
-                    obj.setIcon(self.settings_icon)
-                elif obj is self.run_script_btn:
-                    obj.setIcon(self.arrow_icon)
+        if self.theme is not default:
+            if event.type() == QtCore.QEvent.HoverEnter:
+                obj.setStyleSheet(mouse_hover + font_size)
+                if (obj is self.settings_btn or obj is self.run_script_btn) and self.theme is light:
+                    icon = QtGui.QIcon(icon_path)
+                    pix = QtGui.QPixmap(icon_path)
+                    painter = QtGui.QPainter(pix)
+                    painter.setCompositionMode(QtGui.QPainter.CompositionMode_SourceIn)
+                    painter.fillRect(pix.rect(), QtGui.QColor(255, 255, 255))
+                    painter.end()
+                    icon.addPixmap(pix)
+                    obj.setIcon(icon)
+                obj.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+            elif event.type() == QtCore.QEvent.MouseButtonPress and event.button() == QtCore.Qt.LeftButton:
+                obj.setStyleSheet(mouse_hover + mouse_click + font_size)
+            elif event.type() == QtCore.QEvent.MouseButtonRelease and event.button() == QtCore.Qt.LeftButton:
+                obj.setStyleSheet(mouse_hover + font_size)
+            elif event.type() == QtCore.QEvent.HoverLeave:
+                obj.setStyleSheet(self.theme + font_size)
+                if self.theme is light:
+                    if obj is self.settings_btn:
+                        obj.setIcon(self.settings_icon)
+                    elif obj is self.run_script_btn:
+                        obj.setIcon(self.arrow_icon)
 
         return super(TheWindow, self).eventFilter(obj, event)
 
     def open_settings(self):
-        self.settings_page = Settings(self.pos().x() + 10, self.pos().y() + 120, self.theme is dark,
-                                      self.language is "ENG")
+        self.settings_page = Settings(self.pos().x() + 10, self.pos().y() + 120, self.language is "ENG",
+                                      self.get_theme(), self.bg_path == "C:/Dev/python/FileOrganizer/data/bg4.jpg")
         self.settings_page.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
         if self.settings_page.toggle == 1:
             self.settings_page.show()
         else:
-            self.settings_page.closed_signal.connect(lambda: self.setGraphicsEffect(None))
             self.settings_page.closeEvent(self.settings_page.close)
-        self.settings_page.signal.connect(self.set_theme)
+        self.settings_page.design_signal.connect(self.set_theme)
 
-    def set_theme(self, b: bool):
-        if b:
+    def get_theme(self) -> int:
+        if self.theme is dark:
+            return 1
+        elif self.theme is light:
+            return 2
+        return 0
+
+    def set_theme(self, color_mode: int, bg_path: str):
+        if color_mode == 0:
+            self.theme = default
+        elif color_mode == 1:
             self.theme = dark
-        else:
+        elif color_mode == 2:
             self.theme = light
+
+        self.bg_path = bg_path
         self.update_theme()
-        self.resizeUI()
-
-    def resizeUI(self):
-        self.my_width = self.width()
-        self.my_height = self.height()
-
-        self.scroll.setFixedHeight(int(self.height() / 3))
-
-        # set background image
-        scaled_bg = self.bg.scaled(QSize(self.my_width, self.my_height))
-        palette = QPalette()
-        palette.setBrush(QPalette.Background, QBrush(scaled_bg))
-        self.setPalette(palette)
-
-    def resizeEvent(self, event):
-        self.resizeUI()
 
     def closeEvent(self, a0: QtGui.QCloseEvent):
         self.save_state()
