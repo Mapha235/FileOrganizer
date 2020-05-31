@@ -1,4 +1,4 @@
-from main import makeScrollable, backslashes
+from main import makeScrollable
 from stylesheets import *
 from entrywindow import EntryWindow
 from entry import Entry
@@ -9,12 +9,6 @@ class TheWindow(QWidget):
     def __init__(self, values: list):
         super(TheWindow, self).__init__()
 
-        self.root = backslashes(values[0])
-        print(self.root)
-
-
-        values.pop(0)
-
         self.entry_box_layout = QVBoxLayout()
         self.scroll = QScrollArea()
         self.x = 160
@@ -24,19 +18,15 @@ class TheWindow(QWidget):
         self.src_path = ""
         self.dst_path = ""
 
-        self.theme = light
         self.language = "ENG"
-
-
 
         self.entry_window = None
         self.settings_page = None
 
         self.entries = []
-        self.analyze_values(values)
 
         # set Background Image
-        self.bg_path = f"{self.root}/data/bg4.jpg"
+        # self.bg_path = f"{self.root}/data/bg4.jpg"
 
         self.setWindowIcon(QtGui.QIcon("./data/icon.png"))
 
@@ -72,6 +62,20 @@ class TheWindow(QWidget):
         header2.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
 
         self.entry_box = QGroupBox(self)
+        try:
+            self.root = values[0][0]
+
+            self.bg_path = values[0][2]
+
+            self.theme = dark
+            self.set_theme(int(values[0][1]), self.bg_path)
+        except IndexError:
+            self.theme = default
+            self.bg_path = ""
+        values.pop(0)
+
+        self.analyze_values(values)
+
 
         self.initFuncs()
         self.initUI()
@@ -110,7 +114,9 @@ class TheWindow(QWidget):
         self.show()
 
     def save_state(self):
-        file = open("C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/save.txt", "a")
+        file = open(f"{self.root}/data/save.txt", "a")
+        file.write(f"{self.get_theme()}|")
+        file.write(f"{self.bg_path}|\n")
         for it in self.entries:
             file.write(f"{it.my_id}|"
                        f"{it.script.get_src_dir()}|"
@@ -147,6 +153,7 @@ class TheWindow(QWidget):
 
         else:
             self.setPalette(QApplication.style().standardPalette())
+            self.bg_path = ""
 
         self.settings_btn.setIcon(QtGui.QIcon(self.settings_icon))
         self.settings_btn.setIconSize(QtCore.QSize(60, 60))
@@ -283,11 +290,11 @@ class TheWindow(QWidget):
         t = entry.script.get_dst_dir()
         self.src_btn.setText(entry.src.text())
         self.dst_btn.setText(entry.dst.text())
-        self.src_path = backslashes(s)
-        self.dst_path = backslashes(t)
+        self.src_path = entry.script.backslashes(s)
+        self.dst_path = entry.script.backslashes(t)
 
     def openEntry(self):
-        self.entry_window = EntryWindow(self.pos().x() + (self.width() / 4), self.pos().y() + 50)
+        self.entry_window = EntryWindow(self.pos().x() + (self.width() / 4), self.pos().y() + 50, self.get_theme(), self.bg_path)
         self.entry_window.show()
         self.entry_window.send_signal.connect(self.parse)
 
@@ -361,7 +368,7 @@ class TheWindow(QWidget):
 
     def open_settings(self):
         self.settings_page = Settings(self.pos().x() + 10, self.pos().y() + 120, self.language is "ENG",
-                                      self.get_theme(), self.bg_path == "C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/bg4.jpg")
+                                      self.get_theme(), self.bg_path == f"{self.root}/data/bg4.jpg")
         self.settings_page.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
         if self.settings_page.toggle:
             self.settings_page.show()
@@ -393,6 +400,8 @@ class TheWindow(QWidget):
         self.save_state()
         if self.settings_page is not None:
             self.settings_page.close()
+        if self.entry_window is not None:
+            self.entry_window.close()
 
     def moveEvent(self, a0: QtGui.QMoveEvent):
         if self.settings_page is not None:

@@ -10,14 +10,6 @@ def makeScrollable(widget):
     return scroll
 
 
-def backslashes(path: str):
-    return path.replace("/", "\\")
-
-
-def backslashes2(path: str):
-    return path.replace("\\", "\\\\")
-
-
 def shorten_path(path_name, length):
     shortened_path_name = ""
 
@@ -52,16 +44,17 @@ def read_file():
     except FileNotFoundError:
         file = open(f"{path}/{name}", "w+")
 
-    values = [file.readline()]
-    lines = sum(1 for line in open(f"{path}/{name}"))
+    values = []
 
-    for i in range(1, lines):
-        temp = file.readline().split('|')
+    for i in file:
+        temp = i.split('|')
         temp.pop()
         values.append(temp)
 
+    root = os.getcwd().replace("\\", "/")
+
     file = open(f"{path}/{name}", "w")
-    file.write(f"{os.getcwd()}\n")
+    file.write(f"{root}|")
     file.close()
 
     return values

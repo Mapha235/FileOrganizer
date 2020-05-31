@@ -5,18 +5,28 @@ from stylesheets import *
 class EntryWindow(QWidget):
     send_signal = pyqtSignal(list)
 
-    def __init__(self, x, y):
+    def __init__(self, x, y, color_mode: int, bg_path: str):
         super(EntryWindow, self).__init__()
         self.data = [None] * 3
         self.data[2] = ""
         self.x = x
         self.y = y
 
+        self.theme = ""
+        if color_mode == 0:
+            self.theme = default
+        elif color_mode == 1:
+            self.theme = dark
+        elif color_mode == 2:
+            self.theme = light
+
+        self.bg = QImage(bg_path)
+
+
         self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
 
         # set Background Image
-        os.chdir("C:/Dev/python/FileOrganizer")
-        self.bg = QImage("./data/bg.jpg")
+        self.bg = QImage(bg_path)
 
         self.src_btn = QtWidgets.QPushButton("Browse Source Folder", self)
         self.src_btn.setObjectName("0")
@@ -49,10 +59,15 @@ class EntryWindow(QWidget):
             btn.installEventFilter(self)
             btn.setFixedHeight(18)
         self.btns.clear()
-        self.src_btn.setFixedSize(int(self.width() / 2) - 6, 18)
+        self.src_btn.setFixedSize(int(self.width() / 2) - 12, 18)
+        self.dst_btn.setFixedSize(int(self.width() / 2) - 12, 18)
 
-        self.setStyleSheet(light + "font-size: 10pt;")
-        self.label.setStyleSheet(examples)
+        self.setStyleSheet(self.theme + "font-size: 10pt;")
+
+        if self.theme is default:
+            self.label.setStyleSheet(examples + "color: black;")
+        else:
+            self.label.setStyleSheet(examples)
 
         self.createGridLayout()
 
@@ -158,10 +173,11 @@ class EntryWindow(QWidget):
 
     def resizeBG(self):
         # set background image
-        scaled_bg = self.bg.scaled(QSize(self.width(), self.height()))
-        palette = QPalette()
-        palette.setBrush(QPalette.Background, QBrush(scaled_bg))
-        self.setPalette(palette)
+        if self.theme is not default:
+            scaled_bg = self.bg.scaled(QSize(self.width(), self.height()))
+            palette = QPalette()
+            palette.setBrush(QPalette.Background, QBrush(scaled_bg))
+            self.setPalette(palette)
 
     def resizeEvent(self, event):
         self.resizeBG()
