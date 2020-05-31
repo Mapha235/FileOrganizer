@@ -1,5 +1,1 @@
-0,C:/Users/willi/Desktop/pythonProjects/FileOrganizer/Test Folder,C:/Users/willi/Desktop/pythonProjects/FileOrganizer/TestFolder,1.txt,True,
-1,C:/Users/willi/Desktop/pythonProjects/FileOrganizer/__pycache__,C:/Users/willi/Desktop/pythonProjects/FileOrganizer,,False,
-2,C:/Users/willi/Desktop/pythonProjects/FileOrganizer,C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data,ü,True,
-3,C:/Users/willi/Desktop/pythonProjects/FileOrganizer,C:/Users/willi/Desktop/pythonProjects/FileOrganizer/venv,,True,
-4,C:/Users/willi/Desktop/pythonProjects/FileOrganizer/TestFolder,C:/Users/willi/Desktop/pythonProjects/FileOrganizer,ü,True,
+C:\Users\willi\Desktop\pythonProjects\FileOrganizer

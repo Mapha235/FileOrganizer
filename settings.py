@@ -9,8 +9,6 @@ class Settings(QWidget):
 
     def __init__(self, x, y, language_mode: int, color_mode: int, is_bg4: bool):
         super(Settings, self).__init__()
-        #self.__class__.toggle %= 2
-#        self.__class__.toggle += 1
         self.__class__.toggle = not self.__class__.toggle
 
         self.x = x
@@ -151,9 +149,9 @@ class Settings(QWidget):
 
     def apply(self):
         if self.radio_dark.isChecked():
-            self.bg_path = "C:/Dev/python/FileOrganizer/data/bg.jpg"
+            self.bg_path = "C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/bg.jpg"
         elif self.radio_light.isChecked():
-            self.bg_path = "C:/Dev/python/FileOrganizer/data/bg4.jpg"
+            self.bg_path = "C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/bg4.jpg"
 
         if self.default.isChecked():
             color_mode = 0

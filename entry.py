@@ -72,7 +72,7 @@ class Entry(QGroupBox):
 
         self.setFixedHeight(35)
 
-        os.chdir("C:/Dev/python/FileOrganizer")
+        os.chdir("C:/Users/willi/Desktop/pythonProjects/FileOrganizer")
         self.delete_btn.setIcon(QtGui.QIcon("./data/error.png"))
         self.move_btn.setIcon(QtGui.QIcon("./data/arrow2.png"))
 

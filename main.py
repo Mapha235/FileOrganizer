@@ -10,6 +10,14 @@ def makeScrollable(widget):
     return scroll
 
 
+def backslashes(path: str):
+    return path.replace("/", "\\")
+
+
+def backslashes2(path: str):
+    return path.replace("\\", "\\\\")
+
+
 def shorten_path(path_name, length):
     shortened_path_name = ""
 
@@ -37,24 +45,23 @@ def shorten_path(path_name, length):
 
 
 def read_file():
-    path = "C:/Dev/python/FileOrganizer/data"
+    path = "C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data"
     name = "save.txt"
     try:
         file = open(f"{path}/{name}", "r")
     except FileNotFoundError:
         file = open(f"{path}/{name}", "w+")
 
-    values = []
+    values = [file.readline()]
+    lines = sum(1 for line in open(f"{path}/{name}"))
 
-    for i in file:
-        temp = i.split('|')
+    for i in range(1, lines):
+        temp = file.readline().split('|')
         temp.pop()
         values.append(temp)
 
-    root = os.getcwd().replace("\\", "/")
-
     file = open(f"{path}/{name}", "w")
-    file.write(f"{root}|\n")
+    file.write(f"{os.getcwd()}\n")
     file.close()
 
     return values
