@@ -176,7 +176,7 @@ class TheWindow(QWidget):
 
     def analyze_values(self, values: list):
         for it in values:
-            self.entries.append(Entry(it[1], it[2], it[3], it[4] == "True"))
+            self.entries.append(Entry(self.root, it[1], it[2], it[3], it[4] == "True"))
 
     def initFuncs(self):
         for it in self.entries:
@@ -226,7 +226,7 @@ class TheWindow(QWidget):
         if len(data) < 3:
             print("Error!")
         elif not self.has_duplicate(data[0], data[1], data[2]):
-            entry = Entry(data[0], data[1], data[2])
+            entry = Entry(self.root, data[0], data[1], data[2])
             self.entries.append(entry)
             self.entry_box_layout.addWidget(entry)
 
@@ -368,7 +368,7 @@ class TheWindow(QWidget):
 
     def open_settings(self):
         self.settings_page = Settings(self.pos().x() + 10, self.pos().y() + 120, self.language is "ENG",
-                                      self.get_theme(), self.bg_path == f"{self.root}/data/bg4.jpg")
+                                      self.get_theme(), self.bg_path == f"{self.root}/data/bg4.jpg", self.root)
         self.settings_page.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
         if self.settings_page.toggle:
             self.settings_page.show()

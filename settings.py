@@ -7,7 +7,7 @@ class Settings(QWidget):
     bg_dark_clicked = pyqtSignal()
     bg_light_clicked = pyqtSignal()
 
-    def __init__(self, x, y, language_mode: int, color_mode: int, is_bg4: bool):
+    def __init__(self, x, y, language_mode: int, color_mode: int, is_bg4: bool, groot: str):
         super(Settings, self).__init__()
         self.__class__.toggle = not self.__class__.toggle
 
@@ -17,6 +17,8 @@ class Settings(QWidget):
         self.my_height = 400
         self.setFixedSize(self.my_width, self.my_height)
         self.bg_path = ""
+
+        self.root = groot
 
         self.languages = QtWidgets.QGroupBox("Language")
         self.de = QtWidgets.QRadioButton("Deutsch")
@@ -149,9 +151,9 @@ class Settings(QWidget):
 
     def apply(self):
         if self.radio_dark.isChecked():
-            self.bg_path = "C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/bg.jpg"
+            self.bg_path = f"{self.root}/data/bg.jpg"
         elif self.radio_light.isChecked():
-            self.bg_path = "C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/bg4.jpg"
+            self.bg_path = f"{self.root}/data/bg4.jpg"
 
         if self.default.isChecked():
             color_mode = 0

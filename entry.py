@@ -8,9 +8,11 @@ class Entry(QGroupBox):
     send_id2 = pyqtSignal(int)
     id = 0
 
-    def __init__(self, s, t, k, b=True):
+    def __init__(self, root: str, s, t, k, b=True):
         self.my_id = self.__class__.id
         self.__class__.id += 1
+
+        self.root = root
 
         super(Entry, self).__init__()
 
@@ -72,7 +74,7 @@ class Entry(QGroupBox):
 
         self.setFixedHeight(35)
 
-        os.chdir("C:/Users/willi/Desktop/pythonProjects/FileOrganizer")
+        os.chdir(self.root)
         self.delete_btn.setIcon(QtGui.QIcon("./data/error.png"))
         self.move_btn.setIcon(QtGui.QIcon("./data/arrow2.png"))
 
