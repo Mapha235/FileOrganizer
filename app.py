@@ -8,6 +8,10 @@ from settings import Settings
 class TheWindow(QWidget):
     def __init__(self, values: list):
         super(TheWindow, self).__init__()
+
+        self.root = values[0][0]
+        values.pop(0)
+
         self.entry_box_layout = QVBoxLayout()
         self.scroll = QScrollArea()
         self.x = 160
@@ -27,7 +31,7 @@ class TheWindow(QWidget):
         self.analyze_values(values)
 
         # set Background Image
-        self.bg_path = "C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/bg.jpg"
+        self.bg_path = f"{self.root}/data/bg.jpg"
 
         self.setWindowIcon(QtGui.QIcon("./data/icon.png"))
 
@@ -68,6 +72,7 @@ class TheWindow(QWidget):
         self.initUI()
         self.button_handler()
 
+
     def initUI(self):
         self.setWindowTitle("File Organizer")
         self.setGeometry(self.x, self.y, self.my_width, self.my_height)
@@ -80,7 +85,6 @@ class TheWindow(QWidget):
 
         self.src_btn.setFixedWidth(345)
         self.dst_btn.setFixedWidth(345)
-
 
         for btn in self.btns:
             # used for mouse hover event
@@ -101,33 +105,20 @@ class TheWindow(QWidget):
         self.show()
 
     def save_state(self):
-        file = open("./data/save.txt", "w")
+        file = open(f"{self.root}/data/save.txt", "a")
         for it in self.entries:
-            file.write(f"{it.my_id},"
-                       f"{it.script.get_src_dir()},"
-                       f"{it.script.get_dst_dir()},"
-                       f"{it.script.get_keywords()},"
-                       f"{it.get_check_box()},\n")
+            file.write(f"{it.my_id}|"
+                       f"{it.script.get_src_dir()}|"
+                       f"{it.script.get_dst_dir()}|"
+                       f"{it.script.get_keywords()}|"
+                       f"{it.get_check_box()}|\n")
+        file.close()
 
     def update_theme(self):
         self.settings_icon = QtGui.QIcon("./data/einstellungen.png")
         self.arrow_icon = QtGui.QIcon("./data/arrow2.png")
 
         if self.theme is not default:
-
-            if self.theme is dark:
-                pix = QtGui.QPixmap("./data/einstellungen.png")
-                pix2 = QtGui.QPixmap("./data/arrow2.png")
-                painter = QtGui.QPainter(pix)
-                painter.setCompositionMode(QtGui.QPainter.CompositionMode_SourceIn)
-                painter.fillRect(pix.rect(), QtGui.QColor(255, 255, 255))
-                painter.end()
-                painter2 = QtGui.QPainter(pix2)
-                painter2.setCompositionMode(QtGui.QPainter.CompositionMode_SourceIn)
-                painter2.fillRect(pix.rect(), QtGui.QColor(255, 255, 255))
-                painter2.end()
-                self.settings_icon.addPixmap(pix)
-                self.arrow_icon.addPixmap(pix2)
             # set background image
             bg = QImage(self.bg_path)
             scaled_bg = bg.scaled(QSize(self.my_width, self.my_height))
@@ -136,6 +127,20 @@ class TheWindow(QWidget):
             self.setPalette(palette)
         else:
             self.setPalette(QApplication.style().standardPalette())
+
+        if self.theme is dark:
+            pix = QtGui.QPixmap("./data/einstellungen.png")
+            pix2 = QtGui.QPixmap("./data/arrow2.png")
+            painter = QtGui.QPainter(pix)
+            painter.setCompositionMode(QtGui.QPainter.CompositionMode_SourceIn)
+            painter.fillRect(pix.rect(), QtGui.QColor(255, 255, 255))
+            painter.end()
+            painter2 = QtGui.QPainter(pix2)
+            painter2.setCompositionMode(QtGui.QPainter.CompositionMode_SourceIn)
+            painter2.fillRect(pix.rect(), QtGui.QColor(255, 255, 255))
+            painter2.end()
+            self.settings_icon.addPixmap(pix)
+            self.arrow_icon.addPixmap(pix2)
 
         self.settings_btn.setIcon(QtGui.QIcon(self.settings_icon))
         self.settings_btn.setIconSize(QtCore.QSize(60, 60))
@@ -147,7 +152,6 @@ class TheWindow(QWidget):
         self.settings_btn.setStyleSheet(self.theme)
         self.create_entry_btn.setStyleSheet(self.theme + "font-size: 14pt")
         self.run_script_btn.setStyleSheet(self.theme)
-
 
         self.src_btn.setStyleSheet(self.theme + "font-size: 10pt")
         self.dst_btn.setStyleSheet(self.theme + "font-size: 10pt")
@@ -253,7 +257,7 @@ class TheWindow(QWidget):
                 if self.theme is dark:
                     temp.setForeground(QBrush(QColor(225, 127, 80)))
                 else:
-                    temp.setForeground(QBrush(QColor(153, 0, 153)))
+                    temp.setForeground(QBrush(QColor(255, 0, 0)))
                 font = QtGui.QFont()
                 font.setBold(True)
                 temp.setFont(font)
@@ -350,9 +354,9 @@ class TheWindow(QWidget):
 
     def open_settings(self):
         self.settings_page = Settings(self.pos().x() + 10, self.pos().y() + 120, self.language is "ENG",
-                                      self.get_theme(), self.bg_path == "C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/bg4.jpg")
+                                      self.get_theme(), self.bg_path == f"{self.root}/data/bg4.jpg")
         self.settings_page.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
-        if self.settings_page.toggle == 1:
+        if self.settings_page.toggle:
             self.settings_page.show()
         else:
             self.settings_page.closeEvent(self.settings_page.close)

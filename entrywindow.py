@@ -15,7 +15,7 @@ class EntryWindow(QWidget):
         self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
 
         # set Background Image
-        os.chdir("C:/Users/willi/Desktop/pythonProjects/FileOrganizer")
+        os.chdir("C:/Dev/python/FileOrganizer")
         self.bg = QImage("./data/bg.jpg")
 
         self.src_btn = QtWidgets.QPushButton("Browse Source Folder", self)
@@ -126,7 +126,7 @@ class EntryWindow(QWidget):
 
     def check_integrity(self):
         msg = QMessageBox()
-        msg.setWindowFlags(QtCore.Qt.WindowStaysOnBottomHint)
+        msg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         if not any(x is None for x in self.data):
             if self.is_equal():
                 msg.setWindowTitle("Error")

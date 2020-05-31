@@ -2,15 +2,16 @@ from stylesheets import *
 
 
 class Settings(QWidget):
-    toggle = 0
+    toggle = False
     design_signal = pyqtSignal(int, str)
     bg_dark_clicked = pyqtSignal()
     bg_light_clicked = pyqtSignal()
 
     def __init__(self, x, y, language_mode: int, color_mode: int, is_bg4: bool):
         super(Settings, self).__init__()
-        self.__class__.toggle %= 2
-        self.__class__.toggle += 1
+        #self.__class__.toggle %= 2
+#        self.__class__.toggle += 1
+        self.__class__.toggle = not self.__class__.toggle
 
         self.x = x
         self.y = y
@@ -150,9 +151,9 @@ class Settings(QWidget):
 
     def apply(self):
         if self.radio_dark.isChecked():
-            self.bg_path = "C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/bg.jpg"
+            self.bg_path = "C:/Dev/python/FileOrganizer/data/bg.jpg"
         elif self.radio_light.isChecked():
-            self.bg_path = "C:/Users/willi/Desktop/pythonProjects/FileOrganizer/data/bg4.jpg"
+            self.bg_path = "C:/Dev/python/FileOrganizer/data/bg4.jpg"
 
         if self.default.isChecked():
             color_mode = 0
@@ -172,5 +173,5 @@ class Settings(QWidget):
         return super(Settings, self).eventFilter(obj, event)
 
     def closeEvent(self, a0: QtGui.QCloseEvent):
-        self.__class__.toggle += 1
+        self.__class__.toggle = not self.__class__.toggle
         self.close()
