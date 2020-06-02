@@ -94,7 +94,6 @@ class TheWindow(QWidget):
         self.src_btn.setFixedWidth(345)
         self.dst_btn.setFixedWidth(345)
 
-
         for btn in self.btns:
             # used for mouse hover event
             btn.installEventFilter(self)
@@ -114,9 +113,13 @@ class TheWindow(QWidget):
         self.show()
 
     def save_state(self):
-        file = open(f"{self.root}/data/save.txt", "a")
+        file = open(f"{self.root}/data/save.txt", "w")
+        file.write(f"{self.root}|")
         file.write(f"{self.get_theme()}|")
         file.write(f"{self.bg_path}|\n")
+        file.close()
+        file = open(f"{self.root}/data/save.txt", "a")
+
         for it in self.entries:
             file.write(f"{it.my_id}|"
                        f"{it.script.get_src_dir()}|"
@@ -271,7 +274,7 @@ class TheWindow(QWidget):
                 if self.theme is dark:
                     temp.setForeground(QBrush(QColor(225, 127, 80)))
                 else:
-                    temp.setForeground(QBrush(QColor(153, 0, 153)))
+                    temp.setForeground(QBrush(QColor(255, 255, 0)))
                 font = QtGui.QFont()
                 font.setBold(True)
                 temp.setFont(font)

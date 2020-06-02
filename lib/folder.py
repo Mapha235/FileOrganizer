@@ -62,6 +62,8 @@ class Folder:
         return keywords
 
     # replaces the forwardslashes in src_dir and dst_dir to backslashes
+    def backslashes(self, path:str):
+        return path.replace("/", "\\")
 
     def move(self):
         keyword_list = self.split_keywords()

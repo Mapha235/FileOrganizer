@@ -103,6 +103,7 @@ class Entry(QGroupBox):
 
     def editKeywords(self):
         self.keywords.setReadOnly(False)
+        self.keywords.setFocus(QtCore.Qt.MouseFocusReason)
         self.edit_btn.setText("Apply")
         self.keywords.setStyleSheet("background-color: rgba(0,0,0,0.0);")
         self.script.set_keywords(self.keywords.text())

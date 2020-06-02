@@ -37,7 +37,8 @@ def shorten_path(path_name, length):
 
 
 def read_file():
-    path = "C:/Dev/python/FileOrganizer/data"
+    path = "C:/Dev/python/FileOrganizer"
+    path = f"{path}/data"
     name = "save.txt"
     try:
         file = open(f"{path}/{name}", "r")
@@ -51,10 +52,6 @@ def read_file():
         temp.pop()
         values.append(temp)
 
-    root = os.getcwd().replace("\\", "/")
-
-    file = open(f"{path}/{name}", "w")
-    file.write(f"{root}|")
     file.close()
 
     return values

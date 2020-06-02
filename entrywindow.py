@@ -22,7 +22,6 @@ class EntryWindow(QWidget):
 
         self.bg = QImage(bg_path)
 
-
         self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
 
         # set Background Image
@@ -67,7 +66,7 @@ class EntryWindow(QWidget):
         if self.theme is default:
             self.label.setStyleSheet(examples + "color: black;")
         else:
-            self.label.setStyleSheet(examples)
+            self.label.setStyleSheet(examples + "color: white;")
 
         self.createGridLayout()
 
