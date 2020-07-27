@@ -37,7 +37,7 @@ def shorten_path(path_name, length):
 
 
 def read_file():
-    path = "C:/Dev/python/FileOrganizer"
+    path = "D:/Dev/python/FileOrganizer"
     path = f"{path}/data"
     name = "save.txt"
     try:

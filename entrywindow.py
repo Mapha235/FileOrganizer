@@ -51,15 +51,17 @@ class EntryWindow(QWidget):
 
     def initUI(self):
         self.setWindowTitle("Add New Entry")
-        self.setFixedSize(400, 100)
-        self.setGeometry(self.x, self.y, self.width(), self.height())
+        #self.setFixedSize(400, 100)
+        self.setGeometry(self.x, self.y, self.frameGeometry().width(), self.frameGeometry().height())
 
         for btn in self.btns:
             btn.installEventFilter(self)
-            btn.setFixedHeight(18)
+            #btn.setFixedHeight(18)
         self.btns.clear()
-        self.src_btn.setFixedSize(int(self.width() / 2) - 12, 18)
-        self.dst_btn.setFixedSize(int(self.width() / 2) - 12, 18)
+        #button_width = (self.frameGeometry().width() / 2) - 12
+        #button_height = 18
+        #self.src_btn.setFixedSize(button_width, button_height)
+        #self.dst_btn.setFixedSize(button_width, button_height)
 
         self.setStyleSheet(self.theme + "font-size: 10pt;")
 

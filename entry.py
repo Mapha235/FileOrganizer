@@ -17,7 +17,7 @@ class Entry(QGroupBox):
         super(Entry, self).__init__()
 
         self.script = Folder(s, t, k)
-        self.setFixedHeight(27)
+        #self.setFixedHeight(27)
 
         self.src = QLabel()
         self.dst = QLabel()
@@ -70,9 +70,11 @@ class Entry(QGroupBox):
             elif type(x) is QtWidgets.QPushButton:
                 x.installEventFilter(self)
             elif type(x) is QLabel:
-                x.setFixedWidth(205)
+                print(self.frameGeometry().width() - 80)
+                label_width = (self.frameGeometry().width() - 80) / 3
+                x.setFixedWidth(270)
 
-        self.setFixedHeight(35)
+        self.setFixedHeight(40)
 
         os.chdir(self.root)
         self.delete_btn.setIcon(QtGui.QIcon("./data/error.png"))

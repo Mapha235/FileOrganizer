@@ -13,11 +13,12 @@ class TheWindow(QWidget):
         self.scroll = QScrollArea()
         self.x = 160
         self.y = 200
-        self.my_width = 800
-        self.my_height = 500
+        self.my_width = 1000
+        self.my_height = 600
         self.src_path = ""
         self.dst_path = ""
 
+        self.setMinimumWidth(1000)
         self.language = "ENG"
 
         self.entry_window = None
@@ -62,9 +63,9 @@ class TheWindow(QWidget):
         header2.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
 
         self.entry_box = QGroupBox(self)
+        
         try:
             self.root = values[0][0]
-
             self.bg_path = values[0][2]
 
             self.theme = dark
@@ -84,21 +85,23 @@ class TheWindow(QWidget):
     def initUI(self):
         self.setWindowTitle("File Organizer")
         self.setGeometry(self.x, self.y, self.my_width, self.my_height)
-        self.setFixedSize(800, 500)
+        #self.setFixedSize(self.my_width, self.my_height)
 
         # Design of the settings btn
-        self.settings_btn.setFixedSize(70, 70)
+        #self.settings_btn.setFixedSize(70, 70)
 
-        self.create_entry_btn.setFixedHeight(70)
+        #self.create_entry_btn.setFixedHeight(70)
 
-        self.src_btn.setFixedWidth(345)
-        self.dst_btn.setFixedWidth(345)
+        #self.src_btn.setFixedWidth(self.src_table.frameGeometry().width())
+        #print(self.src_table.frameGeometry().width())
+        #self.dst_btn.setFixedWidth(self.src_table.frameGeometry().width())
+        #print(self.src_table.frameGeometry().width())
 
         for btn in self.btns:
             # used for mouse hover event
             btn.installEventFilter(self)
 
-        self.btns.clear()
+        #self.btns.clear()
 
         # assign design layout to all widgets
         self.scroll = makeScrollable(self.entry_box)
@@ -106,11 +109,41 @@ class TheWindow(QWidget):
         self.createBoxLayout()
 
         for it in self.entries:
+            #entry_width = (self.frameGeometry().width() - 20)
+            #entry_height = self.entry_box.frameGeometry().height() / 5
+            #it.setFixedSize(entry_width, entry_height)
             self.entry_box_layout.addWidget(it)
 
         self.update_theme()
 
         self.show()
+
+    def resizeEvent(self, event):
+        self.my_height = self.frameGeometry().height()
+        self.my_width = self.frameGeometry().width()
+
+        scaled_bg = self.bg.scaled(QSize(self.my_width, self.my_height))
+        palette = QPalette()
+        palette.setBrush(QPalette.Background, QBrush(scaled_bg))
+        self.setPalette(palette)
+
+        button_size = (self.my_width - (self.my_width % 100) - 100)/ 10
+        
+        for btn in self.btns:
+            if btn == self.settings_btn or btn == self.run_script_btn:
+                btn.setFixedSize(button_size, button_size)
+            elif btn == self.create_entry_btn:
+                btn.setFixedHeight(button_size)
+        icon_size = button_size - 10
+        self.settings_btn.setIconSize(QtCore.QSize(icon_size, icon_size))
+
+        print(self.frameGeometry().height())
+        #for entry in self.entries:
+        #    entry_width = (self.frameGeometry().width() - 20)
+        #    entry_height = self.entry_box.frameGeometry().height() / 5
+        #    entry.setFixedSize(entry_width, entry_height)
+      
+
 
     def save_state(self):
         file = open(f"{self.root}/data/save.txt", "w")
@@ -148,8 +181,8 @@ class TheWindow(QWidget):
                 self.settings_icon.addPixmap(pix)
                 self.arrow_icon.addPixmap(pix2)
             # set background image
-            bg = QImage(self.bg_path)
-            scaled_bg = bg.scaled(QSize(self.my_width, self.my_height))
+            self.bg = QImage(self.bg_path)
+            scaled_bg = self.bg.scaled(QSize(self.my_width, self.my_height))
             palette = QPalette()
             palette.setBrush(QPalette.Background, QBrush(scaled_bg))
             self.setPalette(palette)
@@ -161,7 +194,9 @@ class TheWindow(QWidget):
         self.settings_btn.setIcon(QtGui.QIcon(self.settings_icon))
         self.settings_btn.setIconSize(QtCore.QSize(60, 60))
 
-        self.run_script_btn.setFixedWidth(70)
+        self.run_script_btn.setFixedWidth(self.my_width/10)
+        #self.run_script_btn.setFixedSize((self.my_width - (self.my_width % 100) - 100)/ 10,(self.my_width - (self.my_width % 100) - 100)/ 10)
+        
         self.run_script_btn.setIcon(QtGui.QIcon(self.arrow_icon))
         self.run_script_btn.setIconSize(QtCore.QSize(60, 60))
 
@@ -298,6 +333,7 @@ class TheWindow(QWidget):
 
     def openEntry(self):
         self.entry_window = EntryWindow(self.pos().x() + (self.width() / 4), self.pos().y() + 50, self.get_theme(), self.bg_path)
+        self.entry_window.setFixedSize(self.my_width/2, self.my_height/ 5)
         self.entry_window.show()
         self.entry_window.send_signal.connect(self.parse)
 
@@ -370,9 +406,20 @@ class TheWindow(QWidget):
         return super(TheWindow, self).eventFilter(obj, event)
 
     def open_settings(self):
+        print(self.pos().x() + 10)
         self.settings_page = Settings(self.pos().x() + 10, self.pos().y() + 120, self.language is "ENG",
                                       self.get_theme(), self.bg_path == f"{self.root}/data/bg4.jpg", self.root)
+    
+        settings_win_width = self.my_width / 3
+        settings_win_height = self.my_height - 150
+        if settings_win_height < 540:
+            settings_win_height = 540
+        if settings_win_width < 400:
+            settings_win_width = 400
+        self.settings_page.setFixedSize(settings_win_width, settings_win_height)
+
         self.settings_page.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
+
         if self.settings_page.toggle:
             self.settings_page.show()
         else:

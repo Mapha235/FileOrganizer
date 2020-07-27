@@ -13,8 +13,8 @@ class Settings(QWidget):
 
         self.x = x
         self.y = y
-        self.my_width = 270
-        self.my_height = 400
+        self.my_width = self.frameGeometry().width()
+        self.my_height = self.frameGeometry().height()
         self.setFixedSize(self.my_width, self.my_height)
         self.bg_path = ""
 
@@ -100,7 +100,10 @@ class Settings(QWidget):
     def updatePos(self, x, y):
         self.x = x
         self.y = y
-        self.setGeometry(x, y, self.my_width, self.my_height)
+        #self.setGeometry(x, y, self.my_width, self.my_height)
+        self.width = self.frameGeometry().width()
+        self.height = self.frameGeometry().height()
+        self.setGeometry(x, y, self.width, self.height)
 
     def button_handler(self):
         if self.default.isChecked():
