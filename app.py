@@ -63,7 +63,7 @@ class TheWindow(QWidget):
         header2.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
 
         self.entry_box = QGroupBox(self)
-        
+
         try:
             self.root = values[0][0]
             self.bg_path = values[0][2]
@@ -85,6 +85,7 @@ class TheWindow(QWidget):
     def initUI(self):
         self.setWindowTitle("File Organizer")
         self.setGeometry(self.x, self.y, self.my_width, self.my_height)
+        self.bg = QImage(self.bg_path)
         #self.setFixedSize(self.my_width, self.my_height)
 
         # Design of the settings btn
