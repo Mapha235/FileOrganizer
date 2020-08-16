@@ -67,13 +67,18 @@ class Folder:
 
     def move(self):
         keyword_list = self.split_keywords()
-
+        files = []
+        counter = 0
         for it in keyword_list:
-            for data in glob.glob(os.path.join(self.src_dir, f"*{it}*")):
+            files = glob.glob(os.path.join(self.src_dir, f"*{it}*"))
+            counter += len(files)
+            for data in files:
                 try:
                     shutil.copy(data, self.dst_dir)
                 except shutil.Error:
                     print(f"Error {data} already exists.")
+        return counter
+
 
     def remove(self):
         keyword_list = self.split_keywords()

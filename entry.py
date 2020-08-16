@@ -1,11 +1,11 @@
 from main import shorten_path
 from stylesheets import *
 
-
 class Entry(QGroupBox):
     clicked_signal = pyqtSignal(list, list, str)
     send_id = pyqtSignal(int)
     send_id2 = pyqtSignal(int)
+    files_moved_signal = pyqtSignal(int)
     id = 0
 
     def __init__(self, root: str, s, t, k, b=True):
@@ -70,7 +70,6 @@ class Entry(QGroupBox):
             elif type(x) is QtWidgets.QPushButton:
                 x.installEventFilter(self)
             elif type(x) is QLabel:
-                print(self.frameGeometry().width() - 80)
                 label_width = (self.frameGeometry().width() - 80) / 3
                 x.setFixedWidth(270)
 
@@ -90,8 +89,9 @@ class Entry(QGroupBox):
         self.delete_btn.clicked.connect(self.__del__)
 
     def run_task(self):
-        self.script.move()
+        files_moved = self.script.move()
         self.script.remove()
+        self.files_moved_signal.emit(files_moved)
         self.mousePressEvent(self.clicked)
 
     def createBoxLayout(self):

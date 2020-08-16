@@ -52,18 +52,12 @@ def read_file():
         temp.pop()
         values.append(temp)
 
-    root = os.getcwd().replace("\\", "/")
-
-    file = open(f"{path}/{name}", "w")
-    file.write(f"{root}|")
-
     if len(values) == 0:
        values.append("C:/Dev/python/FileOrganizer|0||")
 
     file.close()
 
     return values
-
 
 def main():
     app = QApplication(sys.argv)
