@@ -170,7 +170,8 @@ class TheWindow(QWidget):
             self.bg_path = ""
 
         self.settings_btn.setIcon(QtGui.QIcon(self.settings_icon))
-        self.settings_btn.setIconSize(QtCore.QSize(60, 60))
+        icon_size = self.settings_btn.size().height() * 2 / 3
+        self.settings_btn.setIconSize(QtCore.QSize(icon_size, icon_size))
 
         self.run_script_btn.setFixedWidth(self.my_width / 10)
         self.run_script_btn.setFixedSize(
@@ -468,7 +469,8 @@ class TheWindow(QWidget):
                 btn.setFixedSize(button_size, button_size)
             elif btn == self.create_entry_btn:
                 btn.setFixedHeight(button_size)
-        icon_size = button_size - 10
+        icon_size = self.settings_btn.size().height() * 2 / 3
+        # self.settings_btn.setIconSize(QtCore.QSize(icon_size, icon_size))
         self.settings_btn.setIconSize(QtCore.QSize(icon_size, icon_size))
 
         # for entry in self.entries:
