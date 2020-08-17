@@ -18,7 +18,7 @@ class TheWindow(QWidget):
         self.src_path = ""
         self.dst_path = ""
 
-        self.setMinimumWidth(1000)
+        self.setMinimumSize(1000, 500)
         self.language = "ENG"
 
         self.entry_window = None
@@ -119,29 +119,6 @@ class TheWindow(QWidget):
 
         self.show()
 
-    def resizeEvent(self, event):
-        self.my_height = self.frameGeometry().height()
-        self.my_width = self.frameGeometry().width()
-
-        scaled_bg = self.bg.scaled(QSize(self.my_width, self.my_height))
-        palette = QPalette()
-        palette.setBrush(QPalette.Background, QBrush(scaled_bg))
-        self.setPalette(palette)
-
-        button_size = (self.my_width - (self.my_width % 100) - 100) / 10
-
-        for btn in self.btns:
-            if btn == self.settings_btn or btn == self.run_script_btn:
-                btn.setFixedSize(button_size, button_size)
-            elif btn == self.create_entry_btn:
-                btn.setFixedHeight(button_size)
-        icon_size = button_size - 10
-        self.settings_btn.setIconSize(QtCore.QSize(icon_size, icon_size))
-
-        # for entry in self.entries:
-        #    entry_width = (self.frameGeometry().width() - 20)
-        #    entry_height = self.entry_box.frameGeometry().height() / 5
-        #    entry.setFixedSize(entry_width, entry_height)
 
     def save_state(self):
         file = open(f"{self.root}/data/save.txt", "w")
@@ -178,6 +155,7 @@ class TheWindow(QWidget):
                 painter2.end()
                 self.settings_icon.addPixmap(pix)
                 self.arrow_icon.addPixmap(pix2)
+
             # set background image
             self.bg = QImage(self.bg_path)
             scaled_bg = self.bg.scaled(QSize(self.my_width, self.my_height))
@@ -472,3 +450,24 @@ class TheWindow(QWidget):
     def moveEvent(self, a0: QtGui.QMoveEvent):
         if self.settings_page is not None:
             self.settings_page.updatePos(self.pos().x() + 20, self.pos().y() + 125)
+
+    def resizeEvent(self, event):
+        self.my_height = self.frameGeometry().height()
+        self.my_width = self.frameGeometry().width()
+
+        button_size = (self.my_width - (self.my_width % 100) - 100) / 10
+
+        for btn in self.btns:
+            if btn == self.settings_btn or btn == self.run_script_btn:
+                btn.setFixedSize(button_size, button_size)
+            elif btn == self.create_entry_btn:
+                btn.setFixedHeight(button_size)
+        icon_size = button_size - 10
+        self.settings_btn.setIconSize(QtCore.QSize(icon_size, icon_size))
+
+        self.update_theme()
+
+        # for entry in self.entries:
+        #    entry_width = (self.frameGeometry().width() - 20)
+        #    entry_height = self.entry_box.frameGeometry().height() / 5
+        #    entry.setFixedSize(entry_width, entry_height)
