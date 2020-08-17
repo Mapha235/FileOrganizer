@@ -35,15 +35,13 @@ def shorten_path(path_name, length):
 
     return "..." + shortened_path_name
 
-
 def read_file():
     path = "C:/Dev/python/FileOrganizer"
-    path = f"{path}/data"
     name = "save.txt"
     try:
-        file = open(f"{path}/{name}", "r")
+        file = open(f"{path}/data/{name}", "r")
     except FileNotFoundError:
-        file = open(f"{path}/{name}", "w+")
+        file = open(f"{path}/data/{name}", "w+")
 
     values = []
 
@@ -53,9 +51,7 @@ def read_file():
         values.append(temp)
 
     if len(values) == 0:
-        file = open(f"{path}/{name}", "w+")
-        values.append("C:/Dev/python/FileOrganizer|0||")
-        # file.write(path + "|0||")
+        values.append([path,"0", ""])
 
     file.close()
 
