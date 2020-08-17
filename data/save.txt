@@ -1,5 +1,0 @@
-C:/Dev/python/FileOrganizer|2|C:/Dev/python/FileOrganizer/data/bg.jpg|
-0|C:/Users/MPham/Downloads|C:/Users/MPham/Documents/TUHH/6-Semester/MA/Feedback|feedback|True|
-1|C:/Users/MPham/Downloads|C:/Users/MPham/Documents/TUHH/6-Semester/MA/HWAufgaben|Homework|True|
-2|C:/Users/MPham/Downloads|C:/Users/MPham/Documents/TUHH/6-Semester/MA/OnlineTests|onlineMA|True|
-3|C:/Users/MPham/Downloads|C:/Users/MPham/Documents/TUHH/6-Semester/MA/Exercises|Exercise|True|
