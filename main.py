@@ -53,7 +53,9 @@ def read_file():
         values.append(temp)
 
     if len(values) == 0:
-       values.append("C:/Dev/python/FileOrganizer|0||")
+        file = open(f"{path}/{name}", "w+")
+        values.append("C:/Dev/python/FileOrganizer|0||")
+        # file.write(path + "|0||")
 
     file.close()
 

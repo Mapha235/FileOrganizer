@@ -19,6 +19,7 @@ class TheWindow(QWidget):
         self.dst_path = ""
 
         self.setMinimumSize(1000, 500)
+
         self.language = "ENG"
 
         self.entry_window = None
@@ -119,7 +120,6 @@ class TheWindow(QWidget):
 
         self.show()
 
-
     def save_state(self):
         file = open(f"{self.root}/data/save.txt", "w")
         file.write(f"{self.root}|")
@@ -146,11 +146,13 @@ class TheWindow(QWidget):
                 pix = QtGui.QPixmap("./data/einstellungen.png")
                 pix2 = QtGui.QPixmap("./data/arrow2.png")
                 painter = QtGui.QPainter(pix)
-                painter.setCompositionMode(QtGui.QPainter.CompositionMode_SourceIn)
+                painter.setCompositionMode(
+                    QtGui.QPainter.CompositionMode_SourceIn)
                 painter.fillRect(pix.rect(), QtGui.QColor(255, 255, 255))
                 painter.end()
                 painter2 = QtGui.QPainter(pix2)
-                painter2.setCompositionMode(QtGui.QPainter.CompositionMode_SourceIn)
+                painter2.setCompositionMode(
+                    QtGui.QPainter.CompositionMode_SourceIn)
                 painter2.fillRect(pix.rect(), QtGui.QColor(255, 255, 255))
                 painter2.end()
                 self.settings_icon.addPixmap(pix)
@@ -164,14 +166,15 @@ class TheWindow(QWidget):
             self.setPalette(palette)
 
         else:
-            self.setPalette(QApplication.style().standardPalette())
+            self.setPalette(self.style().standardPalette())
             self.bg_path = ""
 
         self.settings_btn.setIcon(QtGui.QIcon(self.settings_icon))
         self.settings_btn.setIconSize(QtCore.QSize(60, 60))
 
         self.run_script_btn.setFixedWidth(self.my_width / 10)
-        self.run_script_btn.setFixedSize((self.my_width - (self.my_width % 100) - 100)/ 10,(self.my_width - (self.my_width % 100) - 100)/ 10)
+        self.run_script_btn.setFixedSize(
+            (self.my_width - (self.my_width % 100) - 100) / 10, (self.my_width - (self.my_width % 100) - 100) / 10)
 
         self.run_script_btn.setIcon(QtGui.QIcon(self.arrow_icon))
         self.run_script_btn.setIconSize(QtCore.QSize(60, 60))
@@ -185,13 +188,16 @@ class TheWindow(QWidget):
 
         self.files_moved_label.setStyleSheet(self.theme)
 
-        self.src_table.setStyleSheet(self.theme + "font-size: 10pt; color: black;")
-        self.dst_table.setStyleSheet(self.theme + "font-size: 10pt; color: black;")
+        self.src_table.setStyleSheet(
+            self.theme + "font-size: 10pt; color: black;")
+        self.dst_table.setStyleSheet(
+            self.theme + "font-size: 10pt; color: black;")
         self.entry_box.setStyleSheet(self.theme)
 
     def analyze_values(self, values: list):
         for it in values:
-            self.entries.append(Entry(self.root, it[1], it[2], it[3], it[4] == "True"))
+            self.entries.append(
+                Entry(self.root, it[1], it[2], it[3], it[4] == "True"))
 
     def initFuncs(self):
         for it in self.entries:
@@ -205,8 +211,10 @@ class TheWindow(QWidget):
         self.shortcut.activated.connect(self.run_task)
         self.create_entry_btn.clicked.connect(self.openEntry)
         self.settings_btn.clicked.connect(self.open_settings)
-        self.src_btn.clicked.connect(lambda: os.system(f"explorer {self.src_path}"))
-        self.dst_btn.clicked.connect(lambda: os.system(f"explorer {self.dst_path}"))
+        self.src_btn.clicked.connect(
+            lambda: os.system(f"explorer {self.src_path}"))
+        self.dst_btn.clicked.connect(
+            lambda: os.system(f"explorer {self.dst_path}"))
 
     def createBoxLayout(self):
         self.entry_box_layout.setAlignment(Qt.AlignTop)
@@ -219,7 +227,8 @@ class TheWindow(QWidget):
         for it in self.entries:
             if it.script.get_src_dir() == s and it.script.get_dst_dir() == t:
                 msg.setWindowTitle("Error")
-                msg.setText("Error: An identical entry already exists.\nMerge with existing entry?")
+                msg.setText(
+                    "Error: An identical entry already exists.\nMerge with existing entry?")
                 msg.setIcon(QMessageBox.Question)
                 msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
                 msg.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
@@ -258,7 +267,6 @@ class TheWindow(QWidget):
             msg = f"{files} files moved."
 
         self.files_moved_label.setText(msg)
-
 
     def run_task(self):
         files_moved = 0
@@ -350,14 +358,6 @@ class TheWindow(QWidget):
         layout_grid.addWidget(self.dst_table, 3, 5, 1, 4)
         self.setLayout(layout_grid)
 
-    def doAnimation(self):
-        self.settings_page = Settings(self.pos().x() - 400, self.pos().y() + 60)
-        self.anim = QPropertyAnimation(self.settings_page, b"geometry")
-        self.anim.setDuration(1000)
-        self.anim.setStartValue(QRect(-1000, 100, 500, 400))
-        self.anim.setEndValue(QRect(0, 100, 500, 400))
-        self.anim.start()
-
     def eventFilter(self, obj, event):
         if obj == self.src_btn or obj == self.dst_btn:
             font_size = "font-size:10pt;"
@@ -372,7 +372,8 @@ class TheWindow(QWidget):
         if self.theme is not default:
             if event.type() == QtCore.QEvent.HoverEnter:
                 if self.theme is light:
-                    obj.setStyleSheet(mouse_hover + "background-color: rgba(255, 255, 255, 0.5);" + font_size)
+                    obj.setStyleSheet(
+                        mouse_hover + "background-color: rgba(255, 255, 255, 0.5);" + font_size)
                 else:
                     obj.setStyleSheet(mouse_hover + font_size)
 
@@ -380,7 +381,8 @@ class TheWindow(QWidget):
                     icon = QtGui.QIcon(icon_path)
                     pix = QtGui.QPixmap(icon_path)
                     painter = QtGui.QPainter(pix)
-                    painter.setCompositionMode(QtGui.QPainter.CompositionMode_SourceIn)
+                    painter.setCompositionMode(
+                        QtGui.QPainter.CompositionMode_SourceIn)
                     painter.fillRect(pix.rect(), QtGui.QColor(255, 255, 255))
                     painter.end()
                     icon.addPixmap(pix)
@@ -410,7 +412,8 @@ class TheWindow(QWidget):
             settings_win_height = 540
         if settings_win_width < 400:
             settings_win_width = 400
-        self.settings_page.setFixedSize(settings_win_width, settings_win_height)
+        self.settings_page.setFixedSize(
+            settings_win_width, settings_win_height)
 
         self.settings_page.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
 
@@ -449,11 +452,14 @@ class TheWindow(QWidget):
 
     def moveEvent(self, a0: QtGui.QMoveEvent):
         if self.settings_page is not None:
-            self.settings_page.updatePos(self.pos().x() + 20, self.pos().y() + 125)
+            self.settings_page.updatePos(
+                self.pos().x() + 20, self.pos().y() + 125)
 
     def resizeEvent(self, event):
         self.my_height = self.frameGeometry().height()
         self.my_width = self.frameGeometry().width()
+
+        self.update_theme()
 
         button_size = (self.my_width - (self.my_width % 100) - 100) / 10
 
@@ -464,8 +470,6 @@ class TheWindow(QWidget):
                 btn.setFixedHeight(button_size)
         icon_size = button_size - 10
         self.settings_btn.setIconSize(QtCore.QSize(icon_size, icon_size))
-
-        self.update_theme()
 
         # for entry in self.entries:
         #    entry_width = (self.frameGeometry().width() - 20)
