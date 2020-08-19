@@ -2,10 +2,6 @@ import os, glob, shutil
 
 
 class Folder:
-    src_dir = ""
-    dst_dir = ""
-
-    keywords = ""
 
     def __init__(self, s, t, k):
         is_src_dir = False
@@ -33,10 +29,15 @@ class Folder:
         return self.dst_dir
 
     def get_src_content(self):
-        return os.listdir(self.src_dir)
+        lst = list(os.walk(self.src_dir))[0][:]
+        lst = list(lst[1:3])
+        return lst
 
     def get_dst_content(self):
-        return os.listdir(self.dst_dir)
+        lst = list(os.walk(self.dst_dir))[0][:]
+        lst = list(lst[1:3])
+        return lst
+
 
     def set_keywords(self, k):
         self.keywords = k
@@ -79,8 +80,8 @@ class Folder:
                     print(f"Error {data} already exists.")
         return counter
 
-
     def remove(self):
+        queue = []
         keyword_list = self.split_keywords()
 
         for it in keyword_list:
@@ -89,3 +90,16 @@ class Folder:
                     os.unlink(data)
                 except shutil.Error as e:
                     print(f"Fail: {e}")
+                except PermissionError as e:
+                    queue.append(data)
+
+        while len(queue) != 0:
+            for entry in queue:
+                try:
+                    os.unlink(entry)
+                except shutil.Error as e:
+                    print(f"Fail: {e}")
+                except PermissionError:
+                    None
+                except FileNotFoundError:
+                    queue.pop()

@@ -12,6 +12,7 @@ class EntryWindow(QWidget):
         self.x = x
         self.y = y
 
+
         self.theme = ""
         if color_mode == 0:
             self.theme = default
@@ -51,8 +52,9 @@ class EntryWindow(QWidget):
 
     def initUI(self):
         self.setWindowTitle("Add New Entry")
-        #self.setFixedSize(400, 100)
         self.setGeometry(self.x, self.y, self.frameGeometry().width(), self.frameGeometry().height())
+        self.setMaximumSize(500, 100)
+
 
         for btn in self.btns:
             btn.installEventFilter(self)
@@ -172,13 +174,9 @@ class EntryWindow(QWidget):
 
         return False
 
-    def resizeBG(self):
-        # set background image
+    def resizeEvent(self, event):
         if self.theme is not default:
             scaled_bg = self.bg.scaled(QSize(self.width(), self.height()))
             palette = QPalette()
             palette.setBrush(QPalette.Background, QBrush(scaled_bg))
             self.setPalette(palette)
-
-    def resizeEvent(self, event):
-        self.resizeBG()

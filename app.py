@@ -262,6 +262,7 @@ class TheWindow(QWidget):
             # IDEA: on click: send id of the entry and use it to access self.entries and entry.func()
 
     def message(self, files):
+        self.files_moved_label.show()
         if files == 1:
             msg = "1 file moved."
         else:
@@ -271,11 +272,9 @@ class TheWindow(QWidget):
 
     def run_task(self):
         files_moved = 0
-        self.files_moved_label.show()
         for it in self.entries:
             if it.get_check_box():
                 temp = it.script.move()
-                it.mousePressEvent(it.clicked)
                 files_moved += temp
 
         for it in self.entries:
@@ -290,39 +289,58 @@ class TheWindow(QWidget):
             self.entries[i].adjustID()
         self.entries.pop(index)
 
-    def show_content(self, src_data: list, dst_data: list, keyword: str):
-        self.src_table.setRowCount(len(src_data))
+    def show_content(self, src_folders: list, src_files: list, dst_folders: list, dst_files: list, keywords: str):
+        self.src_table.setRowCount(len(src_folders) + len(src_files))
 
-        self.dst_table.setRowCount(len(dst_data))
+        self.dst_table.setRowCount(len(dst_folders) + len(dst_files))
 
-        keyword_list = keyword.split("//")
+        keyword_list = keywords.split("//")
 
-        for i in range(0, len(src_data)):
-            temp = QTableWidgetItem(src_data[i])
-            self.src_table.setItem(i, 0, temp)
+        src_file_count = len(src_files)
+        dst_file_count = len(dst_files)
+
+
+
+        for i in range(0, src_file_count + len(src_folders)):
+
+            if i >= src_file_count:
+                temp = QTableWidgetItem(src_folders[i % src_file_count])
+                self.src_table.setItem(i, 0, temp)
+                self.src_table.item(i, 0).setForeground(QtGui.QColor(128, 128, 128))
+            else:
+                temp = QTableWidgetItem(src_files[i])
+                self.src_table.setItem(i, 0, temp)
+
+                self.src_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
+                if self.theme == dark:
+                    temp.setForeground(QBrush(QColor(255, 255, 255)))
+
+                if any(key in src_files[i] for key in keyword_list):
+
+                    if self.theme is dark:
+                        temp.setForeground(QBrush(QColor(225, 127, 80)))
+                    else:
+                        temp.setForeground(QBrush(QColor(225, 100, 80)))
+                    font = QtGui.QFont()
+                    font.setBold(True)
+                    temp.setFont(font)
+
+
+        for i in range(0, dst_file_count + len(dst_folders)):
+            if i >= dst_file_count:
+                temp = QTableWidgetItem(dst_folders[i % dst_file_count])
+                self.dst_table.setItem(i, 0, temp)
+                self.dst_table.item(i, 0).setForeground(QtGui.QColor(128, 128, 128))
+
+            else:
+                temp = QTableWidgetItem(dst_files[i])
+                self.dst_table.setItem(i, 0, temp)
+
 
             if self.theme == dark:
                 temp.setForeground(QBrush(QColor(255, 255, 255)))
 
-            self.src_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
-
-            if any(key in src_data[i] for key in keyword_list):
-                if self.theme is dark:
-                    temp.setForeground(QBrush(QColor(225, 127, 80)))
-                else:
-                    temp.setForeground(QBrush(QColor(225, 100, 80)))
-                    # temp.setForeground(QBrush(QColor(255, 255, 0)))
-                font = QtGui.QFont()
-                font.setBold(True)
-                temp.setFont(font)
-
-        for i in range(0, len(dst_data)):
-            temp = QTableWidgetItem(dst_data[i])
-
-            if self.theme == dark:
-                temp.setForeground(QBrush(QColor(255, 255, 255)))
-
-            self.dst_table.setItem(i, 0, temp)
 
     def adjust_buttons(self, index):
         entry = self.entries[index]
@@ -336,7 +354,7 @@ class TheWindow(QWidget):
     def openEntry(self):
         self.entry_window = EntryWindow(self.pos().x() + (self.width() / 4), self.pos().y() + 50, self.get_theme(),
                                         self.bg_path)
-        self.entry_window.setFixedSize(self.my_width / 2, self.my_height / 5)
+        #self.entry_window.setFixedSize(self.my_width / 2, self.my_height / 5)
         self.entry_window.show()
         self.entry_window.send_signal.connect(self.parse)
 

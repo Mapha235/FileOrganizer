@@ -2,7 +2,7 @@ from main import shorten_path
 from stylesheets import *
 
 class Entry(QGroupBox):
-    clicked_signal = pyqtSignal(list, list, str)
+    clicked_signal = pyqtSignal(list, list, list, list, str)
     send_id = pyqtSignal(int)
     send_id2 = pyqtSignal(int)
     files_moved_signal = pyqtSignal(int)
@@ -120,8 +120,10 @@ class Entry(QGroupBox):
         self.mousePressEvent(self.clicked)
 
     def mousePressEvent(self, a0: QtGui.QMouseEvent):
-        self.clicked_signal.emit(self.script.get_src_content(),
-                                 self.script.get_dst_content(),
+        src_data = self.script.get_src_content()
+        dst_data = self.script.get_dst_content()
+        self.clicked_signal.emit(src_data[0], src_data[1],
+                                 dst_data[0], dst_data[1],
                                  self.script.keywords)
 
         self.send_id2.emit(self.my_id)
