@@ -304,7 +304,11 @@ class TheWindow(QWidget):
         for i in range(0, src_file_count + len(src_folders)):
 
             if i >= src_file_count:
-                temp = QTableWidgetItem(src_folders[i % src_file_count])
+                if src_file_count == 0:
+                    temp = QTableWidgetItem(src_folders[i])
+                else:
+                    temp = QTableWidgetItem(src_folders[i % src_file_count])
+
                 self.src_table.setItem(i, 0, temp)
                 self.src_table.item(i, 0).setForeground(QtGui.QColor(128, 128, 128))
             else:
@@ -329,7 +333,12 @@ class TheWindow(QWidget):
 
         for i in range(0, dst_file_count + len(dst_folders)):
             if i >= dst_file_count:
-                temp = QTableWidgetItem(dst_folders[i % dst_file_count])
+                if dst_file_count == 0:
+                    temp = QTableWidgetItem(dst_folders[i])
+                else:
+                    temp = QTableWidgetItem(dst_folders[i % dst_file_count])
+                    
+
                 self.dst_table.setItem(i, 0, temp)
                 self.dst_table.item(i, 0).setForeground(QtGui.QColor(128, 128, 128))
 
@@ -337,9 +346,8 @@ class TheWindow(QWidget):
                 temp = QTableWidgetItem(dst_files[i])
                 self.dst_table.setItem(i, 0, temp)
 
-
-            if self.theme == dark:
-                temp.setForeground(QBrush(QColor(255, 255, 255)))
+                if self.theme == dark:
+                    temp.setForeground(QBrush(QColor(255, 255, 255)))
 
 
     def adjust_buttons(self, index):
