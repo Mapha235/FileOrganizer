@@ -299,8 +299,6 @@ class TheWindow(QWidget):
         src_file_count = len(src_files)
         dst_file_count = len(dst_files)
 
-
-
         for i in range(0, src_file_count + len(src_folders)):
 
             if i >= src_file_count:
@@ -310,12 +308,14 @@ class TheWindow(QWidget):
                     temp = QTableWidgetItem(src_folders[i % src_file_count])
 
                 self.src_table.setItem(i, 0, temp)
-                self.src_table.item(i, 0).setForeground(QtGui.QColor(128, 128, 128))
+                self.src_table.item(i, 0).setForeground(
+                    QtGui.QColor(128, 128, 128))
             else:
                 temp = QTableWidgetItem(src_files[i])
                 self.src_table.setItem(i, 0, temp)
 
-                self.src_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+                self.src_table.setEditTriggers(
+                    QAbstractItemView.NoEditTriggers)
 
                 if self.theme == dark:
                     temp.setForeground(QBrush(QColor(255, 255, 255)))
@@ -330,25 +330,22 @@ class TheWindow(QWidget):
                     font.setBold(True)
                     temp.setFont(font)
 
-
         for i in range(0, dst_file_count + len(dst_folders)):
             if i >= dst_file_count:
                 if dst_file_count == 0:
                     temp = QTableWidgetItem(dst_folders[i])
                 else:
                     temp = QTableWidgetItem(dst_folders[i % dst_file_count])
-                    
 
                 self.dst_table.setItem(i, 0, temp)
-                self.dst_table.item(i, 0).setForeground(QtGui.QColor(128, 128, 128))
-
+                self.dst_table.item(i, 0).setForeground(
+                    QtGui.QColor(128, 128, 128))
             else:
                 temp = QTableWidgetItem(dst_files[i])
                 self.dst_table.setItem(i, 0, temp)
 
                 if self.theme == dark:
                     temp.setForeground(QBrush(QColor(255, 255, 255)))
-
 
     def adjust_buttons(self, index):
         entry = self.entries[index]

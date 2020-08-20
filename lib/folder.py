@@ -3,15 +3,15 @@ import os, glob, shutil
 
 class Folder:
 
-    def __init__(self, s, t, k):
+    def __init__(self, src, dst, keyw):
         is_src_dir = False
-        self.keywords = k
+        self.keywords = keyw
         try:
-            self.src_dir = s
+            self.src_dir = src
             is_src_dir = True
             os.chdir(self.src_dir)
 
-            self.dst_dir = t
+            self.dst_dir = dst
             is_src_dir = False
             os.chdir(self.dst_dir)
 

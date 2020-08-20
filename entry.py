@@ -8,7 +8,7 @@ class Entry(QGroupBox):
     files_moved_signal = pyqtSignal(int)
     id = 0
 
-    def __init__(self, root: str, s, t, k, b=True):
+    def __init__(self, root: str, src, dst, keyw, b=True):
         self.my_id = self.__class__.id
         self.__class__.id += 1
 
@@ -16,19 +16,19 @@ class Entry(QGroupBox):
 
         super(Entry, self).__init__()
 
-        self.script = Folder(s, t, k)
+        self.script = Folder(src, dst, keyw)
         #self.setFixedHeight(27)
 
         self.src = QLabel()
         self.dst = QLabel()
         self.keywords = QLineEdit()
 
-        short_src_path = shorten_path(s, 29)
-        short_dst_path = shorten_path(t, 29)
+        short_src_path = shorten_path(src, 29)
+        short_dst_path = shorten_path(dst, 29)
 
         self.src.setText(short_src_path)
         self.dst.setText(short_dst_path)
-        self.keywords.insert(k)
+        self.keywords.insert(keyw)
 
         self.move_btn = QtWidgets.QPushButton()
         self.edit_btn = QtWidgets.QPushButton("Edit")
