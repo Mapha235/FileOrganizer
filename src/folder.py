@@ -68,30 +68,39 @@ class Folder:
 
     def move(self):
         keyword_list = self.split_keywords()
-        files = []
-        counter = 0
+        # files = [os.path.join(self.src_dir, file) for file in os.listdir(self.src_dir) if os.path.isfile(file)]
+        self.files = [file for file in os.listdir(self.src_dir) if os.path.isfile(os.path.join(self.src_dir, file))]
+        files_moved = 0
         for it in keyword_list:
-            files = glob.glob(os.path.join(self.src_dir, f"*{it}*"))
-            counter += len(files)
-            for data in files:
+            matching_files = [file for file in self.files if it in file]
+            matching_files = [os.path.join(self.src_dir, file) for file in matching_files]
+            # files = glob.glob(os.path.join(self.src_dir, f"*{it}*"))
+            files_moved += len(matching_files)
+            for data in matching_files:
+
                 try:
                     shutil.copy(data, self.dst_dir)
                 except shutil.Error:
                     print(f"Error {data} already exists.")
-        return counter
+        return files_moved
 
     def remove(self):
         queue = []
         keyword_list = self.split_keywords()
 
         for it in keyword_list:
-            for data in glob.glob(os.path.join(self.src_dir, f"*{it}*")):
+            matching_files = [file for file in self.files if it in file]
+            matching_files = [os.path.join(self.src_dir, file) for file in matching_files]
+            for data in matching_files:
                 try:
                     os.unlink(data)
                 except shutil.Error as e:
                     print(f"Fail: {e}")
-                except PermissionError as e:
+                except PermissionError:
                     queue.append(data)
+                except FileNotFoundError:
+                    None
+        self.files.clear()
 
         while len(queue) != 0:
             for entry in queue:

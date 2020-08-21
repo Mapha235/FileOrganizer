@@ -273,7 +273,7 @@ class TheWindow(QWidget):
     def run_task(self):
         files_moved = 0
         for it in self.entries:
-            if it.get_check_box():
+            if it.get_check_box():                
                 temp = it.script.move()
                 files_moved += temp
 
