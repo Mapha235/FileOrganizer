@@ -81,7 +81,7 @@ class TheWindow(QWidget):
 
         self.initFuncs()
         self.initUI()
-        self.button_handler()
+        self.handle_signals()
 
     def initUI(self):
         self.setWindowTitle("File Organizer")
@@ -207,7 +207,7 @@ class TheWindow(QWidget):
             it.send_id2.connect(self.adjust_buttons)
             it.files_moved_signal.connect(self.message)
 
-    def button_handler(self):
+    def handle_signals(self):
         self.run_script_btn.clicked.connect(self.run_task)
         self.shortcut.activated.connect(self.run_task)
         self.create_entry_btn.clicked.connect(self.openEntry)

@@ -10,7 +10,6 @@ class Settings(QWidget):
     def __init__(self, x, y, language_mode: int, color_mode: int, is_bg4: bool, groot: str):
         super(Settings, self).__init__()
         self.__class__.toggle = not self.__class__.toggle
-
         self.x = x
         self.y = y
         self.my_width = self.frameGeometry().width()
@@ -62,7 +61,7 @@ class Settings(QWidget):
             self.radio_dark.setChecked(True)
 
         self.initUI()
-        self.button_handler()
+        self.handle_signals()
 
     def initUI(self):
         self.setWindowTitle("Settings")
@@ -105,7 +104,7 @@ class Settings(QWidget):
         self.height = self.frameGeometry().height()
         self.setGeometry(x, y, self.width, self.height)
 
-    def button_handler(self):
+    def handle_signals(self):
         if self.default.isChecked():
             self.bgs.setEnabled(False)
 

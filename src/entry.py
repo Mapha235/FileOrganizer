@@ -2,6 +2,7 @@ from main import shorten_path
 from stylesheets import *
 
 class Entry(QGroupBox):
+    is_applied = False
     clicked_signal = pyqtSignal(list, list, list, list, str)
     send_id = pyqtSignal(int)
     send_id2 = pyqtSignal(int)
@@ -21,14 +22,14 @@ class Entry(QGroupBox):
 
         self.src = QLabel()
         self.dst = QLabel()
-        self.keywords = QLineEdit()
+        self.keywords_line_edit = QLineEdit()
 
         short_src_path = shorten_path(src, 29)
         short_dst_path = shorten_path(dst, 29)
 
         self.src.setText(short_src_path)
         self.dst.setText(short_dst_path)
-        self.keywords.insert(keyw)
+        self.keywords_line_edit.insert(keyw)
 
         self.move_btn = QtWidgets.QPushButton()
         self.edit_btn = QtWidgets.QPushButton("Edit")
@@ -43,12 +44,12 @@ class Entry(QGroupBox):
         self.entry_list.append(self.src)
         self.entry_list.append(self.move_btn)
         self.entry_list.append(self.dst)
-        self.entry_list.append(self.keywords)
+        self.entry_list.append(self.keywords_line_edit)
         self.entry_list.append(self.edit_btn)
         self.entry_list.append(self.delete_btn)
 
         self.initUI()
-        self.button_handler()
+        self.handle_signals()
 
     def __del__(self):
         self.send_id.emit(self.my_id)
@@ -83,10 +84,12 @@ class Entry(QGroupBox):
         self.createBoxLayout()
         self.setStyleSheet(entry_layout + "color: black;")
 
-    def button_handler(self):
+    def handle_signals(self):
         self.move_btn.clicked.connect(self.run_task)
         self.edit_btn.clicked.connect(self.editKeywords)
         self.delete_btn.clicked.connect(self.__del__)
+        # self.keywords_line_edit.returnPressed.connect(self.editKeywords)
+
 
     def run_task(self):
         files_moved = self.script.move()
@@ -104,20 +107,18 @@ class Entry(QGroupBox):
         self.setLayout(layout)
 
     def editKeywords(self):
-        self.keywords.setReadOnly(False)
-        self.keywords.setFocus(QtCore.Qt.MouseFocusReason)
-        self.edit_btn.setText("Apply")
-        self.keywords.setStyleSheet("background-color: rgba(0,0,0,0.0);")
-        self.script.set_keywords(self.keywords.text())
-        self.edit_btn.clicked.connect(self.applyKeywords)
-
-    def applyKeywords(self):
-        self.keywords.setReadOnly(True)
-        self.edit_btn.setText("Edit")
-        self.keywords.setStyleSheet(entry_layout + "color: black;")
-        self.script.set_keywords(self.keywords.text())
-        self.edit_btn.clicked.connect(self.editKeywords)
-        self.mousePressEvent(self.clicked)
+        self.is_applied = not self.is_applied
+        if self.is_applied == True:
+            self.keywords_line_edit.setFocus(QtCore.Qt.MouseFocusReason)
+            self.keywords_line_edit.setReadOnly(False)
+            self.edit_btn.setText("Apply")
+            self.keywords_line_edit.setStyleSheet("background-color: rgba(0,0,0,0.0);")
+        else: 
+            self.keywords_line_edit.setReadOnly(True)
+            self.edit_btn.setText("Edit")
+            self.keywords_line_edit.setStyleSheet(entry_layout + "color: black;")
+            self.script.set_keywords(self.keywords_line_edit.text())
+            self.mousePressEvent(self.clicked) 
 
     def mousePressEvent(self, a0: QtGui.QMouseEvent):
         src_data = self.script.get_src_content()
