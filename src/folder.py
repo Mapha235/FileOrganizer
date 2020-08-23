@@ -18,7 +18,6 @@ class Folder:
         except OSError:
             if is_src_dir:
                 print("Source-Directory not found.")
-                return
             else:
                 self.create_directory()
 
@@ -68,13 +67,11 @@ class Folder:
 
     def move(self):
         keyword_list = self.split_keywords()
-        # files = [os.path.join(self.src_dir, file) for file in os.listdir(self.src_dir) if os.path.isfile(file)]
         self.files = [file for file in os.listdir(self.src_dir) if os.path.isfile(os.path.join(self.src_dir, file))]
         files_moved = 0
         for it in keyword_list:
             matching_files = [file for file in self.files if it in file]
             matching_files = [os.path.join(self.src_dir, file) for file in matching_files]
-            # files = glob.glob(os.path.join(self.src_dir, f"*{it}*"))
             files_moved += len(matching_files)
             for data in matching_files:
 
@@ -94,21 +91,20 @@ class Folder:
             for data in matching_files:
                 try:
                     os.unlink(data)
-                except shutil.Error as e:
-                    print(f"Fail: {e}")
                 except PermissionError:
                     queue.append(data)
+                    # print(f"appended: {data}")
                 except FileNotFoundError:
+                    # print(f"filenotfound: {data}")
                     None
         self.files.clear()
-
         while len(queue) != 0:
             for entry in queue:
                 try:
                     os.unlink(entry)
                 except shutil.Error as e:
                     print(f"Fail: {e}")
-                except PermissionError:
+                except PermissionError as e:
                     None
                 except FileNotFoundError:
                     queue.pop()

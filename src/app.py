@@ -34,6 +34,10 @@ class TheWindow(QWidget):
         self.run_script_btn = QtWidgets.QPushButton(self)
         self.dst_btn = QtWidgets.QPushButton("Destination Content")
         self.src_btn = QtWidgets.QPushButton("Source Content")
+        
+        self.files_moved_btn = QtWidgets.QPushButton()
+        # self.files_moved_btn.setAlignment(Qt.AlignCenter)
+        self.files_moved_btn.hide()
 
         # list of all btns
         self.btns = []
@@ -43,6 +47,7 @@ class TheWindow(QWidget):
         self.btns.append(self.run_script_btn)
         self.btns.append(self.src_btn)
         self.btns.append(self.dst_btn)
+        self.btns.append(self.files_moved_btn)
 
         self.src_table = QTableWidget()
         self.src_table.setColumnCount(1)
@@ -61,10 +66,6 @@ class TheWindow(QWidget):
         header2.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
 
         self.entry_box = QGroupBox(self)
-
-        self.files_moved_label = QtWidgets.QLabel()
-        self.files_moved_label.setAlignment(Qt.AlignCenter)
-        self.files_moved_label.hide()
 
         try:
             self.root = values[0][0]
@@ -187,7 +188,7 @@ class TheWindow(QWidget):
         self.src_btn.setStyleSheet(self.theme + "font-size: 10pt")
         self.dst_btn.setStyleSheet(self.theme + "font-size: 10pt")
 
-        self.files_moved_label.setStyleSheet(self.theme)
+        self.files_moved_btn.setStyleSheet(self.theme + "font-size: 8pt")
 
         self.src_table.setStyleSheet(
             self.theme + "font-size: 10pt; color: black;")
@@ -262,25 +263,26 @@ class TheWindow(QWidget):
             # IDEA: on click: send id of the entry and use it to access self.entries and entry.func()
 
     def message(self, files):
-        self.files_moved_label.show()
+        self.files_moved_btn.show()
         if files == 1:
             msg = "1 file moved."
         else:
             msg = f"{files} files moved."
 
-        self.files_moved_label.setText(msg)
+        self.files_moved_btn.setText(msg)
 
     def run_task(self):
         files_moved = 0
+        checked_entries = []
         for it in self.entries:
             if it.get_check_box():                
+                checked_entries.append(it)
                 temp = it.script.move()
                 files_moved += temp
 
-        for it in self.entries:
-            if it.get_check_box():
-                it.script.remove()
-                it.mousePressEvent(it.clicked)
+        for it in checked_entries:
+            it.script.remove()
+            it.mousePressEvent(it.clicked)
 
         self.message(files_moved)
 
@@ -374,7 +376,7 @@ class TheWindow(QWidget):
         layout_grid.addWidget(self.scroll, 1, 0, 1, 9)
 
         layout_grid.addWidget(self.src_btn, 2, 0, 1, 4)
-        layout_grid.addWidget(self.files_moved_label, 2, 4, 1, 1)
+        layout_grid.addWidget(self.files_moved_btn, 2, 4, 1, 1)
         layout_grid.addWidget(self.dst_btn, 2, 5, 1, 4)
 
         layout_grid.addWidget(self.src_table, 3, 0, 1, 4)
@@ -385,6 +387,8 @@ class TheWindow(QWidget):
     def eventFilter(self, obj, event):
         if obj == self.src_btn or obj == self.dst_btn:
             font_size = "font-size:10pt;"
+        elif obj == self.files_moved_btn:
+            font_size = "font-size:8pt;"
         else:
             font_size = "font-size:14pt;"
 
@@ -492,6 +496,8 @@ class TheWindow(QWidget):
                 btn.setFixedSize(button_size, button_size)
             elif btn == self.create_entry_btn:
                 btn.setFixedHeight(button_size)
+            elif btn == self.files_moved_btn:
+                btn.setFixedSize(self.run_script_btn.frameGeometry().width(), self.src_btn.frameGeometry().height())
         icon_size = self.settings_btn.size().height() * 2 / 3
         # self.settings_btn.setIconSize(QtCore.QSize(icon_size, icon_size))
         self.settings_btn.setIconSize(QtCore.QSize(icon_size, icon_size))

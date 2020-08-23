@@ -1,6 +1,7 @@
 from main import shorten_path
 from stylesheets import *
 
+
 class Entry(QGroupBox):
     is_applied = False
     clicked_signal = pyqtSignal(list, list, list, list, str)
@@ -18,7 +19,7 @@ class Entry(QGroupBox):
         super(Entry, self).__init__()
 
         self.script = Folder(src, dst, keyw)
-        #self.setFixedHeight(27)
+        # self.setFixedHeight(27)
 
         self.src = QLabel()
         self.dst = QLabel()
@@ -80,16 +81,14 @@ class Entry(QGroupBox):
         self.delete_btn.setIcon(QtGui.QIcon("./data/error.png"))
         self.move_btn.setIcon(QtGui.QIcon("./data/arrow2.png"))
 
-
         self.createBoxLayout()
         self.setStyleSheet(entry_layout + "color: black;")
 
     def handle_signals(self):
         self.move_btn.clicked.connect(self.run_task)
         self.edit_btn.clicked.connect(self.editKeywords)
-        self.delete_btn.clicked.connect(self.__del__)
         # self.keywords_line_edit.returnPressed.connect(self.editKeywords)
-
+        self.delete_btn.clicked.connect(self.__del__)
 
     def run_task(self):
         files_moved = self.script.move()
@@ -112,13 +111,15 @@ class Entry(QGroupBox):
             self.keywords_line_edit.setFocus(QtCore.Qt.MouseFocusReason)
             self.keywords_line_edit.setReadOnly(False)
             self.edit_btn.setText("Apply")
-            self.keywords_line_edit.setStyleSheet("background-color: rgba(0,0,0,0.0);")
-        else: 
+            self.keywords_line_edit.setStyleSheet(
+                "background-color: rgba(0,0,0,0.0);")
+        else:
             self.keywords_line_edit.setReadOnly(True)
             self.edit_btn.setText("Edit")
-            self.keywords_line_edit.setStyleSheet(entry_layout + "color: black;")
             self.script.set_keywords(self.keywords_line_edit.text())
-            self.mousePressEvent(self.clicked) 
+            self.keywords_line_edit.setStyleSheet(
+                entry_layout + "color: black;")
+            self.mousePressEvent(self.clicked)
 
     def mousePressEvent(self, a0: QtGui.QMouseEvent):
         src_data = self.script.get_src_content()

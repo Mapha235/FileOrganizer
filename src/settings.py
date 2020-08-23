@@ -1,6 +1,5 @@
 from stylesheets import *
 
-
 class Settings(QWidget):
     toggle = False
     design_signal = pyqtSignal(int, str)
@@ -36,12 +35,11 @@ class Settings(QWidget):
         self.radio_dark = QtWidgets.QRadioButton()
         self.radio_light = QtWidgets.QRadioButton()
 
-
-
         self.options = QtWidgets.QGroupBox("Options")
         self.run_in_background = QCheckBox("Run in Background.")
         self.enable_shortcut = QCheckBox("Enable Shortcut. (Ctrl+M)")
-        self.auto_replace = QCheckBox("Enable replace existing file in destination\ndirectory.")
+        self.auto_replace = QCheckBox(
+            "Enable replace existing file in destination\ndirectory.")
 
         if color_mode == 0:
             self.default.setChecked(True)
@@ -77,12 +75,12 @@ class Settings(QWidget):
         self.bg_dark.setPixmap(pix_dark)
         self.bg_dark.setFixedSize(100, 60)
         self.bg_dark.setScaledContents(True)
-        #self.bg_dark.installEventFilter(self)
+        # self.bg_dark.installEventFilter(self)
 
         self.bg_light.setPixmap(pix_light)
         self.bg_light.setFixedSize(100, 60)
         self.bg_light.setScaledContents(True)
-        #self.bg_light.installEventFilter(self)
+        # self.bg_light.installEventFilter(self)
 
         if self.default.isChecked():
             self.bgs.setEnabled(False)
