@@ -1,4 +1,4 @@
-from main import shorten_path
+from main import shortenPath
 from stylesheets import *
 
 
@@ -8,6 +8,7 @@ class Entry(QGroupBox):
     send_id = pyqtSignal(int)
     send_id2 = pyqtSignal(int)
     files_moved_signal = pyqtSignal(int)
+    run_task_signal = pyqtSignal()
     id = 0
 
     def __init__(self, root: str, src, dst, keyw, b=True):
@@ -25,8 +26,8 @@ class Entry(QGroupBox):
         self.dst = QLabel()
         self.keywords_line_edit = QLineEdit()
 
-        short_src_path = shorten_path(src, 29)
-        short_dst_path = shorten_path(dst, 29)
+        short_src_path = shortenPath(src, 29)
+        short_dst_path = shortenPath(dst, 29)
 
         self.src.setText(short_src_path)
         self.dst.setText(short_dst_path)
@@ -49,9 +50,11 @@ class Entry(QGroupBox):
         self.entry_list.append(self.edit_btn)
         self.entry_list.append(self.delete_btn)
 
-        self.initUI()
-        self.handle_signals()
+        self.observer = QtCore.QFileSystemWatcher([self.script.getSrcDir()])
 
+        self.initUI()
+        self.signalHandler()
+        
     def __del__(self):
         self.send_id.emit(self.my_id)
         self.__class__.id -= 1
@@ -60,7 +63,7 @@ class Entry(QGroupBox):
     def adjustID(self):
         self.my_id -= 1
 
-    def get_check_box(self):
+    def getCheckBox(self):
         return self.check_box.isChecked()
 
     def initUI(self):
@@ -84,13 +87,14 @@ class Entry(QGroupBox):
         self.createBoxLayout()
         self.setStyleSheet(entry_layout + "color: black;")
 
-    def handle_signals(self):
-        self.move_btn.clicked.connect(self.run_task)
+    def signalHandler(self):
+        self.move_btn.clicked.connect(self.runTask)
         self.edit_btn.clicked.connect(self.editKeywords)
         # self.keywords_line_edit.returnPressed.connect(self.editKeywords)
         self.delete_btn.clicked.connect(self.__del__)
+        self.observer.directoryChanged.connect(lambda: self.run_task_signal.emit())
 
-    def run_task(self):
+    def runTask(self):
         files_moved = self.script.move()
         self.script.remove()
         self.files_moved_signal.emit(files_moved)
@@ -116,14 +120,19 @@ class Entry(QGroupBox):
         else:
             self.keywords_line_edit.setReadOnly(True)
             self.edit_btn.setText("Edit")
-            self.script.set_keywords(self.keywords_line_edit.text())
+            self.script.setKeywords(self.keywords_line_edit.text())
             self.keywords_line_edit.setStyleSheet(
                 entry_layout + "color: black;")
             self.mousePressEvent(self.clicked)
 
+    def sendRunSignal(self):
+        # self.keywords_line_edit.changeEvent
+        return
+        
+
     def mousePressEvent(self, a0: QtGui.QMouseEvent):
-        src_data = self.script.get_src_content()
-        dst_data = self.script.get_dst_content()
+        src_data = self.script.getSrcContent()
+        dst_data = self.script.getDstContent()
         self.clicked_signal.emit(src_data[0], src_data[1],
                                  dst_data[0], dst_data[1],
                                  self.script.keywords)

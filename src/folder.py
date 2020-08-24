@@ -19,32 +19,32 @@ class Folder:
             if is_src_dir:
                 print("Source-Directory not found.")
             else:
-                self.create_directory()
+                self.createDirectory()
 
-    def get_src_dir(self):
+    def getSrcDir(self):
         return self.src_dir
 
-    def get_dst_dir(self):
+    def getDstDir(self):
         return self.dst_dir
 
-    def get_src_content(self):
+    def getSrcContent(self):
         lst = list(os.walk(self.src_dir))[0][:]
         lst = list(lst[1:3])
         return lst
 
-    def get_dst_content(self):
+    def getDstContent(self):
         lst = list(os.walk(self.dst_dir))[0][:]
         lst = list(lst[1:3])
         return lst
 
 
-    def set_keywords(self, k):
+    def setKeywords(self, k):
         self.keywords = k
 
-    def get_keywords(self):
+    def getKeywords(self):
         return self.keywords
 
-    def create_directory(self):
+    def createDirectory(self):
         while 1:
             inp = input("Destination-Directory not found. Create missing Directory? [y/n]")
             if inp == 'y':
@@ -57,7 +57,7 @@ class Folder:
             else:
                 continue
 
-    def split_keywords(self):
+    def splitKeywords(self):
         keywords = self.keywords.split("//")
         return keywords
 
@@ -66,7 +66,7 @@ class Folder:
         return path.replace("/", "\\")
 
     def move(self):
-        keyword_list = self.split_keywords()
+        keyword_list = self.splitKeywords()
         self.files = [file for file in os.listdir(self.src_dir) if os.path.isfile(os.path.join(self.src_dir, file))]
         files_moved = 0
         for it in keyword_list:
@@ -83,7 +83,7 @@ class Folder:
 
     def remove(self):
         queue = []
-        keyword_list = self.split_keywords()
+        keyword_list = self.splitKeywords()
 
         for it in keyword_list:
             matching_files = [file for file in self.files if it in file]

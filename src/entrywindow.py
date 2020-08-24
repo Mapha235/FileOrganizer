@@ -1,4 +1,4 @@
-from main import shorten_path
+from main import shortenPath
 from stylesheets import *
 
 
@@ -34,7 +34,7 @@ class EntryWindow(QWidget):
         self.dst_btn.setObjectName("1")
 
         self.add_btn = QtWidgets.QPushButton("Add", self)
-        self.add_btn.clicked.connect(self.send_data)
+        self.add_btn.clicked.connect(self.sendData)
         self.cancel_btn = QtWidgets.QPushButton("Cancel", self)
 
         self.btns = []
@@ -47,7 +47,7 @@ class EntryWindow(QWidget):
 
         self.keyword_text_field = QtWidgets.QLineEdit(self)
         self.keyword_text_field.setPlaceholderText("Enter keyword(s)")
-        self.keyword_text_field.returnPressed.connect(self.send_data)
+        self.keyword_text_field.returnPressed.connect(self.sendData)
         self.initUI()
 
     def initUI(self):
@@ -93,14 +93,14 @@ class EntryWindow(QWidget):
             obj.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         elif event.type() == QtCore.QEvent.MouseButtonRelease and event.button() == QtCore.Qt.LeftButton:
             if obj is self.src_btn or obj is self.dst_btn:
-                self.open_dialog_box(obj)
+                self.openDialogBox(obj)
             elif obj is self.cancel_btn:
                 self.close()
             elif obj is self.add_btn:
-                self.send_data()
+                self.sendData()
         return super(EntryWindow, self).eventFilter(obj, event)
 
-    def correct_canceled(self, btn: QtWidgets.QPushButton):
+    def correctCanceled(self, btn: QtWidgets.QPushButton):
         index = int(btn.objectName())
         name = "Destination"
         if index == 0:
@@ -111,7 +111,7 @@ class EntryWindow(QWidget):
         btn.setText(f"Browse {name} Folder")
         return temp
 
-    def open_dialog_box(self, btn: QtWidgets.QPushButton):
+    def openDialogBox(self, btn: QtWidgets.QPushButton):
         path_name = QFileDialog.getExistingDirectory(self)
 
         # TODO: regular expressions
@@ -121,32 +121,32 @@ class EntryWindow(QWidget):
         # saves the selected path to the respective place in data
         index = int(btn.objectName())
         self.data[index] = path_name
-        self.correct_canceled(btn)
+        self.correctCanceled(btn)
 
         if path_name != "":
-            shortened_path_name = shorten_path(path_name, 27)
+            shortened_path_name = shortenPath(path_name, 27)
             if shortened_path_name != "...":
                 btn.setText(shortened_path_name)
 
-    def send_data(self):
+    def sendData(self):
         if self.keyword_text_field.text() != "":
             self.data[2] = self.keyword_text_field.text()
 
-        if self.check_integrity():
+        if self.checkIntegrity():
             self.send_signal.emit(self.data)
             self.close()
 
     # checks whether src and dst folder are the same
-    def is_equal(self):
+    def isEqual(self):
         if self.src_btn.text() == self.dst_btn.text():
             return True
         return False
 
-    def check_integrity(self):
+    def checkIntegrity(self):
         msg = QMessageBox()
         msg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         if not any(x is None for x in self.data):
-            if self.is_equal():
+            if self.isEqual():
                 msg.setWindowTitle("Error")
                 msg.setIcon(QMessageBox.Critical)
                 msg.setText("Error: Source and Destination Folder cannot be the same.")

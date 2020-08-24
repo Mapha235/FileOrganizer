@@ -3,7 +3,7 @@ from stylesheets import *
 from entrywindow import EntryWindow
 from entry import Entry
 from settings import Settings
-
+from history import History
 
 class TheWindow(QWidget):
     def __init__(self, values: list):
@@ -72,33 +72,22 @@ class TheWindow(QWidget):
             self.bg_path = values[0][2]
 
             self.theme = dark
-            self.set_theme(int(values[0][1]), self.bg_path)
+            self.setTheme(int(values[0][1]), self.bg_path)
         except IndexError:
             self.theme = default
             self.bg_path = ""
         values.pop(0)
 
-        self.analyze_values(values)
+        self.analyzeValues(values)
 
         self.initFuncs()
         self.initUI()
-        self.handle_signals()
+        self.signalHandler()
 
     def initUI(self):
         self.setWindowTitle("File Organizer")
         self.setGeometry(self.x, self.y, self.my_width, self.my_height)
         self.bg = QImage(self.bg_path)
-        # self.setFixedSize(self.my_width, self.my_height)
-
-        # Design of the settings btn
-        # self.settings_btn.setFixedSize(70, 70)
-
-        # self.create_entry_btn.setFixedHeight(70)
-
-        # self.src_btn.setFixedWidth(self.src_table.frameGeometry().width())
-        # print(self.src_table.frameGeometry().width())
-        # self.dst_btn.setFixedWidth(self.src_table.frameGeometry().width())
-        # print(self.src_table.frameGeometry().width())
 
         for btn in self.btns:
             # used for mouse hover event
@@ -112,32 +101,29 @@ class TheWindow(QWidget):
         self.createBoxLayout()
 
         for it in self.entries:
-            # entry_width = (self.frameGeometry().width() - 20)
-            # entry_height = self.entry_box.frameGeometry().height() / 5
-            # it.setFixedSize(entry_width, entry_height)
             self.entry_box_layout.addWidget(it)
 
-        self.update_theme()
+        self.updateTheme()
 
         self.show()
 
-    def save_state(self):
+    def saveState(self):
         file = open(f"{self.root}/data/save.txt", "w")
         file.write(f"{self.root}|")
-        file.write(f"{self.get_theme()}|")
+        file.write(f"{self.getTheme()}|")
         file.write(f"{self.bg_path}|\n")
         file.close()
         file = open(f"{self.root}/data/save.txt", "a")
 
         for it in self.entries:
             file.write(f"{it.my_id}|"
-                       f"{it.script.get_src_dir()}|"
-                       f"{it.script.get_dst_dir()}|"
-                       f"{it.script.get_keywords()}|"
-                       f"{it.get_check_box()}|\n")
+                       f"{it.script.getSrcDir()}|"
+                       f"{it.script.getDstDir()}|"
+                       f"{it.script.getKeywords()}|"
+                       f"{it.getCheckBox()}|\n")
         file.close()
 
-    def update_theme(self):
+    def updateTheme(self):
         self.settings_icon = QtGui.QIcon("./data/einstellungen.png")
         self.arrow_icon = QtGui.QIcon("./data/arrow2.png")
 
@@ -196,27 +182,30 @@ class TheWindow(QWidget):
             self.theme + "font-size: 10pt; color: black;")
         self.entry_box.setStyleSheet(self.theme)
 
-    def analyze_values(self, values: list):
+    def analyzeValues(self, values: list):
         for it in values:
             self.entries.append(
                 Entry(self.root, it[1], it[2], it[3], it[4] == "True"))
 
     def initFuncs(self):
         for it in self.entries:
-            it.clicked_signal.connect(self.show_content)
-            it.send_id.connect(self.organize_entries)
-            it.send_id2.connect(self.adjust_buttons)
+            it.clicked_signal.connect(self.showContent)
+            it.send_id.connect(self.organizeEntries)
+            it.send_id2.connect(self.adjustButtons)
             it.files_moved_signal.connect(self.message)
+            # it.run_task_signal.connect(self.runTask)
+            
 
-    def handle_signals(self):
-        self.run_script_btn.clicked.connect(self.run_task)
-        self.shortcut.activated.connect(self.run_task)
+    def signalHandler(self):
+        self.run_script_btn.clicked.connect(self.runTask)
+        self.shortcut.activated.connect(self.runTask)
         self.create_entry_btn.clicked.connect(self.openEntry)
-        self.settings_btn.clicked.connect(self.open_settings)
+        self.settings_btn.clicked.connect(self.openSettings)
         self.src_btn.clicked.connect(
             lambda: os.system(f"explorer {self.src_path}"))
         self.dst_btn.clicked.connect(
             lambda: os.system(f"explorer {self.dst_path}"))
+        self.files_moved_btn.clicked.connect(self.showHistory)
 
     def createBoxLayout(self):
         self.entry_box_layout.setAlignment(Qt.AlignTop)
@@ -224,10 +213,10 @@ class TheWindow(QWidget):
 
         self.entry_box.setLayout(self.entry_box_layout)
 
-    def has_duplicate(self, s: str, t: str, k: str):
+    def hasDuplicate(self, s: str, t: str, k: str):
         msg = QMessageBox()
         for it in self.entries:
-            if it.script.get_src_dir() == s and it.script.get_dst_dir() == t:
+            if it.script.getSrcDir() == s and it.script.getDstDir() == t:
                 msg.setWindowTitle("Error")
                 msg.setText(
                     "Error: An identical entry already exists.\nMerge with existing entry?")
@@ -236,12 +225,12 @@ class TheWindow(QWidget):
                 msg.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
                 ret = msg.exec()
                 if ret == QMessageBox.Yes:
-                    if not it.keywords.text():
+                    if not it.keywords_line_edit.text():
                         temp = k
                     else:
                         temp = f"//{k}"
-                    it.script.set_keywords(it.script.get_keywords() + temp)
-                    it.keywords.insert(temp)
+                    it.script.setKeywords(it.script.getKeywords() + temp)
+                    it.keywords_line_edit.insert(temp)
                 elif ret == QMessageBox.No:
                     pass
                 return True
@@ -252,14 +241,14 @@ class TheWindow(QWidget):
     def parse(self, data: list):
         if len(data) < 3:
             print("Error!")
-        elif not self.has_duplicate(data[0], data[1], data[2]):
+        elif not self.hasDuplicate(data[0], data[1], data[2]):
             entry = Entry(self.root, data[0], data[1], data[2])
             self.entries.append(entry)
             self.entry_box_layout.addWidget(entry)
 
-            entry.clicked_signal.connect(self.show_content)
-            entry.send_id.connect(self.organize_entries)
-            entry.send_id2.connect(self.adjust_buttons)
+            entry.clicked_signal.connect(self.showContent)
+            entry.send_id.connect(self.organizeEntries)
+            entry.send_id2.connect(self.adjustButtons)
             # IDEA: on click: send id of the entry and use it to access self.entries and entry.func()
 
     def message(self, files):
@@ -271,11 +260,11 @@ class TheWindow(QWidget):
 
         self.files_moved_btn.setText(msg)
 
-    def run_task(self):
+    def runTask(self):
         files_moved = 0
         checked_entries = []
         for it in self.entries:
-            if it.get_check_box():                
+            if it.getCheckBox():                
                 checked_entries.append(it)
                 temp = it.script.move()
                 files_moved += temp
@@ -286,12 +275,16 @@ class TheWindow(QWidget):
 
         self.message(files_moved)
 
-    def organize_entries(self, index):
+    def organizeEntries(self, index):
         for i in range(index + 1, len(self.entries)):
             self.entries[i].adjustID()
         self.entries.pop(index)
 
-    def show_content(self, src_folders: list, src_files: list, dst_folders: list, dst_files: list, keywords: str):
+    def showHistory(self):
+        self.history_window = History(self.pos().x() + 10, self.pos().y()+ 70, self.getTheme(), self.bg_path)
+        self.history_window.show()
+
+    def showContent(self, src_folders: list, src_files: list, dst_folders: list, dst_files: list, keywords: str):
         self.src_table.setRowCount(len(src_folders) + len(src_files))
 
         self.dst_table.setRowCount(len(dst_folders) + len(dst_files))
@@ -349,17 +342,17 @@ class TheWindow(QWidget):
                 if self.theme == dark:
                     temp.setForeground(QBrush(QColor(255, 255, 255)))
 
-    def adjust_buttons(self, index):
+    def adjustButtons(self, index):
         entry = self.entries[index]
-        s = entry.script.get_src_dir()
-        t = entry.script.get_dst_dir()
+        s = entry.script.getSrcDir()
+        t = entry.script.getDstDir()
         self.src_btn.setText(entry.src.text())
         self.dst_btn.setText(entry.dst.text())
         self.src_path = entry.script.backslashes(s)
         self.dst_path = entry.script.backslashes(t)
 
     def openEntry(self):
-        self.entry_window = EntryWindow(self.pos().x() + (self.width() / 4), self.pos().y() + 50, self.get_theme(),
+        self.entry_window = EntryWindow(self.pos().x() + (self.width() / 4), self.pos().y() + 50, self.getTheme(),
                                         self.bg_path)
         #self.entry_window.setFixedSize(self.my_width / 2, self.my_height / 5)
         self.entry_window.show()
@@ -430,9 +423,9 @@ class TheWindow(QWidget):
 
         return super(TheWindow, self).eventFilter(obj, event)
 
-    def open_settings(self):
+    def openSettings(self):
         self.settings_page = Settings(self.pos().x() + 10, self.pos().y() + 120, self.language is "ENG",
-                                      self.get_theme(), self.bg_path == f"{self.root}/data/bg4.jpg", self.root)
+                                      self.getTheme(), self.bg_path == f"{self.root}/data/bg4.jpg", self.root)
 
         settings_win_width = self.my_width / 3
         settings_win_height = self.my_height - 150
@@ -449,16 +442,16 @@ class TheWindow(QWidget):
             self.settings_page.show()
         else:
             self.settings_page.closeEvent(self.settings_page.close)
-        self.settings_page.design_signal.connect(self.set_theme)
+        self.settings_page.design_signal.connect(self.setTheme)
 
-    def get_theme(self) -> int:
+    def getTheme(self) -> int:
         if self.theme is dark:
             return 1
         elif self.theme is light:
             return 2
         return 0
 
-    def set_theme(self, color_mode: int, bg_path: str):
+    def setTheme(self, color_mode: int, bg_path: str):
         if color_mode == 0:
             self.theme = default
         elif color_mode == 1:
@@ -469,10 +462,10 @@ class TheWindow(QWidget):
         self.src_table.setRowCount(0)
         self.dst_table.setRowCount(0)
         self.bg_path = bg_path
-        self.update_theme()
+        self.updateTheme()
 
     def closeEvent(self, a0: QtGui.QCloseEvent):
-        self.save_state()
+        self.saveState()
         if self.settings_page is not None:
             self.settings_page.close()
         if self.entry_window is not None:
@@ -487,7 +480,7 @@ class TheWindow(QWidget):
         self.my_height = self.frameGeometry().height()
         self.my_width = self.frameGeometry().width()
 
-        self.update_theme()
+        self.updateTheme()
 
         button_size = (self.my_width - (self.my_width % 100) - 100) / 10
 

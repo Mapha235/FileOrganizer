@@ -10,7 +10,7 @@ def makeScrollable(widget):
     return scroll
 
 
-def shorten_path(path_name, length):
+def shortenPath(path_name, length):
     shortened_path_name = ""
 
     folders = path_name.split('/')
@@ -35,7 +35,7 @@ def shorten_path(path_name, length):
 
     return "..." + shortened_path_name
 
-def read_file():
+def readFile():
     path = "C:/Dev/python/FileOrganizer"
     name = "save.txt"
     try:
@@ -59,7 +59,7 @@ def read_file():
 
 def main():
     app = QApplication(sys.argv)
-    win = TheWindow(read_file())
+    win = TheWindow(readFile())
 
     sys.exit(app.exec_())
 

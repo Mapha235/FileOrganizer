@@ -59,7 +59,7 @@ class Settings(QWidget):
             self.radio_dark.setChecked(True)
 
         self.initUI()
-        self.handle_signals()
+        self.signalHandler()
 
     def initUI(self):
         self.setWindowTitle("Settings")
@@ -84,11 +84,11 @@ class Settings(QWidget):
 
         if self.default.isChecked():
             self.bgs.setEnabled(False)
-        self.default.toggled.connect(self.toggle_bg_box)
+        self.default.toggled.connect(self.toggleBgBox)
 
         self.createLayout()
 
-    def toggle_bg_box(self):
+    def toggleBgBox(self):
         if self.default.isChecked():
             self.bgs.setEnabled(False)
         else:
@@ -102,7 +102,7 @@ class Settings(QWidget):
         self.height = self.frameGeometry().height()
         self.setGeometry(x, y, self.width, self.height)
 
-    def handle_signals(self):
+    def signalHandler(self):
         if self.default.isChecked():
             self.bgs.setEnabled(False)
 
