@@ -36,7 +36,7 @@ def shortenPath(path_name, length):
     return "..." + shortened_path_name
 
 def readFile():
-    path = "C:/Dev/python/FileOrganizer"
+    path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
     name = "save.txt"
     try:
         file = open(f"{path}/data/{name}", "r")
@@ -60,7 +60,7 @@ def readFile():
 def main():
     app = QApplication(sys.argv)
     win = TheWindow(readFile())
-
+    
     sys.exit(app.exec_())
 
 

@@ -5,6 +5,7 @@ from entry import Entry
 from settings import Settings
 from history import History
 
+
 class TheWindow(QWidget):
     def __init__(self, values: list):
         super(TheWindow, self).__init__()
@@ -34,7 +35,7 @@ class TheWindow(QWidget):
         self.run_script_btn = QtWidgets.QPushButton(self)
         self.dst_btn = QtWidgets.QPushButton("Destination Content")
         self.src_btn = QtWidgets.QPushButton("Source Content")
-        
+
         self.files_moved_btn = QtWidgets.QPushButton()
         # self.files_moved_btn.setAlignment(Qt.AlignCenter)
         self.files_moved_btn.hide()
@@ -193,8 +194,7 @@ class TheWindow(QWidget):
             it.send_id.connect(self.organizeEntries)
             it.send_id2.connect(self.adjustButtons)
             it.files_moved_signal.connect(self.message)
-            # it.run_task_signal.connect(self.runTask)
-            
+            it.run_task_signal.connect(lambda: print("Changed"))
 
     def signalHandler(self):
         self.run_script_btn.clicked.connect(self.runTask)
@@ -264,7 +264,7 @@ class TheWindow(QWidget):
         files_moved = 0
         checked_entries = []
         for it in self.entries:
-            if it.getCheckBox():                
+            if it.getCheckBox():
                 checked_entries.append(it)
                 temp = it.script.move()
                 files_moved += temp
@@ -281,7 +281,8 @@ class TheWindow(QWidget):
         self.entries.pop(index)
 
     def showHistory(self):
-        self.history_window = History(self.pos().x() + 10, self.pos().y()+ 70, self.getTheme(), self.bg_path)
+        self.history_window = History(
+            self.pos().x() + 10, self.pos().y() + 70, self.getTheme(), self.bg_path)
         self.history_window.show()
 
     def showContent(self, src_folders: list, src_files: list, dst_folders: list, dst_files: list, keywords: str):
@@ -424,8 +425,12 @@ class TheWindow(QWidget):
         return super(TheWindow, self).eventFilter(obj, event)
 
     def openSettings(self):
-        self.settings_page = Settings(self.pos().x() + 10, self.pos().y() + 120, self.language is "ENG",
-                                      self.getTheme(), self.bg_path == f"{self.root}/data/bg4.jpg", self.root)
+        self.settings_page = Settings(self.pos().x() + 10, self.pos().y() + 120,
+                                      self.language is "ENG",
+                                      self.getTheme(),
+                                      self.bg_path == f"{self.root}/data/bg4.jpg",
+                                      True,
+                                      self.root)
 
         settings_win_width = self.my_width / 3
         settings_win_height = self.my_height - 150
@@ -490,7 +495,8 @@ class TheWindow(QWidget):
             elif btn == self.create_entry_btn:
                 btn.setFixedHeight(button_size)
             elif btn == self.files_moved_btn:
-                btn.setFixedSize(self.run_script_btn.frameGeometry().width(), self.src_btn.frameGeometry().height())
+                btn.setFixedSize(self.run_script_btn.frameGeometry(
+                ).width(), self.src_btn.frameGeometry().height())
         icon_size = self.settings_btn.size().height() * 2 / 3
         # self.settings_btn.setIconSize(QtCore.QSize(icon_size, icon_size))
         self.settings_btn.setIconSize(QtCore.QSize(icon_size, icon_size))

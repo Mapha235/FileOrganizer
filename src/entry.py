@@ -11,7 +11,7 @@ class Entry(QGroupBox):
     run_task_signal = pyqtSignal()
     id = 0
 
-    def __init__(self, root: str, src, dst, keyw, b=True):
+    def __init__(self, root: str, src, dst, keyw, isChecked=True):
         self.my_id = self.__class__.id
         self.__class__.id += 1
 
@@ -38,7 +38,7 @@ class Entry(QGroupBox):
         self.delete_btn = QtWidgets.QPushButton()
 
         self.check_box = QCheckBox()
-        self.check_box.setChecked(b)
+        self.check_box.setChecked(isChecked)
 
         self.entry_list = []
 
@@ -55,9 +55,9 @@ class Entry(QGroupBox):
         self.initUI()
         self.signalHandler()
         
-    def __del__(self):
-        self.send_id.emit(self.my_id)
+    def delete(self):
         self.__class__.id -= 1
+        self.send_id.emit(self.my_id)
         self.close()
 
     def adjustID(self):
@@ -75,7 +75,6 @@ class Entry(QGroupBox):
             elif type(x) is QtWidgets.QPushButton:
                 x.installEventFilter(self)
             elif type(x) is QLabel:
-                label_width = (self.frameGeometry().width() - 80) / 3
                 x.setFixedWidth(270)
 
         self.setFixedHeight(40)
@@ -91,7 +90,7 @@ class Entry(QGroupBox):
         self.move_btn.clicked.connect(self.runTask)
         self.edit_btn.clicked.connect(self.editKeywords)
         # self.keywords_line_edit.returnPressed.connect(self.editKeywords)
-        self.delete_btn.clicked.connect(self.__del__)
+        self.delete_btn.clicked.connect(self.delete)
         self.observer.directoryChanged.connect(lambda: self.run_task_signal.emit())
 
     def runTask(self):
@@ -126,8 +125,8 @@ class Entry(QGroupBox):
             self.mousePressEvent(self.clicked)
 
     def sendRunSignal(self):
-        # self.keywords_line_edit.changeEvent
-        return
+        if self.check_box.isChecked():
+            self.run_task_signal.emit()
         
 
     def mousePressEvent(self, a0: QtGui.QMouseEvent):

@@ -5,8 +5,9 @@ class Settings(QWidget):
     design_signal = pyqtSignal(int, str)
     bg_dark_clicked = pyqtSignal()
     bg_light_clicked = pyqtSignal()
+    options_signal = pyqtSignal(list)
 
-    def __init__(self, x, y, language_mode: int, color_mode: int, is_bg4: bool, groot: str):
+    def __init__(self, x, y, language_mode: int, color_mode: int, is_bg4: bool, run_in_bg: bool, groot: str):
         super(Settings, self).__init__()
         self.__class__.toggle = not self.__class__.toggle
         self.x = x
@@ -57,6 +58,9 @@ class Settings(QWidget):
             self.radio_light.setChecked(True)
         else:
             self.radio_dark.setChecked(True)
+
+        if run_in_bg:
+            self.run_in_background.setChecked(True)
 
         self.initUI()
         self.signalHandler()
