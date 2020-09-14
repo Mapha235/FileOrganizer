@@ -1,0 +1,25 @@
+{
+    "project_root": "C:/Dev/python/FileOrganizer",
+    "color_mode": 2,
+    "bg_path": "C:/Dev/python/FileOrganizer/data/bg.jpg",
+    "run_in_background": true,
+    "enable_shortcut": true,
+    "replace_existing": true,
+ 
+    "entries": [
+        {
+            "id": 0,
+            "src": "",
+            "dst": "",
+            "keywords": [],
+            "isChecked": true
+        },
+        {
+            "id": 1,
+            "src": "",
+            "dst": "",
+            "keywords": [],
+            "isChecked": true
+        }
+    ]
+}
