@@ -25,6 +25,7 @@ class TheWindow(QWidget):
 
         self.entry_window = None
         self.settings_page = None
+        self.tray_icon = QtWidgets.QSystemTrayIcon(QtGui.QIcon("./data/icon.png"), self)
 
         self.entries = []
 
@@ -206,6 +207,7 @@ class TheWindow(QWidget):
         self.dst_btn.clicked.connect(
             lambda: os.system(f"explorer {self.dst_path}"))
         self.files_moved_btn.clicked.connect(self.showHistory)
+        self.tray_icon.activated.connect(lambda: self.showNormal())
 
     def createBoxLayout(self):
         self.entry_box_layout.setAlignment(Qt.AlignTop)
@@ -378,7 +380,22 @@ class TheWindow(QWidget):
         layout_grid.addWidget(self.dst_table, 3, 5, 1, 4)
         self.setLayout(layout_grid)
 
+    def showEvent(self, event):
+        self.tray_icon.setVisible(False)
+        self.setVisible(True)
+
+    def changeEvent(self, event):
+        self.tray_icon.installEventFilter(self)
+        if event.type() == QtCore.QEvent.WindowStateChange:
+            if self.windowState() & Qt.WindowMinimized:
+                self.tray_icon.setToolTip("File Organizer")
+                self.tray_icon.show()
+                self.setVisible(False)
+
     def eventFilter(self, obj, event):
+        if obj == self.tray_icon and QtCore.QEvent.HoverEnter:
+            print("höhöhö")
+
         if obj == self.src_btn or obj == self.dst_btn:
             font_size = "font-size:10pt;"
         elif obj == self.files_moved_btn:
