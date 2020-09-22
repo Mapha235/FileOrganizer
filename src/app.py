@@ -19,13 +19,16 @@ class TheWindow(QWidget):
         self.src_path = ""
         self.dst_path = ""
 
+        self.tray_icon = QtWidgets.QSystemTrayIcon(
+            QtGui.QIcon("./data/icon.png"), self)
+        # self.setMouseTracking(True)
+
         self.setMinimumSize(1000, 500)
 
         self.language = "ENG"
 
         self.entry_window = None
         self.settings_page = None
-        self.tray_icon = QtWidgets.QSystemTrayIcon(QtGui.QIcon("./data/icon.png"), self)
 
         self.entries = []
 
@@ -207,7 +210,7 @@ class TheWindow(QWidget):
         self.dst_btn.clicked.connect(
             lambda: os.system(f"explorer {self.dst_path}"))
         self.files_moved_btn.clicked.connect(self.showHistory)
-        self.tray_icon.activated.connect(lambda: self.showNormal())
+        self.tray_icon.activated.connect(self.makeVisible)
 
     def createBoxLayout(self):
         self.entry_box_layout.setAlignment(Qt.AlignTop)
@@ -218,6 +221,7 @@ class TheWindow(QWidget):
     def hasDuplicate(self, s: str, t: str, k: str):
         msg = QMessageBox()
         for it in self.entries:
+
             if it.script.getSrcDir() == s and it.script.getDstDir() == t:
                 msg.setWindowTitle("Error")
                 msg.setText(
@@ -345,6 +349,19 @@ class TheWindow(QWidget):
                 if self.theme == dark:
                     temp.setForeground(QBrush(QColor(255, 255, 255)))
 
+    def showMenu(self, event):
+        context_menu = QtWidgets.QMenu(self)
+        move_action = context_menu.addAction("Move Files")
+        quit_action = context_menu.addAction("Quit")
+        action = context_menu.exec_(QtCore.QPoint(self.tray_icon.geometry().x(
+        ) + self.tray_icon.geometry().width()/2, self.tray_icon.geometry().y() + self.tray_icon.geometry().height()/2))
+        print(self.tray_icon.geometry().x())
+        print(self.tray_icon.geometry().y())
+        if action == quit_action:
+            self.close()
+        elif action == move_action:
+            self.runTask()
+
     def adjustButtons(self, index):
         entry = self.entries[index]
         s = entry.script.getSrcDir()
@@ -380,22 +397,16 @@ class TheWindow(QWidget):
         layout_grid.addWidget(self.dst_table, 3, 5, 1, 4)
         self.setLayout(layout_grid)
 
-    def showEvent(self, event):
-        self.tray_icon.setVisible(False)
-        self.setVisible(True)
-
-    def changeEvent(self, event):
-        self.tray_icon.installEventFilter(self)
-        if event.type() == QtCore.QEvent.WindowStateChange:
-            if self.windowState() & Qt.WindowMinimized:
-                self.tray_icon.setToolTip("File Organizer")
-                self.tray_icon.show()
-                self.setVisible(False)
+    def makeVisible(self, reason):
+        if reason == 3 or reason == 2:
+            self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
+            self.showNormal()
+        elif reason == 1:
+            self.showMenu(reason)
+        else:
+            print(reason)
 
     def eventFilter(self, obj, event):
-        if obj == self.tray_icon and QtCore.QEvent.HoverEnter:
-            print("höhöhö")
-
         if obj == self.src_btn or obj == self.dst_btn:
             font_size = "font-size:10pt;"
         elif obj == self.files_moved_btn:
@@ -486,17 +497,28 @@ class TheWindow(QWidget):
         self.bg_path = bg_path
         self.updateTheme()
 
-    def closeEvent(self, a0: QtGui.QCloseEvent):
+    def closeEvent(self, event: QtGui.QCloseEvent):
         self.saveState()
         if self.settings_page is not None:
             self.settings_page.close()
         if self.entry_window is not None:
             self.entry_window.close()
 
-    def moveEvent(self, a0: QtGui.QMoveEvent):
+    def moveEvent(self, event: QtGui.QMoveEvent):
         if self.settings_page is not None:
             self.settings_page.updatePos(
                 self.pos().x() + 20, self.pos().y() + 125)
+
+    def showEvent(self, event):
+        self.tray_icon.setVisible(False)
+        self.setVisible(True)
+
+    def changeEvent(self, event):
+        if event.type() == QtCore.QEvent.WindowStateChange:
+            if self.windowState() & Qt.WindowMinimized:
+                self.tray_icon.setToolTip("File Organizer")
+                self.tray_icon.show()
+                self.setVisible(False)
 
     def resizeEvent(self, event):
         self.my_height = self.frameGeometry().height()

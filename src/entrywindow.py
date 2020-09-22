@@ -12,7 +12,6 @@ class EntryWindow(QWidget):
         self.x = x
         self.y = y
 
-
         self.theme = ""
         if color_mode == 0:
             self.theme = default
