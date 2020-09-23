@@ -87,7 +87,6 @@ class TheWindow(QWidget):
             self.bg_path = ""
         values.pop(0)
 
-        print(self.options)
         self.analyzeValues(values)
 
         self.initFuncs()
@@ -292,6 +291,8 @@ class TheWindow(QWidget):
             it.mousePressEvent(it.clicked)
 
         self.message(files_moved)
+        self.tray_icon.showMessage("File Organizer", f"{files_moved} files moved.\nClick to show details.", QtGui.QIcon("./data/icon.png"))
+        self.tray_icon.messageClicked.connect(self.showHistory)
 
     def organizeEntries(self, index):
         for i in range(index + 1, len(self.entries)):
@@ -410,7 +411,7 @@ class TheWindow(QWidget):
 
     def makeVisible(self, reason):
         if reason == 3 or reason == 2:
-            self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
+            self.show()
             self.showNormal()
         elif reason == 1:
             self.showMenu(reason)
@@ -530,10 +531,16 @@ class TheWindow(QWidget):
 
     def changeEvent(self, event):
         if event.type() == QtCore.QEvent.WindowStateChange:
-            if self.windowState() & Qt.WindowMinimized and self.options[1]:
-                self.tray_icon.setToolTip("File Organizer")
-                self.tray_icon.show()
-                self.setVisible(False)
+            if self.windowState() & Qt.WindowMinimized:
+                if self.settings_page is not None:
+                    self.settings_page.close()
+                if self.entry_window is not None:
+                    self.entry_window.close()
+                
+                if self.options[1]:
+                    self.tray_icon.setToolTip("File Organizer")
+                    self.tray_icon.show()
+                    self.setVisible(False)
 
     def resizeEvent(self, event):
         self.my_height = self.frameGeometry().height()
