@@ -74,15 +74,20 @@ class TheWindow(QWidget):
 
         try:
             self.root = values[0][0]
-            self.bg_path = values[0][2]
+            self.bg_path = values[0][3]
+            temp = values[0][2]
+            temp = temp.split(',')
+            self.options = []
+            for i in temp:
+                self.options.append(i == 'True')
 
-            self.theme = dark
             self.setTheme(int(values[0][1]), self.bg_path)
         except IndexError:
             self.theme = default
             self.bg_path = ""
         values.pop(0)
 
+        print(self.options)
         self.analyzeValues(values)
 
         self.initFuncs()
@@ -116,6 +121,13 @@ class TheWindow(QWidget):
         file = open(f"{self.root}/data/save.txt", "w")
         file.write(f"{self.root}|")
         file.write(f"{self.getTheme()}|")
+
+        for i in range(0, len(self.options)):
+            if(i < len(self.options) - 1):
+                file.write(f"{self.options[i]},")
+            else:
+                file.write(f"{self.options[i]}|")
+            
         file.write(f"{self.bg_path}|\n")
         file.close()
         file = open(f"{self.root}/data/save.txt", "a")
@@ -353,10 +365,9 @@ class TheWindow(QWidget):
         context_menu = QtWidgets.QMenu(self)
         move_action = context_menu.addAction("Move Files")
         quit_action = context_menu.addAction("Quit")
-        action = context_menu.exec_(QtCore.QPoint(self.tray_icon.geometry().x(
-        ) + self.tray_icon.geometry().width()/2, self.tray_icon.geometry().y() + self.tray_icon.geometry().height()/2))
-        print(self.tray_icon.geometry().x())
-        print(self.tray_icon.geometry().y())
+        action = context_menu.exec_(QtCore.QPoint(self.tray_icon.geometry().x() + self.tray_icon.geometry().width()/2, 
+                                                    self.tray_icon.geometry().y() + self.tray_icon.geometry().height()/2))
+
         if action == quit_action:
             self.close()
         elif action == move_action:
@@ -404,7 +415,7 @@ class TheWindow(QWidget):
         elif reason == 1:
             self.showMenu(reason)
         else:
-            print(reason)
+            os.system("python op.py")
 
     def eventFilter(self, obj, event):
         if obj == self.src_btn or obj == self.dst_btn:
@@ -456,8 +467,8 @@ class TheWindow(QWidget):
         self.settings_page = Settings(self.pos().x() + 10, self.pos().y() + 120,
                                       self.language is "ENG",
                                       self.getTheme(),
+                                      self.options,
                                       self.bg_path == f"{self.root}/data/bg4.jpg",
-                                      True,
                                       self.root)
 
         settings_win_width = self.my_width / 3
@@ -476,6 +487,7 @@ class TheWindow(QWidget):
         else:
             self.settings_page.closeEvent(self.settings_page.close)
         self.settings_page.design_signal.connect(self.setTheme)
+        self.settings_page.options_signal.connect(self.setOptions)
 
     def getTheme(self) -> int:
         if self.theme is dark:
@@ -483,6 +495,9 @@ class TheWindow(QWidget):
         elif self.theme is light:
             return 2
         return 0
+
+    def setOptions(self, options: list):
+        self.options = options
 
     def setTheme(self, color_mode: int, bg_path: str):
         if color_mode == 0:
@@ -515,7 +530,7 @@ class TheWindow(QWidget):
 
     def changeEvent(self, event):
         if event.type() == QtCore.QEvent.WindowStateChange:
-            if self.windowState() & Qt.WindowMinimized:
+            if self.windowState() & Qt.WindowMinimized and self.options[1]:
                 self.tray_icon.setToolTip("File Organizer")
                 self.tray_icon.show()
                 self.setVisible(False)

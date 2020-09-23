@@ -3,11 +3,9 @@ from stylesheets import *
 class Settings(QWidget):
     toggle = False
     design_signal = pyqtSignal(int, str)
-    bg_dark_clicked = pyqtSignal()
-    bg_light_clicked = pyqtSignal()
     options_signal = pyqtSignal(list)
 
-    def __init__(self, x, y, language_mode: int, color_mode: int, is_bg4: bool, run_in_bg: bool, groot: str):
+    def __init__(self, x, y, language_mode: int, color_mode: int, options: list, is_bg4: bool, groot: str):
         super(Settings, self).__init__()
         self.__class__.toggle = not self.__class__.toggle
         self.x = x
@@ -38,7 +36,7 @@ class Settings(QWidget):
 
         self.options = QtWidgets.QGroupBox("Options")
         self.run_in_background = QCheckBox("Run in Background.")
-        self.enable_shortcut = QCheckBox("Enable Shortcut. (Ctrl+M)")
+        self.to_tray = QCheckBox("Minimize to tray.")
         self.auto_replace = QCheckBox(
             "Enable replace existing file in destination\ndirectory.")
 
@@ -59,8 +57,13 @@ class Settings(QWidget):
         else:
             self.radio_dark.setChecked(True)
 
-        if run_in_bg:
+
+        if options[0]:
             self.run_in_background.setChecked(True)
+        if options[1]:
+            self.to_tray.setChecked(True)
+        if options[2]:
+            self.auto_replace.setChecked(True)
 
         self.initUI()
         self.signalHandler()
@@ -144,7 +147,7 @@ class Settings(QWidget):
 
         options_layout = QGridLayout()
         options_layout.addWidget(self.run_in_background, 0, 0)
-        options_layout.addWidget(self.enable_shortcut, 1, 0)
+        options_layout.addWidget(self.to_tray, 1, 0)
         options_layout.addWidget(self.auto_replace, 2, 0)
 
         self.customization.setLayout(customization_layout)
@@ -165,6 +168,13 @@ class Settings(QWidget):
             color_mode = 1
         elif self.light.isChecked():
             color_mode = 2
+
+        options_list = []
+        options_list.append(self.run_in_background.isChecked())
+        options_list.append(self.to_tray.isChecked())
+        options_list.append(self.auto_replace.isChecked())
+
+        self.options_signal.emit(options_list)
         self.design_signal.emit(color_mode, self.bg_path)
         self.close()
 
