@@ -89,7 +89,7 @@ class TheWindow(QWidget):
 
         self.analyzeValues(values)
 
-        self.initFuncs()
+        self.initEntries()
         self.initUI()
         self.signalHandler()
 
@@ -203,13 +203,15 @@ class TheWindow(QWidget):
             self.entries.append(
                 Entry(self.root, it[1], it[2], it[3], it[4] == "True"))
 
-    def initFuncs(self):
+    def initEntries(self):
         for it in self.entries:
             it.clicked_signal.connect(self.showContent)
             it.send_id.connect(self.organizeEntries)
             it.send_id2.connect(self.adjustButtons)
             it.files_moved_signal.connect(self.message)
-            it.run_task_signal.connect(lambda: print("Changed"))
+
+            if self.options[0]:
+                it.run_task_signal.connect(lambda: None)
 
     def signalHandler(self):
         self.run_script_btn.clicked.connect(self.runTask)
@@ -277,6 +279,19 @@ class TheWindow(QWidget):
 
         self.files_moved_btn.setText(msg)
 
+    # https://stackoverflow.com/questions/21586643/pyqt-widget-connect-and-disconnect
+    def reconnect(self, signal, newhandler=None, oldhandler=None):
+        while True:
+            try:
+                if oldhandler is not None:
+                    signal.disconnect(oldhandler)
+                else:
+                    signal.disconnect()
+            except TypeError:
+                break
+        if newhandler is not None:
+            signal.connect(newhandler)
+
     def runTask(self):
         files_moved = 0
         checked_entries = []
@@ -292,7 +307,7 @@ class TheWindow(QWidget):
 
         self.message(files_moved)
         self.tray_icon.showMessage("File Organizer", f"{files_moved} files moved.\nClick to show details.", QtGui.QIcon("./data/icon.png"))
-        self.tray_icon.messageClicked.connect(self.showHistory)
+        # self.tray_icon.messageClicked.connect(self.showHistory)
 
     def organizeEntries(self, index):
         for i in range(index + 1, len(self.entries)):
@@ -500,6 +515,7 @@ class TheWindow(QWidget):
     def setOptions(self, options: list):
         self.options = options
 
+
     def setTheme(self, color_mode: int, bg_path: str):
         if color_mode == 0:
             self.theme = default
@@ -541,6 +557,14 @@ class TheWindow(QWidget):
                     self.tray_icon.setToolTip("File Organizer")
                     self.tray_icon.show()
                     self.setVisible(False)
+
+                if not self.options[0] or self.isVisible():
+                    for entry in self.entries:
+                        entry.run_task_signal.disconnect()
+                elif self.options[0] and not self.isVisible():
+                    for entry in self.entries:
+                        self.runTask()
+                        entry.run_task_signal.connect(self.runTask)
 
     def resizeEvent(self, event):
         self.my_height = self.frameGeometry().height()
