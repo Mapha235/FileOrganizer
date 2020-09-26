@@ -40,21 +40,21 @@ class Entry(QGroupBox):
         self.check_box = QCheckBox()
         self.check_box.setChecked(isChecked)
 
-        self.entry_list = []
+        self.widgets = []
 
-        self.entry_list.append(self.check_box)
-        self.entry_list.append(self.src)
-        self.entry_list.append(self.move_btn)
-        self.entry_list.append(self.dst)
-        self.entry_list.append(self.keywords_line_edit)
-        self.entry_list.append(self.edit_btn)
-        self.entry_list.append(self.delete_btn)
+        self.widgets.append(self.check_box)
+        self.widgets.append(self.src)
+        self.widgets.append(self.move_btn)
+        self.widgets.append(self.dst)
+        self.widgets.append(self.keywords_line_edit)
+        self.widgets.append(self.edit_btn)
+        self.widgets.append(self.delete_btn)
 
         self.observer = QtCore.QFileSystemWatcher([self.script.getSrcDir()])
 
         self.initUI()
         self.signalHandler()
-        
+
     def delete(self):
         self.__class__.id -= 1
         self.send_id.emit(self.my_id)
@@ -68,7 +68,7 @@ class Entry(QGroupBox):
 
     def initUI(self):
 
-        for x in self.entry_list:
+        for x in self.widgets:
             if type(x) is QLineEdit:
                 x.setReadOnly(True)
                 x.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -91,7 +91,8 @@ class Entry(QGroupBox):
         self.edit_btn.clicked.connect(self.editKeywords)
         # self.keywords_line_edit.returnPressed.connect(self.editKeywords)
         self.delete_btn.clicked.connect(self.delete)
-        self.observer.directoryChanged.connect(lambda: self.run_task_signal.emit())
+        self.observer.directoryChanged.connect(
+            lambda: self.run_task_signal.emit())
 
     def runTask(self):
         files_moved = self.script.move()
@@ -102,7 +103,7 @@ class Entry(QGroupBox):
     def createBoxLayout(self):
         layout = QHBoxLayout()
 
-        for x in self.entry_list:
+        for x in self.widgets:
             layout.addWidget(x)
 
         layout.setContentsMargins(7, 7, 7, 7)
@@ -127,7 +128,6 @@ class Entry(QGroupBox):
     def sendRunSignal(self):
         if self.check_box.isChecked():
             self.run_task_signal.emit()
-        
 
     def mousePressEvent(self, a0: QtGui.QMouseEvent):
         src_data = self.script.getSrcContent()
@@ -137,8 +137,14 @@ class Entry(QGroupBox):
                                  self.script.keywords)
 
         self.send_id2.emit(self.my_id)
+        self.updateTheme()
 
     def eventFilter(self, obj, event):
         if event.type() == QtCore.QEvent.HoverEnter:
             obj.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         return super(Entry, self).eventFilter(obj, event)
+
+    def updateTheme(self):
+        for widget in self.widgets:
+            widget.setStyleSheet(entry_layout)
+        # self.setStyleSheet(entry_layout)

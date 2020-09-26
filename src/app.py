@@ -7,6 +7,9 @@ from history import History
 
 
 class TheWindow(QWidget):
+
+    entry_clicked = pyqtSignal()
+
     def __init__(self, values: list):
         super(TheWindow, self).__init__()
 
@@ -126,7 +129,7 @@ class TheWindow(QWidget):
                 file.write(f"{self.options[i]},")
             else:
                 file.write(f"{self.options[i]}|")
-            
+
         file.write(f"{self.bg_path}|\n")
         file.close()
         file = open(f"{self.root}/data/save.txt", "a")
@@ -225,6 +228,14 @@ class TheWindow(QWidget):
         self.files_moved_btn.clicked.connect(self.showHistory)
         self.tray_icon.activated.connect(self.makeVisible)
 
+        def removeBorder():
+            for entry in self.entries:
+                entry.setStyleSheet(entry_layout)
+                entry.updateTheme()
+
+        self.entry_clicked.connect(removeBorder)
+        # self.entry_clicked.connect(lambda: map(lambda x: x.updateTheme(), self.entries))
+
     def createBoxLayout(self):
         self.entry_box_layout.setAlignment(Qt.AlignTop)
         self.entry_box_layout.setContentsMargins(0, 0, 0, 0)
@@ -306,7 +317,13 @@ class TheWindow(QWidget):
             it.mousePressEvent(it.clicked)
 
         self.message(files_moved)
-        self.tray_icon.showMessage("File Organizer", f"{files_moved} files moved.\nClick to show details.", QtGui.QIcon("./data/icon.png"))
+        if files_moved == 1:
+            self.tray_icon.showMessage(
+                "File Organizer", f"{files_moved} file moved.\nClick to show details.", QtGui.QIcon("./data/icon.png"))
+        elif files_moved > 1:
+            self.tray_icon.showMessage(
+                "File Organizer", f"{files_moved} files moved.\nClick to show details.", QtGui.QIcon("./data/icon.png"))
+
         # self.tray_icon.messageClicked.connect(self.showHistory)
 
     def organizeEntries(self, index):
@@ -320,6 +337,7 @@ class TheWindow(QWidget):
         self.history_window.show()
 
     def showContent(self, src_folders: list, src_files: list, dst_folders: list, dst_files: list, keywords: str):
+
         self.src_table.setRowCount(len(src_folders) + len(src_files))
 
         self.dst_table.setRowCount(len(dst_folders) + len(dst_files))
@@ -381,22 +399,29 @@ class TheWindow(QWidget):
         context_menu = QtWidgets.QMenu(self)
         move_action = context_menu.addAction("Move Files")
         quit_action = context_menu.addAction("Quit")
-        action = context_menu.exec_(QtCore.QPoint(self.tray_icon.geometry().x() + self.tray_icon.geometry().width()/2, 
-                                                    self.tray_icon.geometry().y() + self.tray_icon.geometry().height()/2))
+        action = context_menu.exec_(QtCore.QPoint(self.tray_icon.geometry().x() + self.tray_icon.geometry().width()/2,
+                                                  self.tray_icon.geometry().y() + self.tray_icon.geometry().height()/2))
 
         if action == quit_action:
             self.close()
         elif action == move_action:
             self.runTask()
 
-    def adjustButtons(self, index):
+    def adjustButtons(self, index: int):
         entry = self.entries[index]
+
         s = entry.script.getSrcDir()
         t = entry.script.getDstDir()
         self.src_btn.setText(entry.src.text())
         self.dst_btn.setText(entry.dst.text())
         self.src_path = entry.script.backslashes(s)
         self.dst_path = entry.script.backslashes(t)
+
+        # Highligths the clicked entry
+        self.entry_clicked.emit()
+        entry.setObjectName("BorderBox")
+        entry.setStyleSheet(
+        " QGroupBox#BorderBox { " + entry_layout + " background-color: rgba(171, 183, 183, 1)}")
 
     def openEntry(self):
         self.entry_window = EntryWindow(self.pos().x() + (self.width() / 4), self.pos().y() + 50, self.getTheme(),
@@ -515,7 +540,6 @@ class TheWindow(QWidget):
     def setOptions(self, options: list):
         self.options = options
 
-
     def setTheme(self, color_mode: int, bg_path: str):
         if color_mode == 0:
             self.theme = default
@@ -552,7 +576,7 @@ class TheWindow(QWidget):
                     self.settings_page.close()
                 if self.entry_window is not None:
                     self.entry_window.close()
-                
+
                 if self.options[1]:
                     self.tray_icon.setToolTip("File Organizer")
                     self.tray_icon.show()
@@ -560,7 +584,8 @@ class TheWindow(QWidget):
 
                 if not self.options[0] or self.isVisible():
                     for entry in self.entries:
-                        entry.run_task_signal.disconnect()
+                        if QtCore.QObject.receivers(entry, entry.run_task_signal) > 0:
+                            entry.run_task_signal.disconnect()
                 elif self.options[0] and not self.isVisible():
                     for entry in self.entries:
                         self.runTask()
