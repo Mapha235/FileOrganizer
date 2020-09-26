@@ -34,6 +34,7 @@ class Entry(QGroupBox):
         self.keywords_line_edit.insert(keyw)
 
         self.move_btn = QtWidgets.QPushButton()
+        self.reverse_move_btn = QtWidgets.QPushButton()
         self.edit_btn = QtWidgets.QPushButton("Edit")
         self.delete_btn = QtWidgets.QPushButton()
 
@@ -44,6 +45,7 @@ class Entry(QGroupBox):
 
         self.widgets.append(self.check_box)
         self.widgets.append(self.src)
+        self.widgets.append(self.reverse_move_btn)
         self.widgets.append(self.move_btn)
         self.widgets.append(self.dst)
         self.widgets.append(self.keywords_line_edit)
@@ -80,23 +82,28 @@ class Entry(QGroupBox):
         self.setFixedHeight(40)
 
         os.chdir(self.root)
+        icon = QPixmap("./data/arrow2.png")
+        self.move_btn.setIcon(QtGui.QIcon(icon))
+        self.reverse_move_btn.setIcon(QtGui.QIcon(icon.transformed(QtGui.QTransform().scale(-1, 1))))
+
         self.delete_btn.setIcon(QtGui.QIcon("./data/error.png"))
-        self.move_btn.setIcon(QtGui.QIcon("./data/arrow2.png"))
 
         self.createBoxLayout()
-        self.setStyleSheet(entry_layout + "color: black;")
+        # self.setStyleSheet(entry_layout + "color: black;")
+        self.setStyleSheet(entry_layout)
 
     def signalHandler(self):
-        self.move_btn.clicked.connect(self.runTask)
+        self.move_btn.clicked.connect(lambda: self.runTask(False))
+        self.reverse_move_btn.clicked.connect(lambda: self.runTask(True))
         self.edit_btn.clicked.connect(self.editKeywords)
         # self.keywords_line_edit.returnPressed.connect(self.editKeywords)
         self.delete_btn.clicked.connect(self.delete)
         self.observer.directoryChanged.connect(
             lambda: self.run_task_signal.emit())
 
-    def runTask(self):
-        files_moved = self.script.move()
-        self.script.remove()
+    def runTask(self, isReverse):
+        files_moved = self.script.move(isReverse)
+        self.script.remove(isReverse)
         self.files_moved_signal.emit(files_moved)
         self.mousePressEvent(self.clicked)
 
@@ -147,4 +154,3 @@ class Entry(QGroupBox):
     def updateTheme(self):
         for widget in self.widgets:
             widget.setStyleSheet(entry_layout)
-        # self.setStyleSheet(entry_layout)

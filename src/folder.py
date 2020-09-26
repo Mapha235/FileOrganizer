@@ -65,29 +65,41 @@ class Folder:
     def backslashes(self, path:str):
         return path.replace("/", "\\")
 
-    def move(self):
+    def move(self, isReverse = False):
+        if isReverse:
+            src_dir = self.dst_dir
+            dst_dir = self.src_dir
+        else:
+            src_dir = self.src_dir
+            dst_dir = self.dst_dir
+        
         keyword_list = self.splitKeywords()
-        self.files = [file for file in os.listdir(self.src_dir) if os.path.isfile(os.path.join(self.src_dir, file))]
+        self.files = [file for file in os.listdir(src_dir) if os.path.isfile(os.path.join(src_dir, file))]
         files_moved = 0
         for it in keyword_list:
             matching_files = [file for file in self.files if it in file]
-            matching_files = [os.path.join(self.src_dir, file) for file in matching_files]
+            matching_files = [os.path.join(src_dir, file) for file in matching_files]
             files_moved += len(matching_files)
-            for data in matching_files:
 
+            for data in matching_files:
                 try:
-                    shutil.copy(data, self.dst_dir)
+                    shutil.copy(data, dst_dir)
                 except shutil.Error:
                     print(f"Error {data} already exists.")
         return files_moved
 
-    def remove(self):
+    def remove(self, isReverse = False):
         queue = []
         keyword_list = self.splitKeywords()
 
+        if isReverse:
+            src_dir = self.dst_dir
+        else:
+            src_dir = self.src_dir
+
         for it in keyword_list:
             matching_files = [file for file in self.files if it in file]
-            matching_files = [os.path.join(self.src_dir, file) for file in matching_files]
+            matching_files = [os.path.join(src_dir, file) for file in matching_files]
             for data in matching_files:
                 try:
                     os.unlink(data)

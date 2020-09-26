@@ -290,19 +290,6 @@ class TheWindow(QWidget):
 
         self.files_moved_btn.setText(msg)
 
-    # https://stackoverflow.com/questions/21586643/pyqt-widget-connect-and-disconnect
-    def reconnect(self, signal, newhandler=None, oldhandler=None):
-        while True:
-            try:
-                if oldhandler is not None:
-                    signal.disconnect(oldhandler)
-                else:
-                    signal.disconnect()
-            except TypeError:
-                break
-        if newhandler is not None:
-            signal.connect(newhandler)
-
     def runTask(self):
         files_moved = 0
         checked_entries = []
@@ -582,14 +569,14 @@ class TheWindow(QWidget):
                     self.tray_icon.show()
                     self.setVisible(False)
 
-                if not self.options[0] or self.isVisible():
-                    for entry in self.entries:
-                        if QtCore.QObject.receivers(entry, entry.run_task_signal) > 0:
-                            entry.run_task_signal.disconnect()
-                elif self.options[0] and not self.isVisible():
-                    for entry in self.entries:
-                        self.runTask()
-                        entry.run_task_signal.connect(self.runTask)
+            if not self.options[0] or self.isVisible():
+                for entry in self.entries:
+                    if QtCore.QObject.receivers(entry, entry.run_task_signal) > 0:
+                        entry.run_task_signal.disconnect()
+            elif self.options[0] and not self.isVisible():
+                for entry in self.entries:
+                    self.runTask()
+                    entry.run_task_signal.connect(self.runTask)
 
     def resizeEvent(self, event):
         self.my_height = self.frameGeometry().height()
