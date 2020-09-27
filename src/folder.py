@@ -78,13 +78,13 @@ class Folder:
         files_moved = 0
         for it in keyword_list:
             matching_files = [file for file in self.files if it in file]
-            matching_files = [os.path.join(src_dir, file) for file in matching_files]
+            # matching_files = [os.path.join(src_dir, file) for file in matching_files]
             files_moved += len(matching_files)
 
             for data in matching_files:
                 try:
-                    shutil.copy(data, dst_dir)
-                except shutil.Error:
+                    shutil.copyfile(f"{src_dir}/{data}", f"{dst_dir}/{data}")
+                except shutil.SameFileError:
                     print(f"Error {data} already exists.")
         return files_moved
 

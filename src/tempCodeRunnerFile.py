@@ -1,2 +1,2 @@
 
-                "background-color: rgba(0,0,0,0.0)
+        # self.dst_table.setRowCount(0)

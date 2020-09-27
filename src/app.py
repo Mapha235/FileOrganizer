@@ -119,7 +119,7 @@ class TheWindow(QWidget):
 
         self.show()
 
-    def saveState(self):
+    def saveToFile(self):
         file = open(f"{self.root}/data/save.txt", "w")
         file.write(f"{self.root}|")
         file.write(f"{self.getTheme()}|")
@@ -245,11 +245,11 @@ class TheWindow(QWidget):
     def hasDuplicate(self, s: str, t: str, k: str):
         msg = QMessageBox()
         for it in self.entries:
-
-            if it.script.getSrcDir() == s and it.script.getDstDir() == t:
-                msg.setWindowTitle("Error")
+            # checks whether an entry with the same source and destination path or vice versa already exists.
+            if (it.script.getSrcDir() == s and it.script.getDstDir() == t) or (it.script.getSrcDir() == t and it.script.getDstDir() == s):
+                msg.setWindowTitle("Note")
                 msg.setText(
-                    "Error: An identical entry already exists.\nMerge with existing entry?")
+                    "An identical entry already exists.\nMerge with existing entry?")
                 msg.setIcon(QMessageBox.Question)
                 msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
                 msg.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
@@ -343,6 +343,7 @@ class TheWindow(QWidget):
                     temp = QTableWidgetItem(src_folders[i % src_file_count])
 
                 self.src_table.setItem(i, 0, temp)
+                # grey out directories/folders that are not considered in this program
                 self.src_table.item(i, 0).setForeground(
                     QtGui.QColor(128, 128, 128))
             else:
@@ -355,6 +356,7 @@ class TheWindow(QWidget):
                 if self.theme == dark:
                     temp.setForeground(QBrush(QColor(255, 255, 255)))
 
+                # highlight the files that contain the keyword(s)
                 if any(key in src_files[i] for key in keyword_list):
 
                     if self.theme is dark:
@@ -379,8 +381,22 @@ class TheWindow(QWidget):
                 temp = QTableWidgetItem(dst_files[i])
                 self.dst_table.setItem(i, 0, temp)
 
+                self.dst_table.setEditTriggers(
+                    QAbstractItemView.NoEditTriggers)
+
                 if self.theme == dark:
                     temp.setForeground(QBrush(QColor(255, 255, 255)))
+
+                # highlight the files that contain the keyword(s)
+                if any(key in dst_files[i] for key in keyword_list):
+
+                    if self.theme is dark:
+                        temp.setForeground(QBrush(QColor(225, 127, 80)))
+                    else:
+                        temp.setForeground(QBrush(QColor(225, 100, 80)))
+                    font = QtGui.QFont()
+                    font.setBold(True)
+                    temp.setFont(font)
 
     def showMenu(self, event):
         context_menu = QtWidgets.QMenu(self)
@@ -397,6 +413,12 @@ class TheWindow(QWidget):
     def adjustButtons(self, index: int):
         entry = self.entries[index]
 
+        # Highligths the clicked entry
+        self.entry_clicked.emit()
+        entry.setObjectName("BorderBox")
+        entry.setStyleSheet(
+        " QGroupBox#BorderBox { " + entry_layout + " background-color: rgba(171, 183, 183, 1)}")
+
         s = entry.script.getSrcDir()
         t = entry.script.getDstDir()
         self.src_btn.setText(entry.src.text())
@@ -404,11 +426,7 @@ class TheWindow(QWidget):
         self.src_path = entry.script.backslashes(s)
         self.dst_path = entry.script.backslashes(t)
 
-        # Highligths the clicked entry
-        self.entry_clicked.emit()
-        entry.setObjectName("BorderBox")
-        entry.setStyleSheet(
-        " QGroupBox#BorderBox { " + entry_layout + " background-color: rgba(171, 183, 183, 1)}")
+        
 
     def openEntry(self):
         self.entry_window = EntryWindow(self.pos().x() + (self.width() / 4), self.pos().y() + 50, self.getTheme(),
@@ -535,13 +553,13 @@ class TheWindow(QWidget):
         elif color_mode == 2:
             self.theme = light
 
-        self.src_table.setRowCount(0)
-        self.dst_table.setRowCount(0)
+        # self.src_table.setRowCount(0)
+        # self.dst_table.setRowCount(0)
         self.bg_path = bg_path
         self.updateTheme()
 
     def closeEvent(self, event: QtGui.QCloseEvent):
-        self.saveState()
+        self.saveToFile()
         if self.settings_page is not None:
             self.settings_page.close()
         if self.entry_window is not None:
