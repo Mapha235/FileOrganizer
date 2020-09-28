@@ -92,6 +92,9 @@ class Entry(QGroupBox):
         # self.setStyleSheet(entry_layout + "color: black;")
         self.setStyleSheet(entry_layout)
 
+    def replaceIsEnabled(self, val: bool):
+        self.script.setOption(val)
+
     def signalHandler(self):
         self.move_btn.clicked.connect(lambda: self.runTask(False))
         self.reverse_move_btn.clicked.connect(lambda: self.runTask(True))

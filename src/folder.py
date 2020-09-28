@@ -1,4 +1,7 @@
-import os, glob, shutil
+import os
+import glob
+import shutil
+from exception import FilenameAlreadyExistsError
 
 
 class Folder:
@@ -6,6 +9,8 @@ class Folder:
     def __init__(self, src, dst, keyw):
         is_src_dir = False
         self.keywords = keyw
+        self.replaceEnabled = False
+
         try:
             self.src_dir = src
             is_src_dir = True
@@ -37,16 +42,19 @@ class Folder:
         lst = list(lst[1:3])
         return lst
 
-
     def setKeywords(self, k):
         self.keywords = k
 
     def getKeywords(self):
         return self.keywords
 
+    def setOption(self, val: bool):
+        self.replaceEnabled = val
+
     def createDirectory(self):
         while 1:
-            inp = input("Destination-Directory not found. Create missing Directory? [y/n]")
+            inp = input(
+                "Destination-Directory not found. Create missing Directory? [y/n]")
             if inp == 'y':
                 os.system("mkdir " + "\"" + self.dst_dir + "\"")
                 print("Successfully created Destination-Directory.")
@@ -62,19 +70,20 @@ class Folder:
         return keywords
 
     # replaces the forwardslashes in src_dir and dst_dir to backslashes
-    def backslashes(self, path:str):
+    def backslashes(self, path: str):
         return path.replace("/", "\\")
 
-    def move(self, isReverse = False):
+    def move(self, isReverse=False):
         if isReverse:
             src_dir = self.dst_dir
             dst_dir = self.src_dir
         else:
             src_dir = self.src_dir
             dst_dir = self.dst_dir
-        
+
         keyword_list = self.splitKeywords()
-        self.files = [file for file in os.listdir(src_dir) if os.path.isfile(os.path.join(src_dir, file))]
+        self.files = [file for file in os.listdir(
+            src_dir) if os.path.isfile(os.path.join(src_dir, file))]
         files_moved = 0
         for it in keyword_list:
             matching_files = [file for file in self.files if it in file]
@@ -83,12 +92,20 @@ class Folder:
 
             for data in matching_files:
                 try:
-                    shutil.copyfile(f"{src_dir}/{data}", f"{dst_dir}/{data}")
-                except shutil.SameFileError:
-                    print(f"Error {data} already exists.")
+                    dst = f"{dst_dir}/{data}"
+                    if not self.replaceEnabled and os.path.isfile(dst):
+                        raise FilenameAlreadyExistsError
+                except FilenameAlreadyExistsError:
+                    file = data.split('.')
+                    os.replace(os.path.join(self.src_dir, data),
+                               os.path.join(self.src_dir, f"{file[0]} (1).{file[1]}"))
+                    file_index = self.files.index(data)
+                    data = f"{file[0]} (1).{file[1]}"
+                    self.files[file_index] = data
+                shutil.copyfile(f"{src_dir}/{data}", f"{dst_dir}/{data}")
         return files_moved
 
-    def remove(self, isReverse = False):
+    def remove(self, isReverse=False):
         queue = []
         keyword_list = self.splitKeywords()
 
@@ -99,15 +116,14 @@ class Folder:
 
         for it in keyword_list:
             matching_files = [file for file in self.files if it in file]
-            matching_files = [os.path.join(src_dir, file) for file in matching_files]
+            matching_files = [os.path.join(src_dir, file)
+                              for file in matching_files]
             for data in matching_files:
                 try:
                     os.unlink(data)
                 except PermissionError:
                     queue.append(data)
-                    # print(f"appended: {data}")
                 except FileNotFoundError:
-                    # print(f"filenotfound: {data}")
                     None
         self.files.clear()
         while len(queue) != 0:

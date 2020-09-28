@@ -104,6 +104,7 @@ class TheWindow(QWidget):
         for btn in self.btns:
             # used for mouse hover event
             btn.installEventFilter(self)
+        self.src_table.installEventFilter(self)
 
         # self.btns.clear()
 
@@ -227,6 +228,7 @@ class TheWindow(QWidget):
             lambda: os.system(f"explorer {self.dst_path}"))
         self.files_moved_btn.clicked.connect(self.showHistory)
         self.tray_icon.activated.connect(self.makeVisible)
+        self.src_table.itemClicked.connect(lambda x: print(x.text()))
 
         def removeBorder():
             for entry in self.entries:
@@ -296,12 +298,14 @@ class TheWindow(QWidget):
         for it in self.entries:
             if it.getCheckBox():
                 checked_entries.append(it)
+                it.replaceIsEnabled(self.options[2])
                 temp = it.script.move()
                 files_moved += temp
 
-        for it in checked_entries:
-            it.script.remove()
-            it.mousePressEvent(it.clicked)
+        if files_moved > 0:
+            for it in checked_entries:
+                it.script.remove()
+                it.mousePressEvent(it.clicked)
 
         self.message(files_moved)
         if files_moved == 1:
@@ -475,6 +479,9 @@ class TheWindow(QWidget):
             icon_path = "./data/einstellungen.png"
         elif obj is self.run_script_btn:
             icon_path = "./data/arrow2.png"
+        elif obj is self.src_table:
+            if event.type() == QtCore.QEvent.MouseButtonRelease and event.button() == QtCore.Qt.RightButton:
+                print("hahahhööö")
 
         if self.theme is not default:
             if event.type() == QtCore.QEvent.HoverEnter:
