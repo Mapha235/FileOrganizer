@@ -84,7 +84,8 @@ class Entry(QGroupBox):
         os.chdir(self.root)
         icon = QPixmap("./data/arrow2.png")
         self.move_btn.setIcon(QtGui.QIcon(icon))
-        self.reverse_move_btn.setIcon(QtGui.QIcon(icon.transformed(QtGui.QTransform().scale(-1, 1))))
+        self.reverse_move_btn.setIcon(QtGui.QIcon(
+            icon.transformed(QtGui.QTransform().scale(-1, 1))))
 
         self.delete_btn.setIcon(QtGui.QIcon("./data/error.png"))
 

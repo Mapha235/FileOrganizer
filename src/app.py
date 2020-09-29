@@ -421,7 +421,7 @@ class TheWindow(QWidget):
         self.entry_clicked.emit()
         entry.setObjectName("BorderBox")
         entry.setStyleSheet(
-        " QGroupBox#BorderBox { " + entry_layout + " background-color: rgba(171, 183, 183, 1)}")
+            " QGroupBox#BorderBox { " + entry_layout + " background-color: rgba(171, 183, 183, 1)}")
 
         s = entry.script.getSrcDir()
         t = entry.script.getDstDir()
@@ -429,8 +429,6 @@ class TheWindow(QWidget):
         self.dst_btn.setText(entry.dst.text())
         self.src_path = entry.script.backslashes(s)
         self.dst_path = entry.script.backslashes(t)
-
-        
 
     def openEntry(self):
         self.entry_window = EntryWindow(self.pos().x() + (self.width() / 4), self.pos().y() + 50, self.getTheme(),

@@ -95,14 +95,17 @@ class Folder:
                     dst = f"{dst_dir}/{data}"
                     if not self.replaceEnabled and os.path.isfile(dst):
                         raise FilenameAlreadyExistsError
+                    elif not os.path.isfile(dst):
+                        shutil.copyfile(f"{src_dir}/{data}", f"{dst_dir}/{data}")
                 except FilenameAlreadyExistsError:
                     file = data.split('.')
-                    os.replace(os.path.join(self.src_dir, data),
-                               os.path.join(self.src_dir, f"{file[0]} (1).{file[1]}"))
+                    os.replace(os.path.join(src_dir, data),
+                               os.path.join(src_dir, f"{file[0]} - moved.{file[1]}"))
                     file_index = self.files.index(data)
-                    data = f"{file[0]} (1).{file[1]}"
+                    data = f"{file[0]} - moved.{file[1]}"
                     self.files[file_index] = data
-                shutil.copyfile(f"{src_dir}/{data}", f"{dst_dir}/{data}")
+                    matching_files.append(data)
+                
         return files_moved
 
     def remove(self, isReverse=False):
