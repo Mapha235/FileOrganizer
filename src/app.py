@@ -230,12 +230,12 @@ class TheWindow(QWidget):
         self.tray_icon.activated.connect(self.makeVisible)
         self.src_table.itemClicked.connect(lambda x: print(x.text()))
 
-        def removeBorder():
+        def removeSelected():
             for entry in self.entries:
                 entry.setStyleSheet(entry_layout)
                 entry.updateTheme()
 
-        self.entry_clicked.connect(removeBorder)
+        self.entry_clicked.connect(removeSelected)
         # self.entry_clicked.connect(lambda: map(lambda x: x.updateTheme(), self.entries))
 
     def createBoxLayout(self):
@@ -415,6 +415,7 @@ class TheWindow(QWidget):
             self.runTask()
 
     def adjustButtons(self, index: int):
+        self.current_entry_id = index
         entry = self.entries[index]
 
         # Highligths the clicked entry

@@ -6,7 +6,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import pyqtSignal, QSize, QPropertyAnimation, QRect, Qt
 from PyQt5.QtGui import QWindow, QImage, QPalette, QBrush, QColor, QKeySequence, QPixmap
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QWidget, QGridLayout, QApplication, QSizePolicy, QTextBrowser, \
-    QStackedLayout, QGroupBox, QVBoxLayout, QHBoxLayout, QScrollArea, QLineEdit, QCheckBox, QLabel, QTableWidget, QTableWidgetItem, QAbstractItemView, QShortcut, QSystemTrayIcon
+    QStackedLayout, QGroupBox, QVBoxLayout, QHBoxLayout, QScrollArea, QLineEdit, QCheckBox, QLabel, QTableWidget, QTableWidgetItem, QAbstractItemView, QShortcut, QSystemTrayIcon, QTreeWidget
 from folder import Folder
 from settings import Settings
 

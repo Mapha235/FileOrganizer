@@ -63,7 +63,7 @@ class Settings(QWidget):
         if options[1]:
             self.to_tray.setChecked(True)
         if options[2]:
-            self.auto_replace.setChecked(True)
+            self.auto_replace.setChecked(True)      
 
         self.initUI()
         self.signalHandler()
@@ -91,15 +91,24 @@ class Settings(QWidget):
 
         if self.default.isChecked():
             self.bgs.setEnabled(False)
-        self.default.toggled.connect(self.toggleBgBox)
+        self.default.toggled.connect(self.toggleHandler)
+
+        if not self.to_tray.isChecked():
+            self.run_in_background.setEnabled(False)
+        self.to_tray.toggled.connect(self.toggleHandler)
 
         self.createLayout()
 
-    def toggleBgBox(self):
+    def toggleHandler(self):
         if self.default.isChecked():
             self.bgs.setEnabled(False)
         else:
             self.bgs.setEnabled(True)
+
+        if self.to_tray.isChecked():
+            self.run_in_background.setEnabled(True)
+        else:
+            self.run_in_background.setEnabled(False)
 
     def updatePos(self, x, y):
         self.x = x
@@ -113,6 +122,8 @@ class Settings(QWidget):
         if self.default.isChecked():
             self.bgs.setEnabled(False)
 
+        if self.to_tray.isChecked():
+            self.run_in_background.setEnabled(True)
         self.cancel_btn.clicked.connect(self.close)
         self.apply_btn.clicked.connect(self.apply)
 
@@ -146,9 +157,9 @@ class Settings(QWidget):
         bgs_layout.setAlignment(Qt.AlignCenter)
 
         options_layout = QGridLayout()
-        options_layout.addWidget(self.run_in_background, 0, 0)
-        options_layout.addWidget(self.to_tray, 1, 0)
-        options_layout.addWidget(self.auto_replace, 2, 0)
+        options_layout.addWidget(self.to_tray, 0, 0, 1, 18)
+        options_layout.addWidget(self.run_in_background, 1, 1, 1, 17)
+        options_layout.addWidget(self.auto_replace, 2, 0, 1, 18)
 
         self.customization.setLayout(customization_layout)
         self.languages.setLayout(languages_layout)
